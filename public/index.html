@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coded Vibe Quiz (VCVQ)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Landing Page -->
+        <div id="landing-page" class="page active">
+            <div class="container">
+                <header>
+                    <h1>🎯 Vibe Coded Vibe Quiz</h1>
+                    <p class="subtitle">Real-time multiplayer quiz game</p>
+                </header>
+                
+                <div class="language-selector">
+                    <label for="language">Language:</label>
+                    <select id="language">
+                        <option value="swedish">🇸🇪 Svenska</option>
+                        <option value="english">🇬🇧 English</option>
+                    </select>
+                </div>
+
+                <div class="topic-input">
+                    <label for="topic">Choose a topic for your quiz:</label>
+                    <input type="text" id="topic" placeholder="e.g., Swedish history, Space exploration, Cooking..." required>
+                    <button id="generate-btn" class="btn-primary">Generate Questions</button>
+                </div>
+
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Generating quiz questions...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Setup Page -->
+        <div id="player-setup" class="page">
+            <div class="container">
+                <h2>Setup Players</h2>
+                <p>Choose number of players (2-4):</p>
+                
+                <div class="player-count-selector">
+                    <button class="player-count-btn" data-count="2">2 Players</button>
+                    <button class="player-count-btn" data-count="3">3 Players</button>
+                    <button class="player-count-btn" data-count="4">4 Players</button>
+                </div>
+
+                <div id="player-names" class="player-names hidden">
+                    <h3>Enter player names:</h3>
+                    <div id="player-inputs"></div>
+                    <button id="start-game-btn" class="btn-primary" disabled>Start Game</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Page -->
+        <div id="game-page" class="page">
+            <div class="container">
+                <div class="game-header">
+                    <div class="scores">
+                        <h3>Scoreboard</h3>
+                        <div id="scoreboard"></div>
+                    </div>
+                    <div class="game-info">
+                        <div id="current-player-indicator"></div>
+                        <div id="question-counter"></div>
+                    </div>
+                </div>
+
+                <div class="game-content">
+                    <div id="question-container">
+                        <h2 id="question-text"></h2>
+                        <div id="answer-options" class="answer-grid"></div>
+                    </div>
+                </div>
+
+                <div id="answer-feedback" class="feedback hidden">
+                    <div id="feedback-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Finished Page -->
+        <div id="game-finished" class="page">
+            <div class="container">
+                <h2>🎉 Game Finished!</h2>
+                <div id="final-scores"></div>
+                <div id="winner-announcement"></div>
+                <button id="play-again-btn" class="btn-primary">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+async function generateQuizQuestions(topic, language = 'swedish') {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    const languageInstruction = language === 'swedish' 
+      ? 'All questions and answers should be in Swedish.'
+      : 'All questions and answers should be in English.';
+
+    const prompt = `
+Generate exactly 10 multiple-choice quiz questions about "${topic}".
+${languageInstruction}
+
+Each question must have:
+- A clear, engaging question
+- Exactly 6 answer options (A, B, C, D, E, F)
+- Only 1 correct answer
+- The correct answer should be marked with "CORRECT:" at the end
+
+Format the response as JSON with this exact structure:
+{
+  "questions": [
+    {
+      "question": "Question text here?",
+      "options": ["Option A", "Option B", "Option C", "Option D", "Option E", "Option F"],
+      "correctAnswer": 0
+    }
+  ]
+}
+
+Make sure the questions are varied in difficulty and cover different aspects of the topic.
+The correctAnswer should be the index (0-5) of the correct option.
+`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    // Extract JSON from the response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No valid JSON found in response');
+    }
+    
+    const quizData = JSON.parse(jsonMatch[0]);
+    
+    // Validate the structure
+    if (!quizData.questions || !Array.isArray(quizData.questions) || quizData.questions.length !== 10) {
+      throw new Error('Invalid quiz structure');
+    }
+    
+    // Validate each question
+    for (let i = 0; i < quizData.questions.length; i++) {
+      const q = quizData.questions[i];
+      if (!q.question || !q.options || !Array.isArray(q.options) || q.options.length !== 6) {
+        throw new Error(`Invalid question structure at index ${i}`);
+      }
+      if (typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > 5) {
+        throw new Error(`Invalid correctAnswer at index ${i}`);
+      }
+    }
+    
+    return quizData.questions;
+  } catch (error) {
+    console.error('Error generating quiz questions:', error);
+    throw new Error('Failed to generate quiz questions');
+  }
+}
+
+module.exports = {
+  generateQuizQuestions
+};
