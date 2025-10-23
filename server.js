@@ -42,9 +42,19 @@ app.post('/api/generate-quiz', async (req, res) => {
   } catch (error) {
     console.error('Error generating quiz:', error);
     console.error('Error details:', error.message);
+    
+    // Check if it's an API key issue
+    let errorMessage = 'Failed to generate quiz questions';
+    let details = error.message;
+    
+    if (error.message.includes('API key') || error.message.includes('GEMINI_API_KEY')) {
+      errorMessage = 'API configuration error';
+      details = 'Please check your GEMINI_API_KEY configuration. Make sure you have a valid .env file with your Google Gemini API key.';
+    }
+    
     res.status(500).json({ 
-      error: 'Failed to generate quiz questions',
-      details: error.message 
+      error: errorMessage,
+      details: details
     });
   }
 });

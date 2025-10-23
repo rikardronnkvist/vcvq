@@ -45,6 +45,11 @@ async function getLatestModel() {
 
 async function generateQuizQuestions(topic, language = 'swedish', questionCount = 10) {
   try {
+    // Check if API key is configured
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_gemini_api_key_here') {
+      throw new Error('GEMINI_API_KEY is not configured. Please set up your .env file with a valid Google Gemini API key.');
+    }
+    
     const modelName = await getLatestModel();
     const model = genAI.getGenerativeModel({ model: modelName });
     

@@ -211,6 +211,9 @@ class VCVQGame {
             }
             
             alert(errorMessage);
+            
+            // Show landing page again after error
+            this.showPage('landing-page');
         } finally {
             this.showLoading(false);
         }
