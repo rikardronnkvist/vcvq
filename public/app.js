@@ -189,7 +189,9 @@ class VCVQGame {
             }
 
             const data = await response.json();
+            console.log('API response received:', data);
             this.questions = data.questions;
+            console.log('Questions stored:', this.questions);
             
             // Show player selection interface
             this.showPlayerSelection(playerCount);
@@ -220,20 +222,35 @@ class VCVQGame {
     }
 
     showPlayerSelection(playerCount) {
+        console.log('showPlayerSelection called with playerCount:', playerCount);
+        
         // Hide landing page and show player selection
-        document.getElementById('landing-page').classList.add('hidden');
-        document.getElementById('player-selection').classList.remove('hidden');
+        const landingPage = document.getElementById('landing-page');
+        const playerSelection = document.getElementById('player-selection');
+        
+        console.log('landing-page element:', landingPage);
+        console.log('player-selection element:', playerSelection);
+        
+        if (landingPage) {
+            landingPage.classList.add('hidden');
+        }
+        if (playerSelection) {
+            playerSelection.classList.remove('hidden');
+        }
         
         // Populate player selection dropdowns
         this.populatePlayerSelection(playerCount);
     }
 
     populatePlayerSelection(playerCount) {
+        console.log('populatePlayerSelection called with playerCount:', playerCount);
         const seats = ['driver', 'front-passenger', 'left-back', 'right-back'];
         
         seats.forEach(seat => {
             const select = document.getElementById(`${seat}-player`);
             const checkbox = document.getElementById(`${seat}-active`);
+            
+            console.log(`Setting up seat ${seat}:`, { select, checkbox });
             
             // Clear existing options
             select.innerHTML = '<option value="">Select Player</option>';
