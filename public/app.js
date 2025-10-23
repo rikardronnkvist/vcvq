@@ -7,6 +7,8 @@ class VCVQGame {
         this.gameState = null;
         this.selectedPlayerCount = null;
         this.currentLanguage = 'swedish'; // Default to Swedish
+        this.playerAnswers = new Map(); // Track which player placed which answer
+        this.allPlayersAnswered = false;
         
         // Translation object
         this.translations = {
@@ -39,7 +41,10 @@ class VCVQGame {
                 'wins-with': 'vinner med',
                 'question': 'Fråga',
                 'of': 'av',
-                'turn': 'tur'
+                'turn': 'tur',
+                'drag-your-number': 'Dra ditt nummer till ett svar:',
+                'all-players-placed': 'Alla spelare har placerat sina svar!',
+                'waiting-for-players': 'Väntar på att alla spelare ska placera sina svar...'
             },
             english: {
                 'app-title': '🎯 Vibe Coded Vibe Quiz',
@@ -70,7 +75,10 @@ class VCVQGame {
                 'wins-with': 'wins with',
                 'question': 'Question',
                 'of': 'of',
-                'turn': 'turn'
+                'turn': 'turn',
+                'drag-your-number': 'Drag your number to an answer:',
+                'all-players-placed': 'All players have placed their answers!',
+                'waiting-for-players': 'Waiting for all players to place their answers...'
             }
         };
         
@@ -129,6 +137,7 @@ class VCVQGame {
         this.socket.on('game-started', (data) => this.handleGameStarted(data));
         this.socket.on('player-turn', (data) => this.handlePlayerTurn(data));
         this.socket.on('answer-feedback', (data) => this.handleAnswerFeedback(data));
+        this.socket.on('all-answers-feedback', (data) => this.handleAllAnswersFeedback(data));
         this.socket.on('next-question', (data) => this.handleNextQuestion(data));
         this.socket.on('game-finished', (data) => this.handleGameFinished(data));
     }
@@ -205,7 +214,7 @@ class VCVQGame {
         this.showPage('game-page');
         this.updateScoreboard();
         this.displayQuestion(data.currentQuestion, 1);
-        this.highlightCurrentPlayer();
+        // No need to highlight current player since all players answer simultaneously
     }
 
     handlePlayerTurn(data) {
@@ -218,10 +227,14 @@ class VCVQGame {
         this.updateScoreboard();
     }
 
+    handleAllAnswersFeedback(data) {
+        this.showAllAnswersFeedback(data);
+        this.updateScoreboard();
+    }
+
     handleNextQuestion(data) {
         this.displayQuestion(data.currentQuestion, data.questionNumber);
-        this.currentPlayer = data.currentPlayer;
-        this.highlightCurrentPlayer();
+        // No need to highlight current player since all players answer simultaneously
     }
 
     handleGameFinished(data) {
@@ -234,33 +247,62 @@ class VCVQGame {
         const ofText = this.translateText('of');
         document.getElementById('question-counter').textContent = `${questionText} ${questionNumber} ${ofText} ${this.questions.length}`;
         
+        // Reset player answers for new question
+        this.playerAnswers.clear();
+        this.allPlayersAnswered = false;
+        
+        // Create player numbers
+        this.createPlayerNumbers();
+        
+        // Create answer options
         const answerGrid = document.getElementById('answer-options');
         answerGrid.innerHTML = '';
         
         question.options.forEach((option, index) => {
             const answerOption = document.createElement('div');
             answerOption.className = 'answer-option';
-            answerOption.draggable = true;
             answerOption.textContent = option;
             answerOption.dataset.answerIndex = index;
             
-            // Add drag and drop functionality
-            this.addDragAndDrop(answerOption);
+            // Add drop functionality
+            this.addDropZone(answerOption);
             
             answerGrid.appendChild(answerOption);
         });
     }
 
-    addDragAndDrop(element) {
+    createPlayerNumbers() {
+        const playerNumbersContainer = document.getElementById('player-numbers');
+        playerNumbersContainer.innerHTML = '';
+        
+        if (!this.gameState) return;
+        
+        this.gameState.players.forEach((player, index) => {
+            const playerNumber = document.createElement('div');
+            playerNumber.className = `player-number player-${player.id}-bg`;
+            playerNumber.textContent = player.id;
+            playerNumber.dataset.playerId = player.id;
+            playerNumber.draggable = true;
+            
+            // Add drag functionality
+            this.addDragFunctionality(playerNumber);
+            
+            playerNumbersContainer.appendChild(playerNumber);
+        });
+    }
+
+    addDragFunctionality(element) {
         element.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', e.target.dataset.answerIndex);
+            e.dataTransfer.setData('text/plain', e.target.dataset.playerId);
             e.target.classList.add('dragging');
         });
 
         element.addEventListener('dragend', (e) => {
             e.target.classList.remove('dragging');
         });
+    }
 
+    addDropZone(element) {
         element.addEventListener('dragover', (e) => {
             e.preventDefault();
             e.target.classList.add('drag-over');
@@ -274,8 +316,100 @@ class VCVQGame {
             e.preventDefault();
             e.target.classList.remove('drag-over');
             
-            const answerIndex = parseInt(e.dataTransfer.getData('text/plain'));
-            this.submitAnswer(answerIndex);
+            const playerId = parseInt(e.dataTransfer.getData('text/plain'));
+            const answerIndex = parseInt(e.target.dataset.answerIndex);
+            
+            this.placePlayerAnswer(playerId, answerIndex, e.target);
+        });
+    }
+
+    placePlayerAnswer(playerId, answerIndex, answerElement) {
+        // Remove player from any previous answer
+        this.removePlayerFromAnswers(playerId);
+        
+        // Mark player as placed
+        const playerElement = document.querySelector(`[data-player-id="${playerId}"]`);
+        if (playerElement) {
+            playerElement.classList.add('placed');
+        }
+        
+        // Add player to new answer
+        answerElement.classList.add('has-player');
+        answerElement.dataset.playerNumber = playerId;
+        answerElement.style.setProperty('--player-color', this.getPlayerColor(playerId));
+        
+        // Store the answer
+        this.playerAnswers.set(playerId, answerIndex);
+        
+        // Check if all players have answered
+        this.checkAllPlayersAnswered();
+    }
+
+    removePlayerFromAnswers(playerId) {
+        // Remove from any existing answer
+        const existingAnswer = document.querySelector(`[data-player-number="${playerId}"]`);
+        if (existingAnswer) {
+            existingAnswer.classList.remove('has-player');
+            existingAnswer.removeAttribute('data-player-number');
+        }
+        
+        // Reset player element
+        const playerElement = document.querySelector(`[data-player-id="${playerId}"]`);
+        if (playerElement) {
+            playerElement.classList.remove('placed');
+        }
+    }
+
+    getPlayerColor(playerId) {
+        const colors = ['#3B82F6', '#EF4444', '#10B981', '#8B5CF6'];
+        return colors[playerId - 1] || '#666';
+    }
+
+    checkAllPlayersAnswered() {
+        if (this.playerAnswers.size === this.gameState.players.length) {
+            this.allPlayersAnswered = true;
+            this.showAllPlayersPlacedMessage();
+            
+            // Submit all answers to server
+            setTimeout(() => {
+                this.submitAllAnswers();
+            }, 1000);
+        }
+    }
+
+    showAllPlayersPlacedMessage() {
+        const message = document.createElement('div');
+        message.className = 'all-players-message';
+        message.textContent = this.translateText('all-players-placed');
+        message.style.cssText = `
+            text-align: center;
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        `;
+        
+        const questionContainer = document.getElementById('question-container');
+        questionContainer.appendChild(message);
+        
+        setTimeout(() => {
+            message.remove();
+        }, 2000);
+    }
+
+    submitAllAnswers() {
+        if (!this.currentGame || !this.gameState) return;
+        
+        // Send all player answers to server
+        this.socket.emit('submit-all-answers', {
+            gameId: this.currentGame,
+            answers: Array.from(this.playerAnswers.entries()).map(([playerId, answerIndex]) => ({
+                playerId,
+                answerIndex
+            }))
         });
     }
 
@@ -321,6 +455,51 @@ class VCVQGame {
         setTimeout(() => {
             feedbackDiv.classList.add('hidden');
         }, 2000);
+    }
+
+    showAllAnswersFeedback(data) {
+        const feedbackDiv = document.getElementById('answer-feedback');
+        const feedbackContent = document.getElementById('feedback-content');
+        
+        const { results, correctAnswer, question } = data;
+        const correctOption = question.options[correctAnswer];
+        
+        // Show correct answer
+        const answerOptions = document.querySelectorAll('.answer-option');
+        answerOptions.forEach((option, index) => {
+            if (index === correctAnswer) {
+                option.classList.add('show-correct');
+            }
+        });
+        
+        // Create results summary
+        const correctPlayers = results.filter(r => r.isCorrect);
+        const incorrectPlayers = results.filter(r => !r.isCorrect);
+        
+        let resultsHTML = `
+            <h3>🎯 ${this.translateText('correct-answer-was')} <strong>${correctOption}</strong></h3>
+        `;
+        
+        if (correctPlayers.length > 0) {
+            resultsHTML += `<p><strong>✅ ${this.translateText('correct')}:</strong> `;
+            resultsHTML += correctPlayers.map(p => `Player ${p.playerId}`).join(', ');
+            resultsHTML += `</p>`;
+        }
+        
+        if (incorrectPlayers.length > 0) {
+            resultsHTML += `<p><strong>❌ ${this.translateText('incorrect')}:</strong> `;
+            resultsHTML += incorrectPlayers.map(p => `Player ${p.playerId}`).join(', ');
+            resultsHTML += `</p>`;
+        }
+        
+        feedbackContent.innerHTML = resultsHTML;
+        feedbackDiv.className = 'feedback correct';
+        feedbackDiv.classList.remove('hidden');
+        
+        // Hide feedback after 3 seconds
+        setTimeout(() => {
+            feedbackDiv.classList.add('hidden');
+        }, 3000);
     }
 
     updateScoreboard() {

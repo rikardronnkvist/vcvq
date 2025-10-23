@@ -321,7 +321,37 @@ header h1 {
 .answer-option.drag-over {
     border-color: #667eea;
     background: #e3f2fd;
+    transform: scale(1.02);
 }
+
+.answer-option.has-player {
+    border-color: #28a745;
+    background: #d4edda;
+    position: relative;
+}
+
+.answer-option.has-player::after {
+    content: attr(data-player-number);
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.answer-option.has-player[data-player-number="1"]::after { background-color: #3B82F6; }
+.answer-option.has-player[data-player-number="2"]::after { background-color: #EF4444; }
+.answer-option.has-player[data-player-number="3"]::after { background-color: #10B981; }
+.answer-option.has-player[data-player-number="4"]::after { background-color: #8B5CF6; }
 
 .answer-option.correct {
     background: #d4edda;
@@ -339,6 +369,64 @@ header h1 {
     background: #d4edda;
     border-color: #28a745;
     color: #155724;
+}
+
+/* Player Numbers Area */
+.player-numbers-container {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.player-numbers-container h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.player-numbers-grid {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.player-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    cursor: grab;
+    transition: all 0.3s;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.player-number:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.player-number:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.player-number.dragging {
+    opacity: 0.7;
+    transform: rotate(10deg) scale(1.1);
+    z-index: 1000;
+}
+
+.player-number.placed {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: scale(0.8);
 }
 
 /* Player colors */

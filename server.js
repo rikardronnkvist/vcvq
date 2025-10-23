@@ -148,6 +148,72 @@ io.on('connection', (socket) => {
     }, 2000); // 2-second delay for answer review
   });
 
+  socket.on('submit-all-answers', (data) => {
+    const { gameId, answers } = data;
+    const game = games.get(gameId);
+    
+    if (!game || game.gameStatus !== 'playing') return;
+
+    const currentQuestion = game.questions[game.currentQuestionIndex];
+    const results = [];
+    
+    // Process all answers
+    answers.forEach(({ playerId, answerIndex }) => {
+      const isCorrect = answerIndex === currentQuestion.correctAnswer;
+      
+      // Update player score
+      if (isCorrect) {
+        game.players[playerId - 1].score += 1;
+      }
+
+      // Store answer
+      game.answers.set(`${game.currentQuestionIndex}-${playerId}`, {
+        playerId,
+        answerIndex,
+        isCorrect,
+        timestamp: Date.now()
+      });
+
+      results.push({
+        playerId,
+        answerIndex,
+        isCorrect,
+        playerScore: game.players[playerId - 1].score
+      });
+    });
+
+    // Emit results for all players
+    io.to(gameId).emit('all-answers-feedback', {
+      results,
+      correctAnswer: currentQuestion.correctAnswer,
+      question: currentQuestion
+    });
+
+    // Move to next question after showing results
+    setTimeout(() => {
+      game.currentQuestionIndex++;
+      
+      if (game.currentQuestionIndex >= game.questions.length) {
+        // Game finished
+        game.gameStatus = 'finished';
+        const winner = game.players.reduce((prev, current) => 
+          (prev.score > current.score) ? prev : current
+        );
+        
+        io.to(gameId).emit('game-finished', {
+          finalScores: game.players,
+          winner
+        });
+      } else {
+        // Next question
+        io.to(gameId).emit('next-question', {
+          currentQuestion: game.questions[game.currentQuestionIndex],
+          questionNumber: game.currentQuestionIndex + 1
+        });
+      }
+    }, 3000); // 3-second delay for answer review
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
