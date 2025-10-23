@@ -3,6 +3,7 @@ Create a real-time multiplayer quiz game web application with the following feat
 Naming:
 - Full name should be "Vibe Coded Vibe Quiz"
 - Project name should be "VCVQ"
+- Project home is https://github.com/rikardronnkvist/vcvq
 
 Core Functionality:
 - Support 2-4 players simultaneously in a turn-based quiz format
