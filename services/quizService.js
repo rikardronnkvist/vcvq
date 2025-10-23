@@ -2,9 +2,50 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Cache for the latest model name
+let latestModelName = null;
+
+async function getLatestModel() {
+  if (latestModelName) {
+    return latestModelName;
+  }
+
+  try {
+    // Try common model names in order of preference
+    const modelNames = [
+      'gemini-1.5-pro',
+      'gemini-1.5-flash',
+      'gemini-pro',
+      'gemini-1.0-pro'
+    ];
+
+    for (const modelName of modelNames) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        // Test if the model works by making a simple request
+        await model.generateContent("test");
+        latestModelName = modelName;
+        console.log(`Using Gemini model: ${modelName}`);
+        return modelName;
+      } catch (error) {
+        console.log(`Model ${modelName} not available, trying next...`);
+        continue;
+      }
+    }
+    
+    throw new Error('No compatible Gemini model found');
+  } catch (error) {
+    console.error('Error finding compatible model:', error);
+    // Fallback to a basic model name
+    latestModelName = 'gemini-1.5-pro';
+    return latestModelName;
+  }
+}
+
 async function generateQuizQuestions(topic, language = 'swedish') {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const modelName = await getLatestModel();
+    const model = genAI.getGenerativeModel({ model: modelName });
     
     const languageInstruction = language === 'swedish' 
       ? 'All questions and answers should be in Swedish.'
@@ -71,5 +112,6 @@ The correctAnswer should be the index (0-5) of the correct option.
 }
 
 module.exports = {
-  generateQuizQuestions
+  generateQuizQuestions,
+  getLatestModel
 };
