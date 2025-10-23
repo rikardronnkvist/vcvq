@@ -5,8 +5,107 @@ class VCVQGame {
         this.currentPlayer = null;
         this.questions = [];
         this.gameState = null;
+        this.currentLanguage = 'swedish'; // Default to Swedish
+        
+        // Translation object
+        this.translations = {
+            swedish: {
+                'app-title': '🎯 Vibe Coded Vibe Quiz',
+                'app-subtitle': 'Realtids flerspelarquiz',
+                'language-label': 'Språk:',
+                'topic-label': 'Välj ett ämne för din quiz:',
+                'topic-placeholder': 't.ex., Svensk historia, Rymdutforskning, Matlagning...',
+                'generate-btn': 'Generera frågor',
+                'loading-text': 'Genererar quizfrågor...',
+                'setup-players': 'Konfigurera spelare',
+                'choose-players': 'Välj antal spelare (2-4):',
+                '2-players': '2 Spelare',
+                '3-players': '3 Spelare',
+                '4-players': '4 Spelare',
+                'enter-names': 'Ange spelarnamn:',
+                'start-game': 'Starta spel',
+                'scoreboard': 'Poängtafla',
+                'game-finished': '🎉 Spelet är klart!',
+                'play-again': 'Spela igen',
+                'correct': '✅ Rätt!',
+                'incorrect': '❌ Fel',
+                'well-done': 'Bra gjort! +1 poäng',
+                'correct-answer-was': 'Det rätta svaret var:',
+                'points': 'poäng',
+                'wins-with': 'vinner med',
+                'question': 'Fråga',
+                'of': 'av',
+                'turn': 'tur'
+            },
+            english: {
+                'app-title': '🎯 Vibe Coded Vibe Quiz',
+                'app-subtitle': 'Real-time multiplayer quiz game',
+                'language-label': 'Language:',
+                'topic-label': 'Choose a topic for your quiz:',
+                'topic-placeholder': 'e.g., Swedish history, Space exploration, Cooking...',
+                'generate-btn': 'Generate Questions',
+                'loading-text': 'Generating quiz questions...',
+                'setup-players': 'Setup Players',
+                'choose-players': 'Choose number of players (2-4):',
+                '2-players': '2 Players',
+                '3-players': '3 Players',
+                '4-players': '4 Players',
+                'enter-names': 'Enter player names:',
+                'start-game': 'Start Game',
+                'scoreboard': 'Scoreboard',
+                'game-finished': '🎉 Game Finished!',
+                'play-again': 'Play Again',
+                'correct': '✅ Correct!',
+                'incorrect': '❌ Incorrect',
+                'well-done': 'Well done! +1 point',
+                'correct-answer-was': 'The correct answer was:',
+                'points': 'points',
+                'wins-with': 'wins with',
+                'question': 'Question',
+                'of': 'of',
+                'turn': 'turn'
+            }
+        };
         
         this.initializeEventListeners();
+        this.initializeLanguage();
+    }
+
+    initializeLanguage() {
+        // Set initial language
+        document.documentElement.lang = this.currentLanguage === 'swedish' ? 'sv' : 'en';
+        this.translatePage();
+        
+        // Add language change listener
+        document.getElementById('language').addEventListener('change', (e) => {
+            this.currentLanguage = e.target.value;
+            document.documentElement.lang = this.currentLanguage === 'swedish' ? 'sv' : 'en';
+            this.translatePage();
+        });
+    }
+
+    translatePage() {
+        // Translate all elements with data-translate attribute
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            const translation = this.translations[this.currentLanguage][key];
+            if (translation) {
+                element.textContent = translation;
+            }
+        });
+
+        // Translate placeholders
+        document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-translate-placeholder');
+            const translation = this.translations[this.currentLanguage][key];
+            if (translation) {
+                element.placeholder = translation;
+            }
+        });
+    }
+
+    translateText(key) {
+        return this.translations[this.currentLanguage][key] || key;
     }
 
     initializeEventListeners() {
@@ -38,7 +137,10 @@ class VCVQGame {
         const language = document.getElementById('language').value;
         
         if (!topic) {
-            alert('Please enter a topic for your quiz!');
+            const alertMessage = this.currentLanguage === 'swedish' 
+                ? 'Vänligen ange ett ämne för din quiz!' 
+                : 'Please enter a topic for your quiz!';
+            alert(alertMessage);
             return;
         }
 
@@ -62,7 +164,10 @@ class VCVQGame {
             this.showPage('player-setup');
         } catch (error) {
             console.error('Error generating quiz:', error);
-            alert('Failed to generate quiz. Please try again.');
+            const errorMessage = this.currentLanguage === 'swedish' 
+                ? 'Misslyckades att generera quiz. Försök igen.' 
+                : 'Failed to generate quiz. Please try again.';
+            alert(errorMessage);
         } finally {
             this.showLoading(false);
         }
@@ -84,9 +189,11 @@ class VCVQGame {
         for (let i = 1; i <= count; i++) {
             const playerInput = document.createElement('div');
             playerInput.className = 'player-input';
+            const playerLabel = this.currentLanguage === 'swedish' ? `Spelare ${i} Namn:` : `Player ${i} Name:`;
+            const playerPlaceholder = this.currentLanguage === 'swedish' ? 'Ange namn...' : 'Enter name...';
             playerInput.innerHTML = `
-                <label for="player${i}">Player ${i} Name:</label>
-                <input type="text" id="player${i}" placeholder="Enter name..." required>
+                <label for="player${i}">${playerLabel}</label>
+                <input type="text" id="player${i}" placeholder="${playerPlaceholder}" required>
             `;
             playerInputsDiv.appendChild(playerInput);
         }
@@ -153,7 +260,9 @@ class VCVQGame {
 
     displayQuestion(question, questionNumber) {
         document.getElementById('question-text').textContent = question.question;
-        document.getElementById('question-counter').textContent = `Question ${questionNumber} of ${this.questions.length}`;
+        const questionText = this.translateText('question');
+        const ofText = this.translateText('of');
+        document.getElementById('question-counter').textContent = `${questionText} ${questionNumber} ${ofText} ${this.questions.length}`;
         
         const answerGrid = document.getElementById('answer-options');
         answerGrid.innerHTML = '';
@@ -220,15 +329,19 @@ class VCVQGame {
         feedbackDiv.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
         
         if (isCorrect) {
+            const correctText = this.translateText('correct');
+            const wellDoneText = this.translateText('well-done');
             feedbackContent.innerHTML = `
-                <h3>✅ Correct!</h3>
-                <p>Well done! +1 point</p>
+                <h3>${correctText}</h3>
+                <p>${wellDoneText}</p>
             `;
         } else {
+            const incorrectText = this.translateText('incorrect');
+            const correctAnswerText = this.translateText('correct-answer-was');
             const correctOption = this.gameState.questions[this.gameState.currentQuestionIndex].options[correctAnswer];
             feedbackContent.innerHTML = `
-                <h3>❌ Incorrect</h3>
-                <p>The correct answer was: <strong>${correctOption}</strong></p>
+                <h3>${incorrectText}</h3>
+                <p>${correctAnswerText} <strong>${correctOption}</strong></p>
             `;
         }
         
@@ -261,9 +374,10 @@ class VCVQGame {
         if (!this.currentPlayer) return;
         
         const indicator = document.getElementById('current-player-indicator');
+        const turnText = this.translateText('turn');
         indicator.innerHTML = `
             <div class="current-player player-${this.currentPlayer.id} player-${this.currentPlayer.id}-bg" style="color: white;">
-                ${this.currentPlayer.name}'s Turn
+                ${this.currentPlayer.name} ${turnText}
             </div>
         `;
     }
@@ -276,6 +390,8 @@ class VCVQGame {
         
         // Sort players by score
         const sortedPlayers = [...finalScores].sort((a, b) => b.score - a.score);
+        const pointsText = this.translateText('points');
+        const winsWithText = this.translateText('wins-with');
         
         finalScoresDiv.innerHTML = '';
         sortedPlayers.forEach((player, index) => {
@@ -283,12 +399,12 @@ class VCVQGame {
             scoreItem.className = `final-score-item ${index === 0 ? 'winner' : ''}`;
             scoreItem.innerHTML = `
                 <span class="player-name player-${player.id}">${player.name}</span>
-                <span class="player-score">${player.score} points</span>
+                <span class="player-score">${player.score} ${pointsText}</span>
             `;
             finalScoresDiv.appendChild(scoreItem);
         });
         
-        winnerAnnouncement.innerHTML = `🏆 ${winner.name} wins with ${winner.score} points!`;
+        winnerAnnouncement.innerHTML = `🏆 ${winner.name} ${winsWithText} ${winner.score} ${pointsText}!`;
     }
 
     playAgain() {

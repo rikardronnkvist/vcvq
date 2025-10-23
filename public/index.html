@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,12 +12,12 @@
         <div id="landing-page" class="page active">
             <div class="container">
                 <header>
-                    <h1>🎯 Vibe Coded Vibe Quiz</h1>
-                    <p class="subtitle">Real-time multiplayer quiz game</p>
+                    <h1 data-translate="app-title">🎯 Vibe Coded Vibe Quiz</h1>
+                    <p class="subtitle" data-translate="app-subtitle">Real-time multiplayer quiz game</p>
                 </header>
                 
                 <div class="language-selector">
-                    <label for="language">Language:</label>
+                    <label for="language" data-translate="language-label">Language:</label>
                     <select id="language">
                         <option value="swedish">🇸🇪 Svenska</option>
                         <option value="english">🇬🇧 English</option>
@@ -25,14 +25,14 @@
                 </div>
 
                 <div class="topic-input">
-                    <label for="topic">Choose a topic for your quiz:</label>
-                    <input type="text" id="topic" placeholder="e.g., Swedish history, Space exploration, Cooking..." required>
-                    <button id="generate-btn" class="btn-primary">Generate Questions</button>
+                    <label for="topic" data-translate="topic-label">Choose a topic for your quiz:</label>
+                    <input type="text" id="topic" data-translate-placeholder="topic-placeholder" placeholder="t.ex., Svensk historia, Rymdutforskning, Matlagning..." required>
+                    <button id="generate-btn" class="btn-primary" data-translate="generate-btn">Generate Questions</button>
                 </div>
 
                 <div id="loading" class="loading hidden">
                     <div class="spinner"></div>
-                    <p>Generating quiz questions...</p>
+                    <p data-translate="loading-text">Generating quiz questions...</p>
                 </div>
             </div>
         </div>
@@ -40,19 +40,19 @@
         <!-- Player Setup Page -->
         <div id="player-setup" class="page">
             <div class="container">
-                <h2>Setup Players</h2>
-                <p>Choose number of players (2-4):</p>
+                <h2 data-translate="setup-players">Setup Players</h2>
+                <p data-translate="choose-players">Choose number of players (2-4):</p>
                 
                 <div class="player-count-selector">
-                    <button class="player-count-btn" data-count="2">2 Players</button>
-                    <button class="player-count-btn" data-count="3">3 Players</button>
-                    <button class="player-count-btn" data-count="4">4 Players</button>
+                    <button class="player-count-btn" data-count="2" data-translate="2-players">2 Players</button>
+                    <button class="player-count-btn" data-count="3" data-translate="3-players">3 Players</button>
+                    <button class="player-count-btn" data-count="4" data-translate="4-players">4 Players</button>
                 </div>
 
                 <div id="player-names" class="player-names hidden">
-                    <h3>Enter player names:</h3>
+                    <h3 data-translate="enter-names">Enter player names:</h3>
                     <div id="player-inputs"></div>
-                    <button id="start-game-btn" class="btn-primary" disabled>Start Game</button>
+                    <button id="start-game-btn" class="btn-primary" disabled data-translate="start-game">Start Game</button>
                 </div>
             </div>
         </div>
@@ -62,7 +62,7 @@
             <div class="container">
                 <div class="game-header">
                     <div class="scores">
-                        <h3>Scoreboard</h3>
+                        <h3 data-translate="scoreboard">Scoreboard</h3>
                         <div id="scoreboard"></div>
                     </div>
                     <div class="game-info">
@@ -87,10 +87,10 @@
         <!-- Game Finished Page -->
         <div id="game-finished" class="page">
             <div class="container">
-                <h2>🎉 Game Finished!</h2>
+                <h2 data-translate="game-finished">🎉 Game Finished!</h2>
                 <div id="final-scores"></div>
                 <div id="winner-announcement"></div>
-                <button id="play-again-btn" class="btn-primary">Play Again</button>
+                <button id="play-again-btn" class="btn-primary" data-translate="play-again">Play Again</button>
             </div>
         </div>
     </div>
