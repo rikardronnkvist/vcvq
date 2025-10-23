@@ -5,6 +5,7 @@ class VCVQGame {
         this.currentPlayer = null;
         this.questions = [];
         this.gameState = null;
+        this.selectedPlayerCount = null;
         this.currentLanguage = 'swedish'; // Default to Swedish
         
         // Translation object
@@ -179,44 +180,27 @@ class VCVQGame {
             btn.classList.remove('selected');
         });
         document.querySelector(`[data-count="${count}"]`).classList.add('selected');
-
-        // Show player name inputs
-        const playerNamesDiv = document.getElementById('player-names');
-        const playerInputsDiv = document.getElementById('player-inputs');
         
-        playerInputsDiv.innerHTML = '';
+        // Store the selected player count
+        this.selectedPlayerCount = count;
         
-        for (let i = 1; i <= count; i++) {
-            const playerInput = document.createElement('div');
-            playerInput.className = 'player-input';
-            const playerLabel = this.currentLanguage === 'swedish' ? `Spelare ${i} Namn:` : `Player ${i} Name:`;
-            const playerPlaceholder = this.currentLanguage === 'swedish' ? 'Ange namn...' : 'Enter name...';
-            playerInput.innerHTML = `
-                <label for="player${i}">${playerLabel}</label>
-                <input type="text" id="player${i}" placeholder="${playerPlaceholder}" required>
-            `;
-            playerInputsDiv.appendChild(playerInput);
-        }
-        
-        playerNamesDiv.classList.remove('hidden');
-        
-        // Add event listeners to inputs
-        document.querySelectorAll('#player-inputs input').forEach(input => {
-            input.addEventListener('input', () => this.validatePlayerNames());
-        });
-    }
-
-    validatePlayerNames() {
-        const inputs = document.querySelectorAll('#player-inputs input');
-        const allFilled = Array.from(inputs).every(input => input.value.trim() !== '');
-        document.getElementById('start-game-btn').disabled = !allFilled;
+        // Enable the start game button
+        document.getElementById('start-game-btn').disabled = false;
     }
 
     startGame() {
-        const inputs = document.querySelectorAll('#player-inputs input');
-        const players = Array.from(inputs).map(input => ({
-            name: input.value.trim()
-        }));
+        if (!this.selectedPlayerCount) {
+            return;
+        }
+
+        // Create players with numbers instead of names
+        const players = [];
+        for (let i = 1; i <= this.selectedPlayerCount; i++) {
+            players.push({
+                name: `Player ${i}`,
+                id: i
+            });
+        }
 
         const gameId = 'game_' + Date.now();
         this.currentGame = gameId;
@@ -413,8 +397,9 @@ class VCVQGame {
         this.currentPlayer = null;
         this.questions = [];
         this.gameState = null;
+        this.selectedPlayerCount = null;
         document.getElementById('topic').value = '';
-        document.getElementById('player-names').classList.add('hidden');
+        document.getElementById('start-game-btn').disabled = true;
         document.querySelectorAll('.player-count-btn').forEach(btn => {
             btn.classList.remove('selected');
         });

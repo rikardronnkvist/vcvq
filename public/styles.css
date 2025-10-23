@@ -155,38 +155,9 @@ header h1 {
     color: white;
 }
 
-.player-names {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.player-names h3 {
+.start-game-section {
     text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.player-input {
-    margin-bottom: 15px;
-}
-
-.player-input label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.player-input input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
+    margin-top: 30px;
 }
 
 /* Game page styles */
