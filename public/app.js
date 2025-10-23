@@ -9,6 +9,8 @@ class VCVQGame {
         this.currentLanguage = 'swedish'; // Default to Swedish
         this.playerAnswers = new Map(); // Track which player placed which answer
         this.allPlayersAnswered = false;
+        this.activePlayers = new Map(); // Track which players are active
+        this.playerSeating = new Map(); // Track player seating positions
         
         // Translation object
         this.translations = {
@@ -44,7 +46,13 @@ class VCVQGame {
                 'turn': 'tur',
                 'drag-your-number': 'Dra ditt nummer till ett svar:',
                 'all-players-placed': 'Alla spelare har placerat sina svar!',
-                'waiting-for-players': 'Väntar på att alla spelare ska placera sina svar...'
+                'waiting-for-players': 'Väntar på att alla spelare ska placera sina svar...',
+                'select-players': 'Välj aktiva spelare',
+                'start-game': 'Starta spelet',
+                'driver': 'Förare',
+                'front-passenger': 'Frampassagerare',
+                'left-back': 'Vänster bak',
+                'right-back': 'Höger bak'
             },
             english: {
                 'app-title': '🎯 Vibe Coded Vibe Quiz',
@@ -78,7 +86,13 @@ class VCVQGame {
                 'turn': 'turn',
                 'drag-your-number': 'Drag your number to an answer:',
                 'all-players-placed': 'All players have placed their answers!',
-                'waiting-for-players': 'Waiting for all players to place their answers...'
+                'waiting-for-players': 'Waiting for all players to place their answers...',
+                'select-players': 'Select Active Players',
+                'start-game': 'Start Game',
+                'driver': 'Driver',
+                'front-passenger': 'Front Passenger',
+                'left-back': 'Left Back',
+                'right-back': 'Right Back'
             }
         };
         
@@ -130,6 +144,9 @@ class VCVQGame {
             if (e.key === 'Enter') this.generateQuiz();
         });
 
+        // Player selection
+        document.getElementById('start-game-btn').addEventListener('click', () => this.startGameWithSeating());
+
         // Play again
         document.getElementById('play-again-btn').addEventListener('click', () => this.playAgain());
 
@@ -174,8 +191,8 @@ class VCVQGame {
             const data = await response.json();
             this.questions = data.questions;
             
-            // Create players and start game directly
-            this.startGame(playerCount);
+            // Show player selection interface
+            this.showPlayerSelection(playerCount);
         } catch (error) {
             console.error('Error generating quiz:', error);
             const errorMessage = this.currentLanguage === 'swedish' 
@@ -187,16 +204,109 @@ class VCVQGame {
         }
     }
 
-    startGame(playerCount) {
-        // Create players with numbers instead of names
-        const players = [];
-        for (let i = 1; i <= playerCount; i++) {
-            players.push({
-                name: `Player ${i}`,
-                id: i
-            });
-        }
+    showPlayerSelection(playerCount) {
+        // Hide landing page and show player selection
+        document.getElementById('landing-page').classList.add('hidden');
+        document.getElementById('player-selection').classList.remove('hidden');
+        
+        // Populate player selection dropdowns
+        this.populatePlayerSelection(playerCount);
+    }
 
+    populatePlayerSelection(playerCount) {
+        const seats = ['driver', 'front-passenger', 'left-back', 'right-back'];
+        
+        seats.forEach(seat => {
+            const select = document.getElementById(`${seat}-player`);
+            const checkbox = document.getElementById(`${seat}-active`);
+            
+            // Clear existing options
+            select.innerHTML = '<option value="">Select Player</option>';
+            
+            // Add player options
+            for (let i = 1; i <= playerCount; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Player ${i}`;
+                select.appendChild(option);
+            }
+            
+            // Set default selections
+            if (seat === 'driver') {
+                select.value = '1';
+                checkbox.checked = true;
+            } else if (seat === 'front-passenger' && playerCount >= 2) {
+                select.value = '2';
+                checkbox.checked = true;
+            } else if (seat === 'left-back' && playerCount >= 3) {
+                select.value = '3';
+                checkbox.checked = true;
+            } else if (seat === 'right-back' && playerCount >= 4) {
+                select.value = '4';
+                checkbox.checked = true;
+            } else {
+                checkbox.checked = false;
+            }
+            
+            // Add event listeners for seat changes
+            select.addEventListener('change', () => this.updateSeatSelection());
+            checkbox.addEventListener('change', () => this.updateSeatSelection());
+        });
+        
+        this.updateSeatSelection();
+    }
+
+    updateSeatSelection() {
+        const seats = ['driver', 'front-passenger', 'left-back', 'right-back'];
+        
+        seats.forEach(seat => {
+            const select = document.getElementById(`${seat}-player`);
+            const checkbox = document.getElementById(`${seat}-active`);
+            const seatElement = document.querySelector(`.seat-selection[data-seat="${seat}"]`);
+            
+            if (checkbox.checked && select.value) {
+                seatElement.classList.remove('inactive');
+            } else {
+                seatElement.classList.add('inactive');
+            }
+        });
+    }
+
+    startGameWithSeating() {
+        // Get active players and their seating
+        const activePlayers = [];
+        const seats = ['driver', 'front-passenger', 'left-back', 'right-back'];
+        
+        seats.forEach(seat => {
+            const select = document.getElementById(`${seat}-player`);
+            const checkbox = document.getElementById(`${seat}-active`);
+            
+            if (checkbox.checked && select.value) {
+                const playerId = parseInt(select.value);
+                activePlayers.push({
+                    id: playerId,
+                    name: `Player ${playerId}`,
+                    seat: seat
+                });
+                
+                this.activePlayers.set(playerId, true);
+                this.playerSeating.set(playerId, seat);
+            }
+        });
+        
+        if (activePlayers.length === 0) {
+            const alertMessage = this.currentLanguage === 'swedish' 
+                ? 'Välj minst en aktiv spelare!' 
+                : 'Please select at least one active player!';
+            alert(alertMessage);
+            return;
+        }
+        
+        // Start the game with active players
+        this.startGame(activePlayers);
+    }
+
+    startGame(players) {
         const gameId = 'game_' + Date.now();
         this.currentGame = gameId;
         
@@ -333,10 +443,8 @@ class VCVQGame {
             playerElement.classList.add('placed');
         }
         
-        // Add player to new answer
-        answerElement.classList.add('has-player');
-        answerElement.dataset.playerNumber = playerId;
-        answerElement.style.setProperty('--player-color', this.getPlayerColor(playerId));
+        // Add player to new answer with corner indicator
+        this.addPlayerAnswerCorner(answerElement, playerId, answerIndex);
         
         // Store the answer
         this.playerAnswers.set(playerId, answerIndex);
@@ -345,12 +453,40 @@ class VCVQGame {
         this.checkAllPlayersAnswered();
     }
 
+    addPlayerAnswerCorner(answerElement, playerId, answerIndex) {
+        const seat = this.playerSeating.get(playerId);
+        if (!seat) return;
+        
+        // Remove any existing corner for this player
+        const existingCorner = answerElement.querySelector(`.player-answer-corner[data-player="${playerId}"]`);
+        if (existingCorner) {
+            existingCorner.remove();
+        }
+        
+        // Create corner indicator
+        const corner = document.createElement('div');
+        corner.className = `player-answer-corner ${seat}-answer-corner`;
+        corner.dataset.player = playerId;
+        corner.textContent = playerId;
+        
+        answerElement.appendChild(corner);
+        answerElement.classList.add('has-player');
+    }
+
     removePlayerFromAnswers(playerId) {
-        // Remove from any existing answer
-        const existingAnswer = document.querySelector(`[data-player-number="${playerId}"]`);
-        if (existingAnswer) {
-            existingAnswer.classList.remove('has-player');
-            existingAnswer.removeAttribute('data-player-number');
+        // Remove from any existing answer corner
+        const existingCorner = document.querySelector(`.player-answer-corner[data-player="${playerId}"]`);
+        if (existingCorner) {
+            existingCorner.remove();
+        }
+        
+        // Check if answer element has no more players
+        const answerElement = existingCorner?.parentElement;
+        if (answerElement) {
+            const remainingCorners = answerElement.querySelectorAll('.player-answer-corner');
+            if (remainingCorners.length === 0) {
+                answerElement.classList.remove('has-player');
+            }
         }
         
         // Reset player element
@@ -505,17 +641,36 @@ class VCVQGame {
     updateScoreboard() {
         if (!this.gameState) return;
         
-        const scoreboard = document.getElementById('scoreboard');
-        scoreboard.innerHTML = '';
+        // Update car seating layout
+        const seats = ['driver', 'front-passenger', 'left-back', 'right-back'];
         
-        this.gameState.players.forEach((player, index) => {
-            const scoreItem = document.createElement('div');
-            scoreItem.className = 'score-item';
-            scoreItem.innerHTML = `
-                <span class="player-name player-${index + 1}">${player.name}</span>
-                <span class="player-score">${player.score}</span>
-            `;
-            scoreboard.appendChild(scoreItem);
+        seats.forEach(seat => {
+            const seatElement = document.getElementById(`${seat}-player`);
+            if (seatElement) {
+                seatElement.innerHTML = '';
+                
+                // Find player in this seat
+                const playerInSeat = this.gameState.players.find(p => this.playerSeating.get(p.id) === seat);
+                
+                if (playerInSeat && this.activePlayers.get(playerInSeat.id)) {
+                    seatElement.innerHTML = `
+                        <div class="player-name">${playerInSeat.name}</div>
+                        <div class="player-score">${playerInSeat.score}</div>
+                    `;
+                    
+                    // Remove inactive class
+                    const carSeat = document.querySelector(`.car-seat[data-seat="${seat}"]`);
+                    if (carSeat) {
+                        carSeat.classList.remove('inactive');
+                    }
+                } else {
+                    // No player in this seat or player is inactive
+                    const carSeat = document.querySelector(`.car-seat[data-seat="${seat}"]`);
+                    if (carSeat) {
+                        carSeat.classList.add('inactive');
+                    }
+                }
+            }
         });
     }
 
@@ -562,10 +717,15 @@ class VCVQGame {
         this.currentPlayer = null;
         this.questions = [];
         this.gameState = null;
+        this.activePlayers.clear();
+        this.playerSeating.clear();
         document.getElementById('topic').value = '';
         // Reset to default values
         document.getElementById('player-count').value = '2';
         document.getElementById('question-count').value = '10';
+        
+        // Hide player selection
+        document.getElementById('player-selection').classList.add('hidden');
     }
 
     showPage(pageId) {

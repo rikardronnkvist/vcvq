@@ -55,6 +55,64 @@
                     <button id="generate-btn" class="btn-primary" data-translate="generate-btn">Generate Questions</button>
                 </div>
 
+                <!-- Player Selection -->
+                <div id="player-selection" class="player-selection hidden">
+                    <h3 data-translate="select-players">Select Active Players</h3>
+                    <div class="car-seating-selection">
+                        <div class="car-layout-selection">
+                            <div class="seat-selection driver-seat" data-seat="driver">
+                                <div class="seat-label">🚗 Driver</div>
+                                <div class="player-selector">
+                                    <select id="driver-player">
+                                        <option value="">Select Player</option>
+                                    </select>
+                                    <label class="active-toggle">
+                                        <input type="checkbox" id="driver-active" checked>
+                                        <span class="toggle-label">Active</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="seat-selection front-passenger-seat" data-seat="front-passenger">
+                                <div class="seat-label">👤 Front</div>
+                                <div class="player-selector">
+                                    <select id="front-passenger-player">
+                                        <option value="">Select Player</option>
+                                    </select>
+                                    <label class="active-toggle">
+                                        <input type="checkbox" id="front-passenger-active" checked>
+                                        <span class="toggle-label">Active</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="seat-selection left-back-seat" data-seat="left-back">
+                                <div class="seat-label">👤 Left Back</div>
+                                <div class="player-selector">
+                                    <select id="left-back-player">
+                                        <option value="">Select Player</option>
+                                    </select>
+                                    <label class="active-toggle">
+                                        <input type="checkbox" id="left-back-active" checked>
+                                        <span class="toggle-label">Active</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="seat-selection right-back-seat" data-seat="right-back">
+                                <div class="seat-label">👤 Right Back</div>
+                                <div class="player-selector">
+                                    <select id="right-back-player">
+                                        <option value="">Select Player</option>
+                                    </select>
+                                    <label class="active-toggle">
+                                        <input type="checkbox" id="right-back-active" checked>
+                                        <span class="toggle-label">Active</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="start-game-btn" class="btn-primary" data-translate="start-game">Start Game</button>
+                </div>
+
                 <div id="loading" class="loading hidden">
                     <div class="spinner"></div>
                     <p data-translate="loading-text">Generating quiz questions...</p>
@@ -67,9 +125,26 @@
         <div id="game-page" class="page">
             <div class="container">
                 <div class="game-header">
-                    <div class="scores">
+                    <div class="car-seating">
                         <h3 data-translate="scoreboard">Scoreboard</h3>
-                        <div id="scoreboard"></div>
+                        <div class="car-layout">
+                            <div class="car-seat driver-seat" data-seat="driver">
+                                <div class="seat-label">🚗 Driver</div>
+                                <div class="player-info" id="driver-player"></div>
+                            </div>
+                            <div class="car-seat front-passenger-seat" data-seat="front-passenger">
+                                <div class="seat-label">👤 Front</div>
+                                <div class="player-info" id="front-passenger-player"></div>
+                            </div>
+                            <div class="car-seat left-back-seat" data-seat="left-back">
+                                <div class="seat-label">👤 Left Back</div>
+                                <div class="player-info" id="left-back-player"></div>
+                            </div>
+                            <div class="car-seat right-back-seat" data-seat="right-back">
+                                <div class="seat-label">👤 Right Back</div>
+                                <div class="player-info" id="right-back-player"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="game-info">
                         <div id="current-player-indicator"></div>
@@ -89,6 +164,26 @@
                         
                         <!-- Answer Options -->
                         <div id="answer-options" class="answer-grid"></div>
+                        
+                        <!-- Player Answer Indicators -->
+                        <div id="player-answer-indicators" class="player-answer-indicators hidden">
+                            <div class="answer-indicator driver-answer" id="driver-answer-indicator">
+                                <div class="player-number">1</div>
+                                <div class="answer-text"></div>
+                            </div>
+                            <div class="answer-indicator front-passenger-answer" id="front-passenger-answer-indicator">
+                                <div class="player-number">2</div>
+                                <div class="answer-text"></div>
+                            </div>
+                            <div class="answer-indicator left-back-answer" id="left-back-answer-indicator">
+                                <div class="player-number">3</div>
+                                <div class="answer-text"></div>
+                            </div>
+                            <div class="answer-indicator right-back-answer" id="right-back-answer-indicator">
+                                <div class="player-number">4</div>
+                                <div class="answer-text"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
