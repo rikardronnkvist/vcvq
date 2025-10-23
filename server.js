@@ -31,6 +31,8 @@ app.post('/api/generate-quiz', async (req, res) => {
   try {
     const { topic, language = 'swedish', questionCount = 10 } = req.body;
     
+    console.log('Received request:', { topic, language, questionCount });
+    
     if (!topic) {
       return res.status(400).json({ error: 'Topic is required' });
     }
@@ -39,7 +41,11 @@ app.post('/api/generate-quiz', async (req, res) => {
     res.json({ questions });
   } catch (error) {
     console.error('Error generating quiz:', error);
-    res.status(500).json({ error: 'Failed to generate quiz questions' });
+    console.error('Error details:', error.message);
+    res.status(500).json({ 
+      error: 'Failed to generate quiz questions',
+      details: error.message 
+    });
   }
 });
 

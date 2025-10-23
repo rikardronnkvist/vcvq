@@ -179,7 +179,7 @@ class VCVQGame {
             const response = await fetch('/api/generate-quiz', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json; charset=utf-8'
                 },
                 body: JSON.stringify({ topic, language, questionCount })
             });
@@ -195,9 +195,21 @@ class VCVQGame {
             this.showPlayerSelection(playerCount);
         } catch (error) {
             console.error('Error generating quiz:', error);
-            const errorMessage = this.currentLanguage === 'swedish' 
+            let errorMessage = this.currentLanguage === 'swedish' 
                 ? 'Misslyckades att generera quiz. Försök igen.' 
                 : 'Failed to generate quiz. Please try again.';
+            
+            // Try to get more specific error details
+            try {
+                const errorResponse = await error.response?.json();
+                if (errorResponse?.details) {
+                    console.error('Server error details:', errorResponse.details);
+                    errorMessage += `\n\nDetaljer: ${errorResponse.details}`;
+                }
+            } catch (e) {
+                // Ignore JSON parsing errors for error response
+            }
+            
             alert(errorMessage);
         } finally {
             this.showLoading(false);

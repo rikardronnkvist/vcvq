@@ -81,13 +81,41 @@ The correctAnswer should be the index (0-5) of the correct option.
     const response = await result.response;
     const text = response.text();
     
-    // Extract JSON from the response
+    // Extract JSON from the response - try multiple approaches
+    let jsonString = null;
+    
+    // First try: look for JSON object
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
+    if (jsonMatch) {
+      jsonString = jsonMatch[0];
+    } else {
+      // Second try: look for JSON array
+      const arrayMatch = text.match(/\[[\s\S]*\]/);
+      if (arrayMatch) {
+        jsonString = `{"questions": ${arrayMatch[0]}}`;
+      }
+    }
+    
+    if (!jsonString) {
+      console.error('No JSON found in response. Full response:', text);
       throw new Error('No valid JSON found in response');
     }
     
-    const quizData = JSON.parse(jsonMatch[0]);
+    let quizData;
+    try {
+      // Clean up the JSON string to handle potential encoding issues
+      const cleanedJson = jsonString
+        .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control characters
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+        
+      quizData = JSON.parse(cleanedJson);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('JSON string that failed to parse:', jsonString);
+      console.error('Cleaned JSON string:', jsonString.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').replace(/\s+/g, ' ').trim());
+      throw new Error('Failed to parse JSON response');
+    }
     
     // Validate the structure
     if (!quizData.questions || !Array.isArray(quizData.questions) || quizData.questions.length !== questionCount) {
