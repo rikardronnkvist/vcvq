@@ -29,13 +29,13 @@ const games = new Map();
 // API Routes
 app.post('/api/generate-quiz', async (req, res) => {
   try {
-    const { topic, language = 'swedish' } = req.body;
+    const { topic, language = 'swedish', questionCount = 10 } = req.body;
     
     if (!topic) {
       return res.status(400).json({ error: 'Topic is required' });
     }
 
-    const questions = await generateQuizQuestions(topic, language);
+    const questions = await generateQuizQuestions(topic, language, questionCount);
     res.json({ questions });
   } catch (error) {
     console.error('Error generating quiz:', error);

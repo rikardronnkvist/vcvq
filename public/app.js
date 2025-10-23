@@ -18,13 +18,16 @@ class VCVQGame {
                 'topic-placeholder': 't.ex., Svensk historia, Rymdutforskning, Matlagning...',
                 'generate-btn': 'Generera frågor',
                 'loading-text': 'Genererar quizfrågor...',
-                'setup-players': 'Konfigurera spelare',
-                'choose-players': 'Välj antal spelare (2-4):',
+                'player-count-label': 'Antal spelare:',
+                'question-count-label': 'Antal frågor:',
                 '2-players': '2 Spelare',
                 '3-players': '3 Spelare',
                 '4-players': '4 Spelare',
-                'enter-names': 'Ange spelarnamn:',
-                'start-game': 'Starta spel',
+                '5-questions': '5 Frågor',
+                '10-questions': '10 Frågor',
+                '15-questions': '15 Frågor',
+                '20-questions': '20 Frågor',
+                '25-questions': '25 Frågor',
                 'scoreboard': 'Poängtafla',
                 'game-finished': '🎉 Spelet är klart!',
                 'play-again': 'Spela igen',
@@ -46,13 +49,16 @@ class VCVQGame {
                 'topic-placeholder': 'e.g., Swedish history, Space exploration, Cooking...',
                 'generate-btn': 'Generate Questions',
                 'loading-text': 'Generating quiz questions...',
-                'setup-players': 'Setup Players',
-                'choose-players': 'Choose number of players (2-4):',
+                'player-count-label': 'Number of players:',
+                'question-count-label': 'Number of questions:',
                 '2-players': '2 Players',
                 '3-players': '3 Players',
                 '4-players': '4 Players',
-                'enter-names': 'Enter player names:',
-                'start-game': 'Start Game',
+                '5-questions': '5 Questions',
+                '10-questions': '10 Questions',
+                '15-questions': '15 Questions',
+                '20-questions': '20 Questions',
+                '25-questions': '25 Questions',
                 'scoreboard': 'Scoreboard',
                 'game-finished': '🎉 Game Finished!',
                 'play-again': 'Play Again',
@@ -116,12 +122,6 @@ class VCVQGame {
             if (e.key === 'Enter') this.generateQuiz();
         });
 
-        // Player setup
-        document.querySelectorAll('.player-count-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.selectPlayerCount(e.target.dataset.count));
-        });
-        document.getElementById('start-game-btn').addEventListener('click', () => this.startGame());
-
         // Play again
         document.getElementById('play-again-btn').addEventListener('click', () => this.playAgain());
 
@@ -136,6 +136,8 @@ class VCVQGame {
     async generateQuiz() {
         const topic = document.getElementById('topic').value.trim();
         const language = document.getElementById('language').value;
+        const playerCount = parseInt(document.getElementById('player-count').value);
+        const questionCount = parseInt(document.getElementById('question-count').value);
         
         if (!topic) {
             const alertMessage = this.currentLanguage === 'swedish' 
@@ -153,7 +155,7 @@ class VCVQGame {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ topic, language })
+                body: JSON.stringify({ topic, language, questionCount })
             });
 
             if (!response.ok) {
@@ -162,7 +164,9 @@ class VCVQGame {
 
             const data = await response.json();
             this.questions = data.questions;
-            this.showPage('player-setup');
+            
+            // Create players and start game directly
+            this.startGame(playerCount);
         } catch (error) {
             console.error('Error generating quiz:', error);
             const errorMessage = this.currentLanguage === 'swedish' 
@@ -174,28 +178,10 @@ class VCVQGame {
         }
     }
 
-    selectPlayerCount(count) {
-        // Update UI
-        document.querySelectorAll('.player-count-btn').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-        document.querySelector(`[data-count="${count}"]`).classList.add('selected');
-        
-        // Store the selected player count
-        this.selectedPlayerCount = count;
-        
-        // Enable the start game button
-        document.getElementById('start-game-btn').disabled = false;
-    }
-
-    startGame() {
-        if (!this.selectedPlayerCount) {
-            return;
-        }
-
+    startGame(playerCount) {
         // Create players with numbers instead of names
         const players = [];
-        for (let i = 1; i <= this.selectedPlayerCount; i++) {
+        for (let i = 1; i <= playerCount; i++) {
             players.push({
                 name: `Player ${i}`,
                 id: i
@@ -397,12 +383,10 @@ class VCVQGame {
         this.currentPlayer = null;
         this.questions = [];
         this.gameState = null;
-        this.selectedPlayerCount = null;
         document.getElementById('topic').value = '';
-        document.getElementById('start-game-btn').disabled = true;
-        document.querySelectorAll('.player-count-btn').forEach(btn => {
-            btn.classList.remove('selected');
-        });
+        // Reset to default values
+        document.getElementById('player-count').value = '2';
+        document.getElementById('question-count').value = '10';
     }
 
     showPage(pageId) {

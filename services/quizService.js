@@ -43,7 +43,7 @@ async function getLatestModel() {
   }
 }
 
-async function generateQuizQuestions(topic, language = 'swedish') {
+async function generateQuizQuestions(topic, language = 'swedish', questionCount = 10) {
   try {
     const modelName = await getLatestModel();
     const model = genAI.getGenerativeModel({ model: modelName });
@@ -53,7 +53,7 @@ async function generateQuizQuestions(topic, language = 'swedish') {
       : 'All questions and answers should be in English.';
 
     const prompt = `
-Generate exactly 10 multiple-choice quiz questions about "${topic}".
+Generate exactly ${questionCount} multiple-choice quiz questions about "${topic}".
 ${languageInstruction}
 
 Each question must have:
@@ -90,7 +90,7 @@ The correctAnswer should be the index (0-5) of the correct option.
     const quizData = JSON.parse(jsonMatch[0]);
     
     // Validate the structure
-    if (!quizData.questions || !Array.isArray(quizData.questions) || quizData.questions.length !== 10) {
+    if (!quizData.questions || !Array.isArray(quizData.questions) || quizData.questions.length !== questionCount) {
       throw new Error('Invalid quiz structure');
     }
     

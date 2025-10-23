@@ -24,9 +24,34 @@
                     </select>
                 </div>
 
-                <div class="topic-input">
-                    <label for="topic" data-translate="topic-label">Choose a topic for your quiz:</label>
-                    <input type="text" id="topic" data-translate-placeholder="topic-placeholder" placeholder="t.ex., Svensk historia, Rymdutforskning, Matlagning..." required>
+                <div class="quiz-setup">
+                    <div class="topic-input">
+                        <label for="topic" data-translate="topic-label">Choose a topic for your quiz:</label>
+                        <input type="text" id="topic" data-translate-placeholder="topic-placeholder" placeholder="t.ex., Svensk historia, Rymdutforskning, Matlagning..." required>
+                    </div>
+
+                    <div class="game-settings">
+                        <div class="setting-group">
+                            <label for="player-count" data-translate="player-count-label">Number of players:</label>
+                            <select id="player-count">
+                                <option value="2" data-translate="2-players">2 Players</option>
+                                <option value="3" data-translate="3-players">3 Players</option>
+                                <option value="4" data-translate="4-players">4 Players</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-group">
+                            <label for="question-count" data-translate="question-count-label">Number of questions:</label>
+                            <select id="question-count">
+                                <option value="5" data-translate="5-questions">5 Questions</option>
+                                <option value="10" selected data-translate="10-questions">10 Questions</option>
+                                <option value="15" data-translate="15-questions">15 Questions</option>
+                                <option value="20" data-translate="20-questions">20 Questions</option>
+                                <option value="25" data-translate="25-questions">25 Questions</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <button id="generate-btn" class="btn-primary" data-translate="generate-btn">Generate Questions</button>
                 </div>
 
@@ -37,23 +62,6 @@
             </div>
         </div>
 
-        <!-- Player Setup Page -->
-        <div id="player-setup" class="page">
-            <div class="container">
-                <h2 data-translate="setup-players">Setup Players</h2>
-                <p data-translate="choose-players">Choose number of players (2-4):</p>
-                
-                <div class="player-count-selector">
-                    <button class="player-count-btn" data-count="2" data-translate="2-players">2 Players</button>
-                    <button class="player-count-btn" data-count="3" data-translate="3-players">3 Players</button>
-                    <button class="player-count-btn" data-count="4" data-translate="4-players">4 Players</button>
-                </div>
-
-                <div class="start-game-section">
-                    <button id="start-game-btn" class="btn-primary" disabled data-translate="start-game">Start Game</button>
-                </div>
-            </div>
-        </div>
 
         <!-- Game Page -->
         <div id="game-page" class="page">
