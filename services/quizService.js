@@ -13,7 +13,8 @@ async function getLatestModel() {
   try {
     // Try common model names in order of preference
     const modelNames = [
-      'gemini-1.5-pro',
+      'gemini-2.5-flash-lite',
+      'gemini-2.0-flash-lite',
       'gemini-1.5-flash',
       'gemini-pro',
       'gemini-1.0-pro'
