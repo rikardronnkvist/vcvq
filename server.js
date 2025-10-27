@@ -60,8 +60,7 @@ import 'dotenv/config';
           // Strip MD code fences if present
           const fenced = text.match(/```[\s\S]*?```/);
           if (fenced) {
-            const inner = fenced[0].replace(/^```[a-zA-Z]*
-?/, '').replace(/```$/, '');
+            const inner = fenced[0].replace(/^```[a-zA-Z]*?/, '').replace(/```$/, '');
             try { return JSON.parse(inner); } catch {}
           }
           // Try direct JSON
@@ -106,8 +105,7 @@ import 'dotenv/config';
               throw new Error('Gemini API error');
             }
             const data = await res.json();
-            const text = data?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('
-') || '';
+            const text = data?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('') || '';
             const parsed = tryParseJSONfromText(text);
             const questions = parsed?.questions || [];
             if (!validateQuestions(questions)) throw new Error('Invalid Gemini format');
