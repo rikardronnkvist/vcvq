@@ -1,0 +1,28 @@
+{
+  "name": "vcvq",
+  "version": "1.0.0",
+  "description": "Vibe Coded Vibe Quiz - real-time multiplayer quiz using Google Gemini",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "quiz",
+    "gemini",
+    "socket.io",
+    "express",
+    "multiplayer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}
