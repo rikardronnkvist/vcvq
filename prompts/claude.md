@@ -60,7 +60,7 @@ You use logging for game flow in both container and browser console.
 - Selection between languages - Swedish (standard) and English
 - All text strings that are shown to the user should be in a separate file for easy translation
 - Responsive design that works on desktop and tablets
-- Screen size should be optimized for 1920x1280
+- Screen size should be optimized for 1180x919 (Tesla Model Y web browser while driving)
 - Create a README.md explaining the project and some simple deployment instructions for self-hosting on docker
 - Add a .gitignore file to the project and exclude Docker environment file
 - Docker sample environment file should include a option to add Gemini API-key and port-selection for web
