@@ -1,6 +1,8 @@
 const express = require('express');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
+const { body, validationResult } = require('express-validator');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -13,6 +15,23 @@ if (!API_KEY) {
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
+// Rate limiting configuration
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // Limit each IP to 50 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const strictApiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // More strict limit for AI generation endpoints
+  message: 'Too many quiz generation requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Model names in order of preference
 const MODEL_NAMES = [
   'gemini-2.5-flash',
@@ -22,8 +41,21 @@ const MODEL_NAMES = [
   'gemini-pro-latest'
 ];
 
-app.use(express.json());
+app.use(express.json({ limit: '1mb' })); // Limit payload size
 app.use(express.static('public'));
+
+// Apply rate limiting to API routes
+app.use('/api/', apiLimiter);
+
+// Health check endpoint (no rate limiting)
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'vcvq',
+    version: '1.0.0'
+  });
+});
 
 async function tryGenerateWithModels(prompt) {
   let lastError = null;
@@ -46,15 +78,38 @@ async function tryGenerateWithModels(prompt) {
   throw new Error(`All models failed. Last error: ${lastError.message}`);
 }
 
-app.post('/api/generate-quiz', async (req, res) => {
+// Input validation middleware for quiz generation
+const validateQuizGeneration = [
+  body('topic')
+    .trim()
+    .notEmpty().withMessage('Topic is required')
+    .isLength({ min: 1, max: 200 }).withMessage('Topic must be between 1 and 200 characters')
+    .escape(),
+  body('language')
+    .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
+  body('numQuestions')
+    .optional()
+    .isInt({ min: 5, max: 50 }).withMessage('Number of questions must be between 5 and 50'),
+  body('numAnswers')
+    .optional()
+    .isInt({ min: 4, max: 8 }).withMessage('Number of answers must be between 4 and 8')
+];
+
+app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (req, res) => {
   try {
+    // Check validation results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('[VCVQ] Validation errors:', errors.array());
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: errors.array().map(e => e.msg).join(', ')
+      });
+    }
+
     const { topic, language, numQuestions = 10, numAnswers = 6 } = req.body;
     
     console.log(`[VCVQ] Generating quiz - Topic: ${topic}, Language: ${language}, Questions: ${numQuestions}, Answers: ${numAnswers}`);
-    
-    if (!topic) {
-      return res.status(400).json({ error: 'Topic is required' });
-    }
 
     const langInstruction = language === 'en' 
       ? 'Generate questions in English.'
@@ -107,22 +162,43 @@ Rules:
     res.json({ questions });
   } catch (error) {
     console.error('[VCVQ] Error generating quiz:', error);
+    // Don't expose detailed error messages in production
+    const isDevelopment = process.env.NODE_ENV === 'development';
     res.status(500).json({ 
       error: 'Failed to generate quiz',
-      details: error.message 
+      ...(isDevelopment && { details: error.message })
     });
   }
 });
 
-app.post('/api/generate-player-names', async (req, res) => {
+// Input validation middleware for player names
+const validatePlayerNames = [
+  body('language')
+    .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
+  body('count')
+    .isInt({ min: 2, max: 5 }).withMessage('Count must be between 2 and 5'),
+  body('topic')
+    .optional()
+    .trim()
+    .isLength({ max: 200 }).withMessage('Topic must not exceed 200 characters')
+    .escape()
+];
+
+app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, async (req, res) => {
   try {
+    // Check validation results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('[VCVQ] Validation errors:', errors.array());
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: errors.array().map(e => e.msg).join(', ')
+      });
+    }
+
     const { language, count, topic } = req.body;
     
     console.log(`[VCVQ] Generating ${count} player names in ${language} for topic: ${topic}`);
-    
-    if (!count || count < 2 || count > 5) {
-      return res.status(400).json({ error: 'Count must be between 2 and 5' });
-    }
 
     const positions = {
       sv: ['Förare', 'Fram passagerare', 'Vänster bak', 'Höger bak', 'Mitten bak'],
@@ -170,15 +246,35 @@ Rules:
     res.json({ names });
   } catch (error) {
     console.error('[VCVQ] Error generating player names:', error);
+    const isDevelopment = process.env.NODE_ENV === 'development';
     res.status(500).json({ 
       error: 'Failed to generate player names',
-      details: error.message 
+      ...(isDevelopment && { details: error.message })
     });
   }
 });
 
-app.post('/api/generate-topic', async (req, res) => {
+// Input validation middleware for topic generation
+const validateTopicGeneration = [
+  body('language')
+    .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
+  body('count')
+    .optional()
+    .isInt({ min: 1, max: 20 }).withMessage('Count must be between 1 and 20')
+];
+
+app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async (req, res) => {
   try {
+    // Check validation results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('[VCVQ] Validation errors:', errors.array());
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: errors.array().map(e => e.msg).join(', ')
+      });
+    }
+
     const { language, count = 1 } = req.body;
     
     console.log(`[VCVQ] Generating ${count} random funny topic(s) in ${language}`);
@@ -230,9 +326,10 @@ Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs"
     }
   } catch (error) {
     console.error('[VCVQ] Error generating topic:', error);
+    const isDevelopment = process.env.NODE_ENV === 'development';
     res.status(500).json({ 
       error: 'Failed to generate topic',
-      details: error.message 
+      ...(isDevelopment && { details: error.message })
     });
   }
 });
