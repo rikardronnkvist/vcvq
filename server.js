@@ -13,6 +13,10 @@ if (!API_KEY) {
   process.exit(1);
 }
 
+// Trust proxy when behind reverse proxy (Docker, nginx, load balancer, etc.)
+// This is required for accurate rate limiting by IP address
+app.set('trust proxy', 1); // Trust first proxy
+
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Rate limiting configuration
