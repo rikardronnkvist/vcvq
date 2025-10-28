@@ -115,9 +115,9 @@ Rules:
 
 app.post('/api/generate-player-names', async (req, res) => {
   try {
-    const { language, count } = req.body;
+    const { language, count, topic } = req.body;
     
-    console.log(`[VCVQ] Generating ${count} player names in ${language}`);
+    console.log(`[VCVQ] Generating ${count} player names in ${language} for topic: ${topic}`);
     
     if (!count || count < 2 || count > 5) {
       return res.status(400).json({ error: 'Count must be between 2 and 5' });
@@ -128,9 +128,15 @@ app.post('/api/generate-player-names', async (req, res) => {
       en: ['Driver', 'Front Passenger', 'Left Back Passenger', 'Right Back Passenger', 'Middle Back Passenger']
     };
 
+    const topicContext = topic 
+      ? (language === 'en' 
+        ? ` The quiz topic is "${topic}", so make the names relate to both the car position AND the quiz topic.`
+        : ` Quizämnet är "${topic}", så gör namnen relaterade till både bilpositionen OCH quizämnet.`)
+      : '';
+
     const langInstruction = language === 'en' 
-      ? `Generate exactly ${count} funny, creative names in English for car passengers in these positions:`
-      : `Generera exakt ${count} roliga, kreativa namn på svenska för bilpassagerare i dessa positioner:`;
+      ? `Generate exactly ${count} funny, creative names in English for car passengers in these positions:${topicContext}`
+      : `Generera exakt ${count} roliga, kreativa namn på svenska för bilpassagerare i dessa positioner:${topicContext}`;
 
     const positionList = positions[language].slice(0, count);
     
@@ -144,7 +150,7 @@ Format your response as a JSON array with exactly ${count} strings (one name per
 
 Rules:
 - Names should be funny, memorable, and family-friendly
-- Names should relate to the car position or driving context
+- Names should relate to the car position${topic ? ' AND the quiz topic' : ' or driving context'}
 - Keep names short (1-2 words max)
 - Make them culturally appropriate for ${language === 'sv' ? 'Swedish' : 'English'} speakers
 - Be creative and fun!`;

@@ -152,8 +152,9 @@
     async function generatePlayerNames() {
       const count = parseInt(playerCountSelect.value);
       const lang = languageSelect.value;
+      const topic = document.getElementById('topic').value.trim();
       
-      console.log(`[VCVQ] Generating ${count} AI player names in ${lang}`);
+      console.log(`[VCVQ] Generating ${count} AI player names in ${lang} for topic: ${topic}`);
       generateNamesBtn.disabled = true;
       generateNamesBtn.textContent = '⏳';
       
@@ -161,7 +162,7 @@
         const response = await fetch('/api/generate-player-names', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang, count })
+          body: JSON.stringify({ language: lang, count, topic })
         });
 
         if (!response.ok) {
@@ -261,10 +262,43 @@
 
     // Check if returning from a game restart
     window.addEventListener('load', () => {
-      const restartPlayers = sessionStorage.getItem('restartPlayers');
-      if (restartPlayers) {
-        console.log('[VCVQ] Restoring players from previous game');
-        const players = JSON.parse(restartPlayers);
+      const restartSettings = sessionStorage.getItem('restartSettings');
+      const oldRestartPlayers = sessionStorage.getItem('restartPlayers'); // Backwards compatibility
+      
+      if (restartSettings) {
+        console.log('[VCVQ] Restoring all settings from previous game');
+        const settings = JSON.parse(restartSettings);
+        
+        // Restore language
+        document.getElementById('language').value = settings.language || 'en';
+        updateLanguage();
+        
+        // Restore topic
+        document.getElementById('topic').value = settings.topic || '';
+        
+        // Restore player count
+        document.getElementById('playerCount').value = settings.players.length;
+        
+        // Restore question count
+        document.getElementById('questionCount').value = settings.numQuestions || 10;
+        
+        // Restore answer count
+        document.getElementById('answerCount').value = settings.numAnswers || 6;
+        
+        // Update player inputs visibility
+        const event = new Event('change');
+        document.getElementById('playerCount').dispatchEvent(event);
+        
+        // Restore player names
+        settings.players.forEach((player, idx) => {
+          document.getElementById(`player${idx + 1}`).value = player.name;
+        });
+        
+        sessionStorage.removeItem('restartSettings');
+      } else if (oldRestartPlayers) {
+        // Backwards compatibility with old restart method
+        console.log('[VCVQ] Restoring players from previous game (old method)');
+        const players = JSON.parse(oldRestartPlayers);
         document.getElementById('playerCount').value = players.length;
         
         const event = new Event('change');

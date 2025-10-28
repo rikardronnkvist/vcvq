@@ -246,8 +246,15 @@ function endGame() {
 }
 
 document.getElementById('restartBtn')?.addEventListener('click', () => {
-  console.log('[VCVQ] Restarting game with same players');
-  sessionStorage.setItem('restartPlayers', JSON.stringify(players));
+  console.log('[VCVQ] Restarting game with same settings');
+  const restartData = {
+    players: players,
+    topic: topic,
+    language: language,
+    numQuestions: numQuestions,
+    numAnswers: questions[0]?.options.length || 6
+  };
+  sessionStorage.setItem('restartSettings', JSON.stringify(restartData));
   window.location.href = 'index.html';
 });
 
@@ -255,6 +262,7 @@ document.getElementById('newGameBtn')?.addEventListener('click', () => {
   console.log('[VCVQ] Starting new game setup');
   sessionStorage.removeItem('gameState');
   sessionStorage.removeItem('restartPlayers');
+  sessionStorage.removeItem('restartSettings');
   window.location.href = 'index.html';
 });
 
