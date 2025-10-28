@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Coded Vibe Quiz</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎮 Vibe Coded Vibe Quiz</h1>
+      <p class="subtitle">Car-Friendly Multiplayer Quiz Game</p>
+    </header>
+
+    <div class="setup-form">
+      <div class="form-group">
+        <label for="language">Language / Språk:</label>
+        <select id="language">
+          <option value="sv">Svenska</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="topic">Quiz Topic:</label>
+        <input type="text" id="topic" placeholder="Enter any topic (e.g., Science, Movies, Sports)">
+      </div>
+
+      <div class="form-group">
+        <label for="playerCount">Number of Players:</label>
+        <select id="playerCount">
+          <option value="2">2 Players</option>
+          <option value="3">3 Players</option>
+          <option value="4">4 Players</option>
+        </select>
+      </div>
+
+      <div id="playerNames">
+        <h3>Player Names:</h3>
+        <div class="player-name-input">
+          <label>Player 1:</label>
+          <input type="text" id="player1" value="Driver">
+        </div>
+        <div class="player-name-input">
+          <label>Player 2:</label>
+          <input type="text" id="player2" value="Front Passenger">
+        </div>
+        <div class="player-name-input">
+          <label>Player 3:</label>
+          <input type="text" id="player3" value="Left Back Passenger">
+        </div>
+        <div class="player-name-input">
+          <label>Player 4:</label>
+          <input type="text" id="player4" value="Right Back Passenger">
+        </div>
+      </div>
+
+      <button id="startBtn" class="btn-primary">Start Quiz</button>
+      <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Generating quiz questions...</p>
+      </div>
+      <div id="error" class="error" style="display: none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const playerCountSelect = document.getElementById('playerCount');
+    const playerNameInputs = document.querySelectorAll('.player-name-input');
+    const startBtn = document.getElementById('startBtn');
+    const loading = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
+    const languageSelect = document.getElementById('language');
+
+    function updatePlayerInputs() {
+      const count = parseInt(playerCountSelect.value);
+      playerNameInputs.forEach((input, idx) => {
+        input.style.display = idx < count ? 'flex' : 'none';
+      });
+    }
+
+    playerCountSelect.addEventListener('change', updatePlayerInputs);
+    updatePlayerInputs();
+
+    languageSelect.addEventListener('change', (e) => {
+      const lang = e.target.value;
+      if (lang === 'sv') {
+        document.querySelector('label[for="topic"]').textContent = 'Frågeämne:';
+        document.getElementById('topic').placeholder = 'Ange ett ämne (t.ex. Vetenskap, Filmer, Sport)';
+        document.querySelector('label[for="playerCount"]').textContent = 'Antal spelare:';
+        document.querySelector('#playerNames h3').textContent = 'Spelarnamn:';
+        startBtn.textContent = 'Starta Quiz';
+        
+        document.getElementById('player1').value = 'Förare';
+        document.getElementById('player2').value = 'Fram passagerare';
+        document.getElementById('player3').value = 'Vänster bak';
+        document.getElementById('player4').value = 'Höger bak';
+      } else {
+        document.querySelector('label[for="topic"]').textContent = 'Quiz Topic:';
+        document.getElementById('topic').placeholder = 'Enter any topic (e.g., Science, Movies, Sports)';
+        document.querySelector('label[for="playerCount"]').textContent = 'Number of Players:';
+        document.querySelector('#playerNames h3').textContent = 'Player Names:';
+        startBtn.textContent = 'Start Quiz';
+        
+        document.getElementById('player1').value = 'Driver';
+        document.getElementById('player2').value = 'Front Passenger';
+        document.getElementById('player3').value = 'Left Back Passenger';
+        document.getElementById('player4').value = 'Right Back Passenger';
+      }
+    });
+
+    startBtn.addEventListener('click', async () => {
+      const topic = document.getElementById('topic').value.trim();
+      const playerCount = parseInt(playerCountSelect.value);
+      const language = languageSelect.value;
+      
+      if (!topic) {
+        errorDiv.textContent = language === 'sv' ? 'Ange ett ämne!' : 'Please enter a topic!';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      const players = [];
+      for (let i = 1; i <= playerCount; i++) {
+        const name = document.getElementById(`player${i}`).value.trim();
+        players.push({ id: i, name: name || `Player ${i}`, score: 0 });
+      }
+
+      errorDiv.style.display = 'none';
+      loading.style.display = 'block';
+      startBtn.disabled = true;
+
+      try {
+        const response = await fetch('/api/generate-quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, language })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate quiz');
+        }
+
+        const data = await response.json();
+        
+        sessionStorage.setItem('gameState', JSON.stringify({
+          topic,
+          players,
+          questions: data.questions,
+          currentQuestion: 0,
+          currentPlayer: Math.floor(Math.random() * playerCount),
+          language
+        }));
+
+        window.location.href = 'game.html';
+      } catch (error) {
+        errorDiv.textContent = language === 'sv' 
+          ? 'Misslyckades att generera quiz. Försök igen.' 
+          : 'Failed to generate quiz. Please try again.';
+        errorDiv.style.display = 'block';
+        loading.style.display = 'none';
+        startBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

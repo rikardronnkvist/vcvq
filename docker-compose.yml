@@ -1,0 +1,9 @@
+services:
+  vcvq:
+    build: .
+    ports:
+      - "${PORT:-3030}:3030"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PORT=${PORT:-3030}
+    restart: unless-stopped
