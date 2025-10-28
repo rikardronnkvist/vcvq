@@ -23,12 +23,14 @@ You use logging for game flow in both container and browser console.
 - Number of players: 2 (default), 3, 4, 5
 - Number of questions for the quiz: 5, 10 (default), 15, 20, 25, 30 and 50
 - Number of answers per question: 4, 6 (default) and 8
-- Option to set names of players, it should default to 1 - Driver, 2 - Front Passanger, 3 - Left Back Passanger, 4 - Right Back Passanger, 5 - Middle back Passanger
+- Option to set names of players
+- Default names for players should be generated from AI and use funny names based on selected language and: 1 - Driver, 2 - Front Passanger, 3 - Left Back Passanger, 4 - Right Back Passanger, 5 - Middle back Passanger
 
 ## Game Flow
 - Landing page where users enter a topic to generate questions from, they also select number of players
-- Random starting player, then turn order follows numerical sequence (Example with 2 starting 2→3→4→5→1→2)
-- All players should answer all questions
+- Random starting player for first question
+- Starting order follows numerical sequence (Example with 2 starting 2→3→4→5→1→2)
+- All players should answer all questions in same numerical sequence
 - Current player drags their player number to one of the answer boxes to select their answer
 - Visual feedback (green for correct, red for incorrect with correct answer shown) when all players have answered
 - Real-time score tracking throughout the game
@@ -44,17 +46,22 @@ You use logging for game flow in both container and browser console.
 - Default to port 3030 for web
 
 ## UI/UX
-- Clean, modern interface with distinct player colors (blue, red, green, purple for players 1-4)
+- Clean, modern interface with distinct player colors, different color for all players
 - Visual highlight showing whose turn it is
-- Smooth drag-and-drop interaction
+- Smooth drag-and-drop interaction for answering
+- Allow the player to click an answer-box instead of drag-and-drop
+- Boxes with answers should only contain correct answer 
+- Players should be able to drop on the whole answer-box
 - Real-time score display
-- 2-second delay between questions for answer review
+- 5-second delay between questions for answer review
 - Accessible via web browser with no installation needed for players.
 
 ## Bonus Features
 - Selection between languages - Swedish (standard) and English
 - All text strings that are shown to the user should be in a separate file for easy translation
 - Responsive design that works on desktop and tablets
+- Screen size should be optimized for 1920x1280
 - Create a README.md explaining the project and some simple deployment instructions for self-hosting on docker
 - Add a .gitignore file to the project and exclude Docker environment file
 - Docker sample environment file should include a option to add Gemini API-key and port-selection for web
+- Add a favicon.ico file that matches the game
