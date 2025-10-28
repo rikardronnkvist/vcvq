@@ -176,6 +176,58 @@ Rules:
   }
 });
 
+app.post('/api/generate-topic', async (req, res) => {
+  try {
+    const { language } = req.body;
+    
+    console.log(`[VCVQ] Generating random funny topic in ${language}`);
+    
+    const langInstruction = language === 'en' 
+      ? 'Generate a single funny, creative, and entertaining quiz topic in English.'
+      : 'Generera ett enda roligt, kreativt och underhållande quizämne på svenska.';
+
+    const prompt = `${langInstruction}
+
+IMPORTANT: You must respond ONLY with valid JSON. Do not include any markdown formatting, code blocks, or explanatory text.
+
+Format your response as a JSON object with exactly this structure:
+{
+  "topic": "Your funny topic here"
+}
+
+Rules:
+- Generate ONE creative and fun quiz topic
+- Make it suitable for a car quiz game
+- Keep it family-friendly
+- Make it interesting and engaging
+- Can be about pop culture, science, history, geography, entertainment, sports, etc.
+- Be creative and unexpected!
+- The topic should be 2-5 words max
+- Make it funny or quirky when possible
+
+Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs", "80s Music", "Famous Mustaches"`;
+
+    let text = await tryGenerateWithModels(prompt);
+
+    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    const data = JSON.parse(text);
+
+    if (!data.topic || typeof data.topic !== 'string') {
+      throw new Error('Invalid response format: Expected topic string');
+    }
+
+    console.log(`[VCVQ] Generated topic: ${data.topic}`);
+    res.json({ topic: data.topic });
+  } catch (error) {
+    console.error('[VCVQ] Error generating topic:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate topic',
+      details: error.message 
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`[VCVQ] Server running on http://localhost:${PORT}`);
 });

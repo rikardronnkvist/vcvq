@@ -26,7 +26,10 @@
 
       <div class="form-group">
         <label for="topic" id="labelTopic">Quiz Topic:</label>
-        <input type="text" id="topic" placeholder="Enter any topic (e.g., Science, Movies, Sports)">
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="topic" placeholder="Enter any topic (e.g., Science, Movies, Sports)" style="flex: 1;">
+          <button id="randomTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap;">🎲 Random</button>
+        </div>
       </div>
 
       <div class="form-group">
@@ -131,6 +134,7 @@
       document.getElementById('subtitle').textContent = t('subtitle', lang);
       document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
       document.getElementById('topic').placeholder = t('topicPlaceholder', lang);
+      document.getElementById('randomTopicBtn').textContent = t('randomTopic', lang);
       document.getElementById('labelPlayerCount').textContent = t('numberOfPlayers', lang) + ':';
       document.getElementById('labelQuestionCount').textContent = t('numberOfQuestions', lang) + ':';
       document.getElementById('labelAnswerCount').textContent = t('numberOfAnswers', lang) + ':';
@@ -146,6 +150,45 @@
         if (defaultNames.sv.includes(input.value) || defaultNames.en.includes(input.value)) {
           input.value = defaultNames[lang][i - 1];
         }
+      }
+    }
+
+    async function generateRandomTopic() {
+      const lang = languageSelect.value;
+      const randomTopicBtn = document.getElementById('randomTopicBtn');
+      
+      console.log(`[VCVQ] Generating random topic in ${lang}`);
+      randomTopicBtn.disabled = true;
+      randomTopicBtn.textContent = '⏳';
+      
+      try {
+        const response = await fetch('/api/generate-topic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ language: lang })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate topic');
+        }
+
+        const data = await response.json();
+        console.log(`[VCVQ] Generated topic: ${data.topic}`);
+        
+        document.getElementById('topic').value = data.topic;
+        
+        randomTopicBtn.textContent = '✓';
+        setTimeout(() => {
+          randomTopicBtn.textContent = t('randomTopic', lang);
+          randomTopicBtn.disabled = false;
+        }, 1500);
+      } catch (error) {
+        console.error('[VCVQ] Error generating topic:', error);
+        randomTopicBtn.textContent = '✗';
+        setTimeout(() => {
+          randomTopicBtn.textContent = t('randomTopic', lang);
+          randomTopicBtn.disabled = false;
+        }, 1500);
       }
     }
 
@@ -193,6 +236,7 @@
 
     playerCountSelect.addEventListener('change', updatePlayerInputs);
     languageSelect.addEventListener('change', updateLanguage);
+    document.getElementById('randomTopicBtn').addEventListener('click', generateRandomTopic);
     generateNamesBtn.addEventListener('click', generatePlayerNames);
     updatePlayerInputs();
 
