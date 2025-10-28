@@ -199,12 +199,10 @@ ${responseFormat}
 
 Rules:
 - Generate ${count} creative and fun quiz topic${count > 1 ? 's' : ''}
-- Make ${count > 1 ? 'them' : 'it'} suitable for a car quiz game
-- Keep ${count > 1 ? 'them' : 'it'} family-friendly
 - Make ${count > 1 ? 'them' : 'it'} interesting and engaging
 - Can be about pop culture, science, history, geography, entertainment, sports, etc.
 - Be creative and unexpected!
-- Each topic should be 2-5 words max
+- Each topic should be maximum 5 words
 - Make ${count > 1 ? 'them' : 'it'} funny or quirky when possible
 ${count > 1 ? '- All topics should be different and diverse\n- Cover different categories' : ''}
 
