@@ -42,7 +42,7 @@ A real-time multiplayer quiz game designed for car trips! Generate AI-powered qu
 ```
 
 5. **Open your browser:**
-(http://localhost:3030)http://localhost:3030
+http://localhost:3030
 
 
 ## How to Play
