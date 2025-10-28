@@ -69,3 +69,42 @@ You use logging for game flow in both container and browser console.
 - Add a .gitignore file to the project and exclude Docker environment file
 - Docker sample environment file should include a option to add Gemini API-key and port-selection for web
 - Use logo.ico as favicon and display logo.png on the start page
+
+## Security & Infrastructure
+### Input Validation
+- Comprehensive validation using express-validator on all API endpoints
+- Topic: 1-200 characters, sanitized against XSS
+- Language: Must be 'sv' or 'en'
+- numQuestions: Integer between 5-50
+- numAnswers: Integer between 4-8
+- Player names count: Integer between 2-5
+- Topic count: Integer between 1-20
+
+### Rate Limiting
+- General API: 50 requests per 15 minutes per IP
+- AI Generation endpoints: 20 requests per 15 minutes per IP
+- Protects Gemini API quota and prevents abuse
+
+### Error Handling
+- Environment-aware error messages (detailed in dev, generic in production)
+- Prevents information leakage in production
+
+### Request Security
+- Payload size limited to 1MB to prevent memory exhaustion
+- All user input sanitized to prevent injection attacks
+
+### Health Monitoring
+- `/health` endpoint for container orchestration and load balancer checks
+- Returns service status, timestamp, and version info
+
+### Docker Security & Optimization
+- Multi-stage builds for smaller images (~40% size reduction)
+- Non-root user (nodejs:1001) for container execution
+- Built-in health checks every 30 seconds
+- Resource limits: 1 CPU core, 512MB memory
+- Security options: no-new-privileges flag
+- Environment-based configuration (NODE_ENV)
+
+### Dependencies
+- express-rate-limit: ^7.1.5
+- express-validator: ^7.0.1
