@@ -67,4 +67,4 @@ You use logging for game flow in both container and browser console.
 - Create a README.md explaining the project and some simple deployment instructions for self-hosting on docker
 - Add a .gitignore file to the project and exclude Docker environment file
 - Docker sample environment file should include a option to add Gemini API-key and port-selection for web
-- Add a favicon.ico file that matches the game
+- Use logo.ico as favicon and display logo.png on the start page

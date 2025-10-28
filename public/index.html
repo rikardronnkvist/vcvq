@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibe Coded Vibe Quiz</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="logo.ico">
   <link rel="stylesheet" href="styles.css">
   <script src="i18n.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1 id="mainTitle">🎮 Vibe Coded Vibe Quiz</h1>
+      <img src="logo.png" alt="VCVQ Logo" class="logo">
+      <h1 id="mainTitle">Vibe Coded Vibe Quiz</h1>
       <p class="subtitle" id="subtitle">Car-Friendly Multiplayer Quiz Game</p>
     </header>
 
@@ -130,7 +131,7 @@
       console.log(`[VCVQ] Language changed to: ${lang}`);
       
       // Update labels
-      document.getElementById('mainTitle').textContent = `🎮 ${t('title', lang)}`;
+      document.getElementById('mainTitle').textContent = t('title', lang);
       document.getElementById('subtitle').textContent = t('subtitle', lang);
       document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
       document.getElementById('topic').placeholder = t('topicPlaceholder', lang);
