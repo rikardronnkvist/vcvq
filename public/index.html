@@ -4,18 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibe Coded Vibe Quiz</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
+  <script src="i18n.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>🎮 Vibe Coded Vibe Quiz</h1>
-      <p class="subtitle">Car-Friendly Multiplayer Quiz Game</p>
+      <h1 id="mainTitle">🎮 Vibe Coded Vibe Quiz</h1>
+      <p class="subtitle" id="subtitle">Car-Friendly Multiplayer Quiz Game</p>
     </header>
 
     <div class="setup-form">
       <div class="form-group">
-        <label for="language">Language / Språk:</label>
+        <label for="language" id="labelLanguage">Language / Språk:</label>
         <select id="language">
           <option value="sv">Svenska</option>
           <option value="en">English</option>
@@ -23,43 +25,73 @@
       </div>
 
       <div class="form-group">
-        <label for="topic">Quiz Topic:</label>
+        <label for="topic" id="labelTopic">Quiz Topic:</label>
         <input type="text" id="topic" placeholder="Enter any topic (e.g., Science, Movies, Sports)">
       </div>
 
       <div class="form-group">
-        <label for="playerCount">Number of Players:</label>
+        <label for="playerCount" id="labelPlayerCount">Number of Players:</label>
         <select id="playerCount">
-          <option value="2">2 Players</option>
-          <option value="3">3 Players</option>
-          <option value="4">4 Players</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="questionCount" id="labelQuestionCount">Number of Questions:</label>
+        <select id="questionCount">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="answerCount" id="labelAnswerCount">Number of Answers per Question:</label>
+        <select id="answerCount">
+          <option value="4">4</option>
+          <option value="6" selected>6</option>
+          <option value="8">8</option>
         </select>
       </div>
 
       <div id="playerNames">
-        <h3>Player Names:</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h3 id="labelPlayerNames">Player Names:</h3>
+          <button id="generateNamesBtn" class="btn-generate">🎲 Generate Names</button>
+        </div>
         <div class="player-name-input">
-          <label>Player 1:</label>
+          <label id="labelPlayer1">Player 1:</label>
           <input type="text" id="player1" value="Driver">
         </div>
         <div class="player-name-input">
-          <label>Player 2:</label>
+          <label id="labelPlayer2">Player 2:</label>
           <input type="text" id="player2" value="Front Passenger">
         </div>
         <div class="player-name-input">
-          <label>Player 3:</label>
+          <label id="labelPlayer3">Player 3:</label>
           <input type="text" id="player3" value="Left Back Passenger">
         </div>
         <div class="player-name-input">
-          <label>Player 4:</label>
+          <label id="labelPlayer4">Player 4:</label>
           <input type="text" id="player4" value="Right Back Passenger">
+        </div>
+        <div class="player-name-input">
+          <label id="labelPlayer5">Player 5:</label>
+          <input type="text" id="player5" value="Middle Back Passenger">
         </div>
       </div>
 
       <button id="startBtn" class="btn-primary">Start Quiz</button>
       <div id="loading" class="loading" style="display: none;">
         <div class="spinner"></div>
-        <p>Generating quiz questions...</p>
+        <p id="loadingText">Generating quiz questions...</p>
       </div>
       <div id="error" class="error" style="display: none;"></div>
     </div>
@@ -69,54 +101,111 @@
     const playerCountSelect = document.getElementById('playerCount');
     const playerNameInputs = document.querySelectorAll('.player-name-input');
     const startBtn = document.getElementById('startBtn');
+    const generateNamesBtn = document.getElementById('generateNamesBtn');
     const loading = document.getElementById('loading');
     const errorDiv = document.getElementById('error');
     const languageSelect = document.getElementById('language');
 
+    let currentLang = 'en';
+
+    const defaultNames = {
+      sv: ['Förare', 'Fram passagerare', 'Vänster bak', 'Höger bak', 'Mitten bak'],
+      en: ['Driver', 'Front Passenger', 'Left Back Passenger', 'Right Back Passenger', 'Middle Back Passenger']
+    };
+
     function updatePlayerInputs() {
       const count = parseInt(playerCountSelect.value);
+      console.log(`[VCVQ] Updating player inputs for ${count} players`);
       playerNameInputs.forEach((input, idx) => {
         input.style.display = idx < count ? 'flex' : 'none';
       });
     }
 
-    playerCountSelect.addEventListener('change', updatePlayerInputs);
-    updatePlayerInputs();
-
-    languageSelect.addEventListener('change', (e) => {
-      const lang = e.target.value;
-      if (lang === 'sv') {
-        document.querySelector('label[for="topic"]').textContent = 'Frågeämne:';
-        document.getElementById('topic').placeholder = 'Ange ett ämne (t.ex. Vetenskap, Filmer, Sport)';
-        document.querySelector('label[for="playerCount"]').textContent = 'Antal spelare:';
-        document.querySelector('#playerNames h3').textContent = 'Spelarnamn:';
-        startBtn.textContent = 'Starta Quiz';
-        
-        document.getElementById('player1').value = 'Förare';
-        document.getElementById('player2').value = 'Fram passagerare';
-        document.getElementById('player3').value = 'Vänster bak';
-        document.getElementById('player4').value = 'Höger bak';
-      } else {
-        document.querySelector('label[for="topic"]').textContent = 'Quiz Topic:';
-        document.getElementById('topic').placeholder = 'Enter any topic (e.g., Science, Movies, Sports)';
-        document.querySelector('label[for="playerCount"]').textContent = 'Number of Players:';
-        document.querySelector('#playerNames h3').textContent = 'Player Names:';
-        startBtn.textContent = 'Start Quiz';
-        
-        document.getElementById('player1').value = 'Driver';
-        document.getElementById('player2').value = 'Front Passenger';
-        document.getElementById('player3').value = 'Left Back Passenger';
-        document.getElementById('player4').value = 'Right Back Passenger';
+    function updateLanguage() {
+      const lang = languageSelect.value;
+      currentLang = lang;
+      console.log(`[VCVQ] Language changed to: ${lang}`);
+      
+      // Update labels
+      document.getElementById('mainTitle').textContent = `🎮 ${t('title', lang)}`;
+      document.getElementById('subtitle').textContent = t('subtitle', lang);
+      document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
+      document.getElementById('topic').placeholder = t('topicPlaceholder', lang);
+      document.getElementById('labelPlayerCount').textContent = t('numberOfPlayers', lang) + ':';
+      document.getElementById('labelQuestionCount').textContent = t('numberOfQuestions', lang) + ':';
+      document.getElementById('labelAnswerCount').textContent = t('numberOfAnswers', lang) + ':';
+      document.getElementById('labelPlayerNames').textContent = t('playerNames', lang) + ':';
+      startBtn.textContent = t('startQuiz', lang);
+      document.getElementById('loadingText').textContent = t('generatingQuiz', lang);
+      
+      // Update player labels and default names
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`labelPlayer${i}`).textContent = `${t('player', lang)} ${i}:`;
+        const input = document.getElementById(`player${i}`);
+        // Only update if it's still a default name from the other language
+        if (defaultNames.sv.includes(input.value) || defaultNames.en.includes(input.value)) {
+          input.value = defaultNames[lang][i - 1];
+        }
       }
-    });
+    }
+
+    async function generatePlayerNames() {
+      const count = parseInt(playerCountSelect.value);
+      const lang = languageSelect.value;
+      
+      console.log(`[VCVQ] Generating ${count} AI player names in ${lang}`);
+      generateNamesBtn.disabled = true;
+      generateNamesBtn.textContent = '⏳';
+      
+      try {
+        const response = await fetch('/api/generate-player-names', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ language: lang, count })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate names');
+        }
+
+        const data = await response.json();
+        console.log(`[VCVQ] Received generated names:`, data.names);
+        
+        for (let i = 0; i < count; i++) {
+          document.getElementById(`player${i + 1}`).value = data.names[i];
+        }
+        
+        generateNamesBtn.textContent = '✓';
+        setTimeout(() => {
+          generateNamesBtn.textContent = '🎲 Generate Names';
+          generateNamesBtn.disabled = false;
+        }, 1500);
+      } catch (error) {
+        console.error('[VCVQ] Error generating names:', error);
+        generateNamesBtn.textContent = '✗';
+        setTimeout(() => {
+          generateNamesBtn.textContent = '🎲 Generate Names';
+          generateNamesBtn.disabled = false;
+        }, 1500);
+      }
+    }
+
+    playerCountSelect.addEventListener('change', updatePlayerInputs);
+    languageSelect.addEventListener('change', updateLanguage);
+    generateNamesBtn.addEventListener('click', generatePlayerNames);
+    updatePlayerInputs();
 
     startBtn.addEventListener('click', async () => {
       const topic = document.getElementById('topic').value.trim();
       const playerCount = parseInt(playerCountSelect.value);
+      const questionCount = parseInt(document.getElementById('questionCount').value);
+      const answerCount = parseInt(document.getElementById('answerCount').value);
       const language = languageSelect.value;
       
+      console.log(`[VCVQ] Starting quiz - Topic: ${topic}, Players: ${playerCount}, Questions: ${questionCount}, Answers: ${answerCount}, Language: ${language}`);
+      
       if (!topic) {
-        errorDiv.textContent = language === 'sv' ? 'Ange ett ämne!' : 'Please enter a topic!';
+        errorDiv.textContent = t('enterTopic', language);
         errorDiv.style.display = 'block';
         return;
       }
@@ -135,7 +224,12 @@
         const response = await fetch('/api/generate-quiz', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic, language })
+          body: JSON.stringify({ 
+            topic, 
+            language, 
+            numQuestions: questionCount, 
+            numAnswers: answerCount 
+          })
         });
 
         if (!response.ok) {
@@ -143,6 +237,7 @@
         }
 
         const data = await response.json();
+        console.log(`[VCVQ] Quiz generated successfully`);
         
         sessionStorage.setItem('gameState', JSON.stringify({
           topic,
@@ -150,17 +245,36 @@
           questions: data.questions,
           currentQuestion: 0,
           currentPlayer: Math.floor(Math.random() * playerCount),
-          language
+          language,
+          numQuestions: questionCount
         }));
 
         window.location.href = 'game.html';
       } catch (error) {
-        errorDiv.textContent = language === 'sv' 
-          ? 'Misslyckades att generera quiz. Försök igen.' 
-          : 'Failed to generate quiz. Please try again.';
+        console.error('[VCVQ] Error generating quiz:', error);
+        errorDiv.textContent = t('generateFailed', language);
         errorDiv.style.display = 'block';
         loading.style.display = 'none';
         startBtn.disabled = false;
+      }
+    });
+
+    // Check if returning from a game restart
+    window.addEventListener('load', () => {
+      const restartPlayers = sessionStorage.getItem('restartPlayers');
+      if (restartPlayers) {
+        console.log('[VCVQ] Restoring players from previous game');
+        const players = JSON.parse(restartPlayers);
+        document.getElementById('playerCount').value = players.length;
+        
+        const event = new Event('change');
+        document.getElementById('playerCount').dispatchEvent(event);
+        
+        players.forEach((player, idx) => {
+          document.getElementById(`player${idx + 1}`).value = player.name;
+        });
+        
+        sessionStorage.removeItem('restartPlayers');
       }
     });
   </script>

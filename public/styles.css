@@ -88,8 +88,8 @@ select:focus {
 }
 
 .btn-primary,
-.btn-secondary {
-  width: 100%;
+.btn-secondary,
+.btn-generate {
   padding: 16px;
   border: none;
   border-radius: 8px;
@@ -97,6 +97,11 @@ select:focus {
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary,
+.btn-secondary {
+  width: 100%;
 }
 
 .btn-primary {
@@ -110,13 +115,22 @@ select:focus {
   margin-top: 10px;
 }
 
+.btn-generate {
+  background: #10b981;
+  color: white;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
 .btn-primary:hover,
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-generate:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.btn-primary:disabled {
+.btn-primary:disabled,
+.btn-generate:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
@@ -292,43 +306,43 @@ select:focus {
   margin: 30px 0;
 }
 
+/* For 8 answers, use 4 columns on larger screens */
+@media (min-width: 1024px) {
+  .answers-grid:has(.answer-box:nth-child(8)) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .answer-box {
   background: #f9fafb;
   border: 3px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
-  min-height: 120px;
+  min-height: 100px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s;
+  cursor: pointer;
 }
 
 .answer-box:hover {
   border-color: #667eea;
   transform: translateY(-2px);
+  background: #f3f4f6;
+}
+
+.answer-box.drag-over {
+  border-color: #667eea;
+  background: #ede9fe;
+  border-style: solid;
 }
 
 .answer-text {
   font-size: 16px;
   color: #333;
-  margin-bottom: 10px;
+  text-align: center;
   flex: 1;
-}
-
-.drop-zone {
-  height: 50px;
-  border: 2px dashed #cbd5e1;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.drop-zone.drag-over {
-  border-color: #667eea;
-  background: #ede9fe;
-  border-style: solid;
 }
 
 .answer-box.correct {
@@ -416,6 +430,16 @@ select:focus {
 
   .answers-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .answer-box {
+    min-height: 80px;
+    padding: 15px;
+  }
+
+  .answer-text {
+    font-size: 14px;
   }
 
   .scoreboard {
@@ -424,5 +448,12 @@ select:focus {
 
   .player-score {
     padding: 10px 15px;
+  }
+}
+
+/* Tablet and medium screens */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .answers-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
