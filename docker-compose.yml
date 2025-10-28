@@ -1,5 +1,6 @@
 services:
   vcvq:
+    container_name: vcvq
     build: .
     ports:
       - "${PORT:-3030}:3030"
