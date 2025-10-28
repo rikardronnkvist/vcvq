@@ -168,22 +168,7 @@ select:focus {
 .game-container {
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.game-header {
-  text-align: center;
-  color: white;
-  margin-bottom: 30px;
-}
-
-.game-header h1 {
-  color: white;
-  margin-bottom: 10px;
-}
-
-.topic {
-  font-size: 1.2rem;
-  opacity: 0.9;
+  padding-top: 20px;
 }
 
 .scoreboard {
@@ -191,7 +176,7 @@ select:focus {
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .player-score {

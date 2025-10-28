@@ -16,7 +16,6 @@ const playerColors = ['#3b82f6', '#ef4444', '#10b981', '#a855f7', '#f59e0b'];
 console.log(`[VCVQ] Game initialized - Topic: ${topic}, Players: ${players.length}, Questions: ${questions.length}, Language: ${language}`);
 
 function init() {
-  document.getElementById('topic').textContent = `${t('topicLabel', language)}: ${topic}`;
   renderScoreboard();
   renderQuestion();
 }
