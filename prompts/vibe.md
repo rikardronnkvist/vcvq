@@ -24,7 +24,7 @@ You use logging for game flow in both container and browser console.
 - Number of questions for the quiz: 5, 10 (default), 15, 20, 25, 30 and 50
 - Number of answers per question: 4, 6 (default) and 8
 - Option to set names of players
-- Default names for players should be generated from AI and use funny names based on selected language and: 1 - Driver, 2 - Front Passanger, 3 - Left Back Passanger, 4 - Right Back Passanger, 5 - Middle back Passanger
+- Default names for players should be generated from AI and use funny names based on selected language, selected topic for questions and: 1 - Driver, 2 - Front Passanger, 3 - Left Back Passanger, 4 - Right Back Passanger, 5 - Middle back Passanger
 
 ## Game Flow
 - Landing page where users enter a topic to generate questions from, they also select number of players
@@ -36,6 +36,7 @@ You use logging for game flow in both container and browser console.
 - Real-time score tracking throughout the game
 - Winner declaration at the end
 - If the game is restarted, number of players and their names should be kept intact
+- On the summary page at the end there should be a option to restart the game returning the user to the frontpage with all options filled in with current topic, names etc.
 
 ## Technical Requirements
 - Node.js/Express backend
