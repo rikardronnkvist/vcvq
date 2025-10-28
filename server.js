@@ -178,32 +178,35 @@ Rules:
 
 app.post('/api/generate-topic', async (req, res) => {
   try {
-    const { language } = req.body;
+    const { language, count = 1 } = req.body;
     
-    console.log(`[VCVQ] Generating random funny topic in ${language}`);
+    console.log(`[VCVQ] Generating ${count} random funny topic(s) in ${language}`);
     
     const langInstruction = language === 'en' 
-      ? 'Generate a single funny, creative, and entertaining quiz topic in English.'
-      : 'Generera ett enda roligt, kreativt och underhållande quizämne på svenska.';
+      ? `Generate ${count} funny, creative, and entertaining quiz topics in English.`
+      : `Generera ${count} roliga, kreativa och underhållande quizämnen på svenska.`;
+
+    const responseFormat = count === 1 
+      ? '{\n  "topic": "Your funny topic here"\n}'
+      : '{\n  "topics": ["Topic 1", "Topic 2", "Topic 3"]\n}';
 
     const prompt = `${langInstruction}
 
 IMPORTANT: You must respond ONLY with valid JSON. Do not include any markdown formatting, code blocks, or explanatory text.
 
 Format your response as a JSON object with exactly this structure:
-{
-  "topic": "Your funny topic here"
-}
+${responseFormat}
 
 Rules:
-- Generate ONE creative and fun quiz topic
-- Make it suitable for a car quiz game
-- Keep it family-friendly
-- Make it interesting and engaging
+- Generate ${count} creative and fun quiz topic${count > 1 ? 's' : ''}
+- Make ${count > 1 ? 'them' : 'it'} suitable for a car quiz game
+- Keep ${count > 1 ? 'them' : 'it'} family-friendly
+- Make ${count > 1 ? 'them' : 'it'} interesting and engaging
 - Can be about pop culture, science, history, geography, entertainment, sports, etc.
 - Be creative and unexpected!
-- The topic should be 2-5 words max
-- Make it funny or quirky when possible
+- Each topic should be 2-5 words max
+- Make ${count > 1 ? 'them' : 'it'} funny or quirky when possible
+${count > 1 ? '- All topics should be different and diverse\n- Cover different categories' : ''}
 
 Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs", "80s Music", "Famous Mustaches"`;
 
@@ -213,12 +216,19 @@ Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs"
 
     const data = JSON.parse(text);
 
-    if (!data.topic || typeof data.topic !== 'string') {
-      throw new Error('Invalid response format: Expected topic string');
+    if (count === 1) {
+      if (!data.topic || typeof data.topic !== 'string') {
+        throw new Error('Invalid response format: Expected topic string');
+      }
+      console.log(`[VCVQ] Generated topic: ${data.topic}`);
+      res.json({ topic: data.topic });
+    } else {
+      if (!Array.isArray(data.topics) || data.topics.length !== count) {
+        throw new Error(`Invalid response format: Expected ${count} topics`);
+      }
+      console.log(`[VCVQ] Generated topics:`, data.topics);
+      res.json({ topics: data.topics });
     }
-
-    console.log(`[VCVQ] Generated topic: ${data.topic}`);
-    res.json({ topic: data.topic });
   } catch (error) {
     console.error('[VCVQ] Error generating topic:', error);
     res.status(500).json({ 

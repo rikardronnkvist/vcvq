@@ -26,8 +26,10 @@
       <div class="form-group">
         <label for="topic" id="labelTopic">Quiz Topic:</label>
         <div style="display: flex; gap: 10px;">
-          <input type="text" id="topic" placeholder="Enter any topic (e.g., Science, Movies, Sports)" style="flex: 1;">
+          <input type="text" id="topicInput" placeholder="Enter any topic (e.g., Science, Movies, Sports)" style="flex: 1;">
+          <select id="topicDropdown" style="flex: 1; display: none;"></select>
           <button id="randomTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap;">🎲 Random</button>
+          <button id="customTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap; display: none;">✏️ Custom</button>
         </div>
       </div>
 
@@ -130,8 +132,9 @@
       
       // Update labels
       document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
-      document.getElementById('topic').placeholder = t('topicPlaceholder', lang);
+      document.getElementById('topicInput').placeholder = t('topicPlaceholder', lang);
       document.getElementById('randomTopicBtn').textContent = t('randomTopic', lang);
+      document.getElementById('customTopicBtn').textContent = t('customTopic', lang);
       document.getElementById('labelPlayerCount').textContent = t('numberOfPlayers', lang) + ':';
       document.getElementById('labelQuestionCount').textContent = t('numberOfQuestions', lang) + ':';
       document.getElementById('labelAnswerCount').textContent = t('numberOfAnswers', lang) + ':';
@@ -150,11 +153,11 @@
       }
     }
 
-    async function generateRandomTopic() {
+    async function generateRandomTopics() {
       const lang = languageSelect.value;
       const randomTopicBtn = document.getElementById('randomTopicBtn');
       
-      console.log(`[VCVQ] Generating random topic in ${lang}`);
+      console.log(`[VCVQ] Generating 10 random topics in ${lang}`);
       randomTopicBtn.disabled = true;
       randomTopicBtn.textContent = '⏳';
       
@@ -162,25 +165,34 @@
         const response = await fetch('/api/generate-topic', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang })
+          body: JSON.stringify({ language: lang, count: 10 })
         });
 
         if (!response.ok) {
-          throw new Error('Failed to generate topic');
+          throw new Error('Failed to generate topics');
         }
 
         const data = await response.json();
-        console.log(`[VCVQ] Generated topic: ${data.topic}`);
+        console.log(`[VCVQ] Generated topics:`, data.topics);
         
-        document.getElementById('topic').value = data.topic;
+        // Switch to dropdown
+        const topicInput = document.getElementById('topicInput');
+        const topicDropdown = document.getElementById('topicDropdown');
+        const customTopicBtn = document.getElementById('customTopicBtn');
         
-        randomTopicBtn.textContent = '✓';
-        setTimeout(() => {
-          randomTopicBtn.textContent = t('randomTopic', lang);
-          randomTopicBtn.disabled = false;
-        }, 1500);
+        topicInput.style.display = 'none';
+        topicDropdown.style.display = 'block';
+        randomTopicBtn.style.display = 'none';
+        customTopicBtn.style.display = 'block';
+        
+        // Populate dropdown
+        topicDropdown.innerHTML = data.topics.map(topic => 
+          `<option value="${topic}">${topic}</option>`
+        ).join('');
+        
+        randomTopicBtn.disabled = false;
       } catch (error) {
-        console.error('[VCVQ] Error generating topic:', error);
+        console.error('[VCVQ] Error generating topics:', error);
         randomTopicBtn.textContent = '✗';
         setTimeout(() => {
           randomTopicBtn.textContent = t('randomTopic', lang);
@@ -189,10 +201,36 @@
       }
     }
 
+    function switchToCustomTopic() {
+      const topicInput = document.getElementById('topicInput');
+      const topicDropdown = document.getElementById('topicDropdown');
+      const randomTopicBtn = document.getElementById('randomTopicBtn');
+      const customTopicBtn = document.getElementById('customTopicBtn');
+      
+      topicDropdown.style.display = 'none';
+      topicInput.style.display = 'block';
+      customTopicBtn.style.display = 'none';
+      randomTopicBtn.style.display = 'block';
+      
+      topicInput.value = '';
+      topicInput.focus();
+    }
+
+    function getCurrentTopic() {
+      const topicInput = document.getElementById('topicInput');
+      const topicDropdown = document.getElementById('topicDropdown');
+      
+      if (topicDropdown.style.display === 'none') {
+        return topicInput.value.trim();
+      } else {
+        return topicDropdown.value;
+      }
+    }
+
     async function generatePlayerNames() {
       const count = parseInt(playerCountSelect.value);
       const lang = languageSelect.value;
-      const topic = document.getElementById('topic').value.trim();
+      const topic = getCurrentTopic();
       
       console.log(`[VCVQ] Generating ${count} AI player names in ${lang} for topic: ${topic}`);
       generateNamesBtn.disabled = true;
@@ -233,12 +271,13 @@
 
     playerCountSelect.addEventListener('change', updatePlayerInputs);
     languageSelect.addEventListener('change', updateLanguage);
-    document.getElementById('randomTopicBtn').addEventListener('click', generateRandomTopic);
+    document.getElementById('randomTopicBtn').addEventListener('click', generateRandomTopics);
+    document.getElementById('customTopicBtn').addEventListener('click', switchToCustomTopic);
     generateNamesBtn.addEventListener('click', generatePlayerNames);
     updatePlayerInputs();
 
     startBtn.addEventListener('click', async () => {
-      const topic = document.getElementById('topic').value.trim();
+      const topic = getCurrentTopic();
       const playerCount = parseInt(playerCountSelect.value);
       const questionCount = parseInt(document.getElementById('questionCount').value);
       const answerCount = parseInt(document.getElementById('answerCount').value);
@@ -315,7 +354,7 @@
         updateLanguage();
         
         // Restore topic
-        document.getElementById('topic').value = settings.topic || '';
+        document.getElementById('topicInput').value = settings.topic || '';
         
         // Restore player count
         document.getElementById('playerCount').value = settings.players.length;

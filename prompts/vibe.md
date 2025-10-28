@@ -19,8 +19,9 @@ You use logging for game flow in both container and browser console.
 - Allow users to specify any topic for quiz generation
 
 ## User selectable options on landing page
-- Topic for questions
-- Option to use a button to get help with a random topic, use AI to generate a funny topic
+- Topic for questions (text input field)
+- Option to use a button to get 10 random AI-generated topics, clicking the random button switches to a dropdown with 10 diverse funny topics to choose from
+- Button to switch back to custom text input from dropdown
 - Number of players: 2 (default), 3, 4, 5
 - Number of questions for the quiz: 5, 10 (default), 15, 20, 25, 30 and 50
 - Number of answers per question: 4, 6 (default) and 8
