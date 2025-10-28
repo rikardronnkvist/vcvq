@@ -15,11 +15,11 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Model names in order of preference
 const MODEL_NAMES = [
-  'gemini-2.0-flash-exp',
-  'gemini-1.5-flash-002',
-  'gemini-1.5-flash-latest',
-  'gemini-1.5-pro-002',
-  'gemini-1.5-pro-latest'
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-flash-latest',
+  'gemini-2.5-pro',
+  'gemini-pro-latest'
 ];
 
 app.use(express.json());
