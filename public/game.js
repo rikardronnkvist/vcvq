@@ -8,6 +8,7 @@ if (!gameState) {
 const { topic, players, questions, language, numQuestions } = gameState;
 let currentQuestionIndex = 0;
 let currentPlayerIndex = gameState.currentPlayer || 0;
+const initialStartingPlayer = gameState.currentPlayer || 0; // Track the random starting player
 let playerAnswers = {}; // Tracks which players have answered the current question
 
 // Player colors - now supports 5 players
@@ -202,8 +203,8 @@ function showFeedback() {
   setTimeout(() => {
     currentQuestionIndex++;
     
-    // Determine next starting player (rotate)
-    const startingPlayerForQuestion = currentQuestionIndex % players.length;
+    // Determine next starting player (rotate from initial random starting player)
+    const startingPlayerForQuestion = (initialStartingPlayer + currentQuestionIndex) % players.length;
     currentPlayerIndex = startingPlayerForQuestion;
     
     console.log(`[VCVQ] Moving to next question, starting with player ${currentPlayerIndex + 1}`);
