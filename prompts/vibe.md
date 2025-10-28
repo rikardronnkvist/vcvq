@@ -35,6 +35,7 @@ You use logging for game flow in both container and browser console.
 - Current player drags their player number to one of the answer boxes to select their answer
 - Visual feedback (green for correct, red for incorrect with correct answer shown) when all players have answered
 - Real-time score tracking throughout the game
+- "End Game" button at the bottom of the game area allows players to end the game early and jump to scoring
 - Winner declaration at the end
 - If the game is restarted, number of players and their names should be kept intact
 - On the summary page at the end there should be a option to restart the game returning the user to the frontpage with all options filled in with current topic, names etc.

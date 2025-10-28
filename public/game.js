@@ -19,6 +19,16 @@ console.log(`[VCVQ] Game initialized - Topic: ${topic}, Players: ${players.lengt
 function init() {
   renderScoreboard();
   renderQuestion();
+  
+  // Set up end game button
+  const endGameBtn = document.getElementById('endGameBtn');
+  endGameBtn.textContent = t('endGame', language);
+  endGameBtn.addEventListener('click', () => {
+    if (confirm(language === 'sv' ? 'Är du säker på att du vill avsluta spelet?' : 'Are you sure you want to end the game?')) {
+      console.log('[VCVQ] Game ended early by user');
+      endGame();
+    }
+  });
 }
 
 function renderScoreboard() {

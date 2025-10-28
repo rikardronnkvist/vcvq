@@ -36,6 +36,7 @@ const translations = {
     tie: 'Oavgjort',
     playAgain: 'Spela Igen',
     newGameSetup: 'Ny Spelkonfiguration',
+    endGame: 'Avsluta Spelet',
     
     // Answer options
     answers: 'svar'
@@ -76,6 +77,7 @@ const translations = {
     tie: 'Tie',
     playAgain: 'Play Again',
     newGameSetup: 'New Game Setup',
+    endGame: 'End Game',
     
     // Answer options
     answers: 'answers'
