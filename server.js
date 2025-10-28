@@ -13,8 +13,38 @@ if (!API_KEY) {
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
+// Model names in order of preference
+const MODEL_NAMES = [
+  'gemini-2.0-flash-exp',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-pro',
+  'gemini-pro'
+];
+
 app.use(express.json());
 app.use(express.static('public'));
+
+async function tryGenerateWithModels(prompt) {
+  let lastError = null;
+  
+  for (const modelName of MODEL_NAMES) {
+    try {
+      console.log(`Trying model: ${modelName}`);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      console.log(`Success with model: ${modelName}`);
+      return response.text();
+    } catch (error) {
+      console.log(`Model ${modelName} failed: ${error.message}`);
+      lastError = error;
+      continue;
+    }
+  }
+  
+  throw new Error(`All models failed. Last error: ${lastError.message}`);
+}
 
 app.post('/api/generate-quiz', async (req, res) => {
   try {
@@ -51,10 +81,7 @@ Rules:
 - Make questions engaging and appropriate for a car quiz game
 - Vary difficulty from easy to challenging`;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let text = response.text();
+    let text = await tryGenerateWithModels(prompt);
 
     text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
