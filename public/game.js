@@ -11,8 +11,8 @@ let currentPlayerIndex = gameState.currentPlayer || 0;
 const initialStartingPlayer = gameState.currentPlayer || 0; // Track the random starting player
 let playerAnswers = {}; // Tracks which players have answered the current question
 
-// Player colors - now supports 5 players
-const playerColors = ['#3b82f6', '#ef4444', '#10b981', '#a855f7', '#f59e0b'];
+// Player colors - vibrant retro theme matching logo
+const playerColors = ['#FF2E97', '#00D9FF', '#FFD700', '#FF8C00', '#FF1493'];
 
 console.log(`[VCVQ] Game initialized - Topic: ${topic}, Players: ${players.length}, Questions: ${questions.length}, Language: ${language}`);
 
