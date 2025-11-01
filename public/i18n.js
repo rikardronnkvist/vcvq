@@ -18,6 +18,8 @@ const translations = {
     generateNames: '🎲 Generera Namn',
     startQuiz: 'Starta Quiz',
     generatingQuiz: 'Genererar frågor...',
+    generatingTopics: 'Genererar ämnen...',
+    generatingPlayerNames: 'Genererar spelarnamn...',
     enterTopic: 'Ange ett ämne!',
     generateFailed: 'Misslyckades att generera quiz. Försök igen.',
     
@@ -63,6 +65,8 @@ const translations = {
     generateNames: '🎲 Generate Names',
     startQuiz: 'Start Quiz',
     generatingQuiz: 'Generating quiz questions...',
+    generatingTopics: 'Generating topics...',
+    generatingPlayerNames: 'Generating player names...',
     enterTopic: 'Please enter a topic!',
     generateFailed: 'Failed to generate quiz. Please try again.',
     

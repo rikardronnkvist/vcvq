@@ -161,7 +161,10 @@
       
       console.log(`[VCVQ] Generating 10 random topics in ${lang}`);
       randomTopicBtn.disabled = true;
-      randomTopicBtn.textContent = '⏳';
+      
+      // Show loading overlay
+      loading.style.display = 'flex';
+      document.getElementById('loadingText').textContent = t('generatingTopics', lang);
       
       try {
         const response = await fetch('/api/generate-topic', {
@@ -176,6 +179,9 @@
 
         const data = await response.json();
         console.log(`[VCVQ] Generated topics:`, data.topics);
+        
+        // Hide loading overlay
+        loading.style.display = 'none';
         
         // Switch to dropdown
         const topicInput = document.getElementById('topicInput');
@@ -195,6 +201,7 @@
         randomTopicBtn.disabled = false;
       } catch (error) {
         console.error('[VCVQ] Error generating topics:', error);
+        loading.style.display = 'none';
         randomTopicBtn.textContent = '✗';
         setTimeout(() => {
           randomTopicBtn.textContent = t('randomTopic', lang);
@@ -236,7 +243,10 @@
       
       console.log(`[VCVQ] Generating ${count} AI player names in ${lang} for topic: ${topic}`);
       generateNamesBtn.disabled = true;
-      generateNamesBtn.textContent = '⏳';
+      
+      // Show loading overlay
+      loading.style.display = 'flex';
+      document.getElementById('loadingText').textContent = t('generatingPlayerNames', lang);
       
       try {
         const response = await fetch('/api/generate-player-names', {
@@ -252,6 +262,9 @@
         const data = await response.json();
         console.log(`[VCVQ] Received generated names:`, data.names);
         
+        // Hide loading overlay
+        loading.style.display = 'none';
+        
         for (let i = 0; i < count; i++) {
           document.getElementById(`player${i + 1}`).value = data.names[i];
         }
@@ -263,6 +276,7 @@
         }, 1500);
       } catch (error) {
         console.error('[VCVQ] Error generating names:', error);
+        loading.style.display = 'none';
         generateNamesBtn.textContent = '✗';
         setTimeout(() => {
           generateNamesBtn.textContent = t('generateNames', lang);
