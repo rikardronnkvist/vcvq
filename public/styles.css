@@ -54,6 +54,7 @@ label {
   margin-bottom: 8px;
   font-weight: 600;
   color: #333;
+  font-size: 18px;
 }
 
 input[type="text"] {
@@ -61,7 +62,7 @@ input[type="text"] {
   padding: 12px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 20px;
   transition: border-color 0.3s;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -76,7 +77,7 @@ select {
   padding-right: 36px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 20px;
   transition: border-color 0.3s;
   /* Improve touch interaction for mobile devices */
   -webkit-appearance: none;
@@ -114,6 +115,7 @@ select:active {
   margin-bottom: 15px;
   color: #FF2E97;
   font-weight: 700;
+  font-size: 22px;
 }
 
 .player-name-input {
@@ -134,7 +136,7 @@ select:active {
   padding: 16px;
   border: none;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -262,12 +264,12 @@ select:active {
 .player-name {
   font-weight: 600;
   color: #333;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .player-points {
   color: #666;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .game-area {
@@ -378,10 +380,11 @@ select:active {
 }
 
 .answer-text {
-  font-size: 16px;
+  font-size: 20px;
   color: #333;
   text-align: center;
   flex: 1;
+  font-weight: 500;
 }
 
 .answer-box.correct {
@@ -513,7 +516,7 @@ select:active {
   }
 
   .answer-text {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .scoreboard {
