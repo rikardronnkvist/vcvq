@@ -49,6 +49,19 @@ h1 {
   margin-bottom: 25px;
 }
 
+.form-group-inline {
+  display: flex;
+  gap: 15px;
+}
+
+.inline-field {
+  flex: 1;
+}
+
+.inline-field label {
+  font-size: 16px;
+}
+
 label {
   display: block;
   margin-bottom: 8px;
@@ -555,6 +568,11 @@ select:active {
 
   .question-text {
     font-size: 20px;
+  }
+
+  .form-group-inline {
+    flex-direction: column;
+    gap: 15px;
   }
 
   .answers-grid {
