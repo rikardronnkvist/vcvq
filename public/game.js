@@ -12,7 +12,7 @@ const initialStartingPlayer = gameState.currentPlayer || 0; // Track the random 
 let playerAnswers = {}; // Tracks which players have answered the current question
 
 // Player colors - vibrant retro theme matching logo
-const playerColors = ['#FF2E97', '#00D9FF', '#FFD700', '#FF8C00', '#FF1493'];
+const playerColors = ['#FF2E97', '#00D9FF', '#FFD700', '#FF8C00', '#9B59B6'];
 
 console.log(`[VCVQ] Game initialized - Topic: ${topic}, Players: ${players.length}, Questions: ${questions.length}, Language: ${language}`);
 
