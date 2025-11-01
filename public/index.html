@@ -11,17 +11,18 @@
 <body>
   <div class="container">
     <header>
+      <div class="language-selector">
+        <button class="language-flag" id="flag-sv" data-lang="sv">🇸🇪</button>
+        <button class="language-flag" id="flag-en" data-lang="en">🇬🇧</button>
+      </div>
       <img src="logo.png" alt="VCVQ Logo" class="logo">
     </header>
 
     <div class="setup-form">
-      <div class="form-group">
-        <label for="language" id="labelLanguage">Language:</label>
-        <select id="language">
-          <option value="sv">Svenska</option>
-          <option value="en">English</option>
-        </select>
-      </div>
+      <select id="language" style="display: none;">
+        <option value="sv">Svenska</option>
+        <option value="en">English</option>
+      </select>
 
       <div class="form-group">
         <label for="topic" id="labelTopic">Quiz Topic:</label>
@@ -130,8 +131,13 @@
       currentLang = lang;
       console.log(`[VCVQ] Language changed to: ${lang}`);
       
+      // Update flag active states
+      document.querySelectorAll('.language-flag').forEach(flag => {
+        flag.classList.remove('active');
+      });
+      document.getElementById(`flag-${lang}`).classList.add('active');
+      
       // Update labels
-      document.getElementById('labelLanguage').textContent = t('languageSelector', lang) + ':';
       document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
       document.getElementById('topicInput').placeholder = t('topicPlaceholder', lang);
       document.getElementById('randomTopicBtn').textContent = t('randomTopic', lang);
@@ -287,6 +293,16 @@
 
     playerCountSelect.addEventListener('change', updatePlayerInputs);
     languageSelect.addEventListener('change', updateLanguage);
+    
+    // Language flag buttons
+    document.querySelectorAll('.language-flag').forEach(flag => {
+      flag.addEventListener('click', () => {
+        const lang = flag.dataset.lang;
+        languageSelect.value = lang;
+        updateLanguage();
+      });
+    });
+    
     document.getElementById('randomTopicBtn').addEventListener('click', generateRandomTopics);
     document.getElementById('customTopicBtn').addEventListener('click', switchToCustomTopic);
     generateNamesBtn.addEventListener('click', generatePlayerNames);
