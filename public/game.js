@@ -30,9 +30,8 @@ function init() {
     }
   });
   
-  // Set up game over buttons
+  // Set up game over button
   document.getElementById('restartBtn').textContent = t('playAgain', language);
-  document.getElementById('newGameBtn').textContent = t('newGameSetup', language);
 }
 
 function renderScoreboard() {
@@ -317,14 +316,6 @@ document.getElementById('restartBtn')?.addEventListener('click', () => {
     numAnswers: questions[0]?.options.length || 6
   };
   sessionStorage.setItem('restartSettings', JSON.stringify(restartData));
-  window.location.href = 'index.html';
-});
-
-document.getElementById('newGameBtn')?.addEventListener('click', () => {
-  console.log('[VCVQ] Starting new game setup');
-  sessionStorage.removeItem('gameState');
-  sessionStorage.removeItem('restartPlayers');
-  sessionStorage.removeItem('restartSettings');
   window.location.href = 'index.html';
 });
 
