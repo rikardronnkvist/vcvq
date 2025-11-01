@@ -230,7 +230,7 @@ select:active {
 }
 
 .player-score {
-  background: white;
+  background: #f3f4f6;
   padding: 15px 20px;
   border-radius: 12px;
   display: flex;
@@ -241,6 +241,7 @@ select:active {
 }
 
 .player-score.active {
+  background: white;
   transform: scale(1.05);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
