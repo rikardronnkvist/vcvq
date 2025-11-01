@@ -103,6 +103,13 @@
   </div>
 
   <script>
+    // Detect Tesla browser and add class for compatibility
+    const isTeslaBrowser = /Tesla/i.test(navigator.userAgent);
+    if (isTeslaBrowser) {
+      document.documentElement.classList.add('tesla-browser');
+      console.log('[VCVQ] Tesla browser detected, applying compatibility fixes');
+    }
+    
     const playerCountSelect = document.getElementById('playerCount');
     const playerNameInputs = document.querySelectorAll('.player-name-input');
     const startBtn = document.getElementById('startBtn');

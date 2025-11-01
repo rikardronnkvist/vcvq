@@ -134,6 +134,15 @@ select {
   background-position: right 12px center;
 }
 
+/* Tesla browser compatibility fix */
+/* Force native select dropdown on Tesla browser */
+.tesla-browser select {
+  -webkit-appearance: menulist !important;
+  appearance: auto !important;
+  background-image: none !important;
+  padding-right: 12px;
+}
+
 input[type="text"]:focus,
 select:focus {
   outline: none;

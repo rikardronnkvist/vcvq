@@ -3,6 +3,21 @@
 ## Overview
 This document summarizes all the changes made to the VCVQ project based on the instructions in `prompts/claude.md`.
 
+## Recent Bug Fixes
+
+### Tesla Browser Dropdown Fix
+**Issue:** Dropdown menus (select elements) not working on Tesla touchscreen browser.  
+**Root Cause:** Custom CSS `-webkit-appearance: none` conflicts with Tesla browser's WebKit implementation.  
+**Solution:**
+- Added JavaScript to detect Tesla browser via user agent string
+- Applied `tesla-browser` class to document root when detected
+- Created CSS override to force native select appearance on Tesla browsers
+- Added console logging for debugging
+
+**Files Modified:**
+- `public/index.html` - Added Tesla browser detection
+- `public/styles.css` - Added `.tesla-browser select` compatibility rule
+
 ## New Files Created
 
 ### 1. `.gitignore`
