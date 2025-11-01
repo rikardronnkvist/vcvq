@@ -213,11 +213,9 @@ function handleAnswer(selectedIndex) {
     showFeedback();
   } else {
     // Move to next player
-    setTimeout(() => {
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-      renderScoreboard();
-      renderQuestion();
-    }, 1000);
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    renderScoreboard();
+    renderQuestion();
   }
 }
 
