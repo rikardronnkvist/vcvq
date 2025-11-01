@@ -24,11 +24,15 @@ function init() {
   const endGameBtn = document.getElementById('endGameBtn');
   endGameBtn.textContent = t('endGame', language);
   endGameBtn.addEventListener('click', () => {
-    if (confirm(language === 'sv' ? 'Är du säker på att du vill avsluta spelet?' : 'Are you sure you want to end the game?')) {
+    if (confirm(t('confirmEndGame', language))) {
       console.log('[VCVQ] Game ended early by user');
       endGame();
     }
   });
+  
+  // Set up game over buttons
+  document.getElementById('restartBtn').textContent = t('playAgain', language);
+  document.getElementById('newGameBtn').textContent = t('newGameSetup', language);
 }
 
 function renderScoreboard() {

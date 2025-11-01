@@ -5,6 +5,7 @@ const translations = {
     title: 'Vibe Coded Vibe Quiz',
     subtitle: 'Flerspelar Quiz för Bilen',
     language: 'Språk',
+    languageSelector: 'Språk',
     topic: 'Frågeämne',
     topicPlaceholder: 'Ange ett ämne (t.ex. Vetenskap, Filmer, Sport)',
     randomTopic: '🎲 Slumpa',
@@ -14,6 +15,7 @@ const translations = {
     numberOfAnswers: 'Antal svar per fråga',
     playerNames: 'Spelarnamn',
     player: 'Spelare',
+    generateNames: '🎲 Generera Namn',
     startQuiz: 'Starta Quiz',
     generatingQuiz: 'Genererar frågor...',
     enterTopic: 'Ange ett ämne!',
@@ -38,6 +40,7 @@ const translations = {
     playAgain: 'Spela Igen',
     newGameSetup: 'Ny Spelkonfiguration',
     endGame: 'Avsluta Spelet',
+    confirmEndGame: 'Är du säker på att du vill avsluta spelet?',
     
     // Answer options
     answers: 'svar'
@@ -47,6 +50,7 @@ const translations = {
     title: 'Vibe Coded Vibe Quiz',
     subtitle: 'Car-Friendly Multiplayer Quiz Game',
     language: 'Language',
+    languageSelector: 'Language',
     topic: 'Quiz Topic',
     topicPlaceholder: 'Enter any topic (e.g., Science, Movies, Sports)',
     randomTopic: '🎲 Random',
@@ -56,6 +60,7 @@ const translations = {
     numberOfAnswers: 'Number of Answers per Question',
     playerNames: 'Player Names',
     player: 'Player',
+    generateNames: '🎲 Generate Names',
     startQuiz: 'Start Quiz',
     generatingQuiz: 'Generating quiz questions...',
     enterTopic: 'Please enter a topic!',
@@ -80,6 +85,7 @@ const translations = {
     playAgain: 'Play Again',
     newGameSetup: 'New Game Setup',
     endGame: 'End Game',
+    confirmEndGame: 'Are you sure you want to end the game?',
     
     // Answer options
     answers: 'answers'

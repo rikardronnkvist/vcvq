@@ -16,7 +16,7 @@
 
     <div class="setup-form">
       <div class="form-group">
-        <label for="language" id="labelLanguage">Language / Språk:</label>
+        <label for="language" id="labelLanguage">Language:</label>
         <select id="language">
           <option value="sv">Svenska</option>
           <option value="en">English</option>
@@ -68,7 +68,7 @@
       <div id="playerNames">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
           <h3 id="labelPlayerNames">Player Names:</h3>
-          <button id="generateNamesBtn" class="btn-generate">🎲 Generate Names</button>
+          <button id="generateNamesBtn" class="btn-generate"></button>
         </div>
         <div class="player-name-input">
           <label id="labelPlayer1">Player 1:</label>
@@ -131,6 +131,7 @@
       console.log(`[VCVQ] Language changed to: ${lang}`);
       
       // Update labels
+      document.getElementById('labelLanguage').textContent = t('languageSelector', lang) + ':';
       document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
       document.getElementById('topicInput').placeholder = t('topicPlaceholder', lang);
       document.getElementById('randomTopicBtn').textContent = t('randomTopic', lang);
@@ -139,6 +140,7 @@
       document.getElementById('labelQuestionCount').textContent = t('numberOfQuestions', lang) + ':';
       document.getElementById('labelAnswerCount').textContent = t('numberOfAnswers', lang) + ':';
       document.getElementById('labelPlayerNames').textContent = t('playerNames', lang) + ':';
+      document.getElementById('generateNamesBtn').textContent = t('generateNames', lang);
       startBtn.textContent = t('startQuiz', lang);
       document.getElementById('loadingText').textContent = t('generatingQuiz', lang);
       
@@ -256,14 +258,14 @@
         
         generateNamesBtn.textContent = '✓';
         setTimeout(() => {
-          generateNamesBtn.textContent = '🎲 Generate Names';
+          generateNamesBtn.textContent = t('generateNames', lang);
           generateNamesBtn.disabled = false;
         }, 1500);
       } catch (error) {
         console.error('[VCVQ] Error generating names:', error);
         generateNamesBtn.textContent = '✗';
         setTimeout(() => {
-          generateNamesBtn.textContent = '🎲 Generate Names';
+          generateNamesBtn.textContent = t('generateNames', lang);
           generateNamesBtn.disabled = false;
         }, 1500);
       }
