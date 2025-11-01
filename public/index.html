@@ -315,6 +315,7 @@
 
       errorDiv.style.display = 'none';
       loading.style.display = 'flex';
+      document.getElementById('loadingText').textContent = t('generatingQuiz', language);
       startBtn.disabled = true;
 
       try {
