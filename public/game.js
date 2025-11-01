@@ -84,6 +84,9 @@ function renderQuestion() {
 
   setupInteractions();
   
+  // Update player badges if any players have already answered
+  updatePlayerBadgesOnAnswer();
+  
   document.getElementById('feedback').style.display = 'none';
 }
 
@@ -132,6 +135,45 @@ function setupInteractions() {
   });
 }
 
+function updatePlayerBadgesOnAnswer() {
+  const answerBoxes = document.querySelectorAll('.answer-box');
+  
+  // Clear existing player badges
+  answerBoxes.forEach(box => {
+    const existingBadges = box.querySelectorAll('.player-badge');
+    existingBadges.forEach(badge => badge.remove());
+  });
+  
+  // Get all answers for current question
+  const currentAnswers = playerAnswers[currentQuestionIndex] || {};
+  
+  // Group players by their answer
+  const answerGroups = {};
+  Object.entries(currentAnswers).forEach(([playerIdx, answerIdx]) => {
+    if (!answerGroups[answerIdx]) {
+      answerGroups[answerIdx] = [];
+    }
+    answerGroups[answerIdx].push(parseInt(playerIdx));
+  });
+  
+  // Add badges for each player's answer, stacked
+  Object.entries(answerGroups).forEach(([answerIdx, playerIndices]) => {
+    const answerIndex = parseInt(answerIdx);
+    const answerBox = Array.from(answerBoxes).find(box => parseInt(box.dataset.index) === answerIndex);
+    
+    if (answerBox) {
+      playerIndices.forEach((playerIndex, badgeIdx) => {
+        const badge = document.createElement('div');
+        badge.className = 'player-badge';
+        badge.textContent = playerIndex + 1;
+        badge.style.background = playerColors[playerIndex];
+        badge.style.top = `${40 + badgeIdx * 32}px`;
+        answerBox.appendChild(badge);
+      });
+    }
+  });
+}
+
 function handleAnswer(selectedIndex) {
   const question = questions[currentQuestionIndex];
   const currentPlayer = players[currentPlayerIndex];
@@ -152,6 +194,9 @@ function handleAnswer(selectedIndex) {
 
   // Hide the token
   document.getElementById('playerToken').style.opacity = '0';
+
+  // Update player badges on answer boxes
+  updatePlayerBadgesOnAnswer();
 
   // Check if all players have answered this question
   const playersAnswered = Object.keys(playerAnswers[currentQuestionIndex] || {}).length;
