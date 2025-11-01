@@ -363,6 +363,7 @@ select:active {
   justify-content: center;
   transition: all 0.3s;
   cursor: pointer;
+  position: relative;
 }
 
 .answer-box:hover {
@@ -377,6 +378,23 @@ select:active {
   background: #fff0f7;
   border-style: solid;
   box-shadow: 0 0 0 4px rgba(255, 46, 151, 0.2);
+}
+
+.answer-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1a1a2e;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .answer-text {

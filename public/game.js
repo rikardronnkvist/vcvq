@@ -73,6 +73,7 @@ function renderQuestion() {
   const answersGrid = document.getElementById('answersGrid');
   answersGrid.innerHTML = question.options.map((option, idx) => `
     <div class="answer-box" data-index="${idx}">
+      <div class="answer-number">${idx + 1}</div>
       <div class="answer-text">${option}</div>
     </div>
   `).join('');
