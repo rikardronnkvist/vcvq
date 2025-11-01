@@ -167,7 +167,7 @@ function updatePlayerBadgesOnAnswer() {
         badge.className = 'player-badge';
         badge.textContent = playerIndex + 1;
         badge.style.background = playerColors[playerIndex];
-        badge.style.top = `${40 + badgeIdx * 32}px`;
+        badge.style.top = `${8 + badgeIdx * 32}px`;
         answerBox.appendChild(badge);
       });
     }

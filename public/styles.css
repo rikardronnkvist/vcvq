@@ -398,8 +398,8 @@ select:active {
 
 .player-badge {
   position: absolute;
-  top: 40px;
-  left: 8px;
+  top: 8px;
+  right: 8px;
   width: 28px;
   height: 28px;
   border-radius: 50%;
