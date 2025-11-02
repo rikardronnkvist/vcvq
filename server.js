@@ -1,6 +1,7 @@
 const express = require('express');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const path = require('path');
+const os = require('os');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 
@@ -45,6 +46,9 @@ const MODEL_NAMES = [
   'gemini-pro-latest'
 ];
 
+// Get container/host information
+const HOSTNAME = os.hostname();
+
 app.use(express.json({ limit: '1mb' })); // Limit payload size
 
 // Log user agent for page requests
@@ -52,7 +56,7 @@ app.use((req, res, next) => {
   // Only log for HTML page requests, not static assets
   if (req.path === '/' || req.path === '/index.html' || req.path === '/game.html') {
     const userAgent = req.headers['user-agent'] || 'Unknown';
-    console.log(`[VCVQ] Page access: ${req.path} | User-Agent: ${userAgent}`);
+    console.log(`[VCVQ] Page access: ${req.path} | Container: ${HOSTNAME} | User-Agent: ${userAgent}`);
   }
   next();
 });
@@ -78,11 +82,11 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   const { resolution, viewport, page } = req.body || {};
   
   if (resolution && viewport) {
-    console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
+    console.log(`[VCVQ] Client info | Container: ${HOSTNAME} | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
   } else if (resolution) {
-    console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
+    console.log(`[VCVQ] Client info | Container: ${HOSTNAME} | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
   } else {
-    console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | User-Agent: ${userAgent}`);
+    console.log(`[VCVQ] Client info | Container: ${HOSTNAME} | Page: ${page || 'unknown'} | User-Agent: ${userAgent}`);
   }
   
   res.status(200).json({ status: 'ok' });
