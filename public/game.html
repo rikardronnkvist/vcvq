@@ -44,12 +44,17 @@
         width: window.screen.width || window.innerWidth || 0,
         height: window.screen.height || window.innerHeight || 0
       };
+      const viewport = {
+        width: window.innerWidth || 0,
+        height: window.innerHeight || 0
+      };
       
       fetch('/api/log-client-info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           resolution: resolution,
+          viewport: viewport,
           page: 'game'
         })
       }).catch(() => {

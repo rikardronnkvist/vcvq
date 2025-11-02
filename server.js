@@ -73,11 +73,13 @@ app.get('/health', (req, res) => {
 });
 
 // Client info logging endpoint (no rate limiting, minimal payload)
-app.post('/api/log-client-info', express.json({ limit: '100b' }), (req, res) => {
+app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   const userAgent = req.headers['user-agent'] || 'Unknown';
-  const { resolution, page } = req.body || {};
+  const { resolution, viewport, page } = req.body || {};
   
-  if (resolution) {
+  if (resolution && viewport) {
+    console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
+  } else if (resolution) {
     console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
   } else {
     console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | User-Agent: ${userAgent}`);
