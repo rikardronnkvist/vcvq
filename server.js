@@ -261,9 +261,12 @@ app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (
     const { topic, language, numQuestions = 10, numAnswers = 6, visitorId } = req.body;
     
     const sanitizedTopic = sanitizeLog(topic);
+    const sanitizedLanguage = sanitizeLog(language);
+    const sanitizedNumQuestions = sanitizeLog(numQuestions);
+    const sanitizedNumAnswers = sanitizeLog(numAnswers);
     const sanitizedVisitorId = sanitizeLog(visitorId);
     const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
-    console.log(`[VCVQ] Generating quiz - Topic: ${sanitizedTopic}, Language: ${language}, Questions: ${numQuestions}, Answers: ${numAnswers}${visitorInfoStr}`);
+    console.log(`[VCVQ] Generating quiz - Topic: ${sanitizedTopic}, Language: ${sanitizedLanguage}, Questions: ${sanitizedNumQuestions}, Answers: ${sanitizedNumAnswers}${visitorInfoStr}`);
 
     const langInstruction = language === 'en' 
       ? 'Generate questions in English.'
@@ -354,9 +357,11 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
     const { language, count, topic, visitorId } = req.body;
     
     const sanitizedTopic = sanitizeLog(topic);
+    const sanitizedLanguage = sanitizeLog(language);
+    const sanitizedCount = sanitizeLog(count);
     const sanitizedVisitorId = sanitizeLog(visitorId);
     const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
-    console.log(`[VCVQ] Generating ${count} player names in ${language} for topic: ${sanitizedTopic}${visitorInfoStr}`);
+    console.log(`[VCVQ] Generating ${sanitizedCount} player names in ${sanitizedLanguage} for topic: ${sanitizedTopic}${visitorInfoStr}`);
 
     const positions = {
       sv: ['Förare', 'Fram passagerare', 'Vänster bak', 'Höger bak', 'Mitten bak'],
@@ -436,9 +441,11 @@ app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async
 
     const { language, count = 1, visitorId } = req.body;
     
+    const sanitizedLanguage = sanitizeLog(language);
+    const sanitizedCount = sanitizeLog(count);
     const sanitizedVisitorId = sanitizeLog(visitorId);
     const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
-    console.log(`[VCVQ] Generating ${count} random funny topic(s) in ${language}${visitorInfoStr}`);
+    console.log(`[VCVQ] Generating ${sanitizedCount} random funny topic(s) in ${sanitizedLanguage}${visitorInfoStr}`);
     
     const langInstruction = language === 'en' 
       ? `Generate ${count} funny, creative, and entertaining quiz topics in English.`
