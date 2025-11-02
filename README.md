@@ -111,6 +111,43 @@ http://localhost:3030
    npm start
 ```
 
+## Security Analysis with GitHub CodeQL
+
+This repository includes GitHub CodeQL for automated security and code quality analysis. CodeQL runs automatically on pushes, pull requests, and on a weekly schedule.
+
+### Enabling CodeQL
+
+If you encounter an error stating that actions must be from repositories owned by your organization, you need to update your GitHub repository settings:
+
+1. **Navigate to repository settings:**
+   - Go to your repository on GitHub
+   - Click on **Settings** → **Actions** → **General**
+
+2. **Update Actions permissions:**
+   - Under **Actions permissions**, select **"Allow all actions and reusable workflows"**
+   - Click **Save**
+
+### Alternative: Fork Actions (If Keeping Restrictions)
+
+If you prefer to keep restrictions on external actions, you can fork the required action repositories into your organization:
+
+1. **Fork these repositories:**
+   - [`actions/checkout`](https://github.com/actions/checkout)
+   - [`github/codeql-action`](https://github.com/github/codeql-action)
+   - [`actions/setup-node`](https://github.com/actions/setup-node)
+
+2. **Update workflow file:**
+   - Edit `.github/workflows/codeql-analysis.yml`
+   - Replace `actions/checkout@v4` with `your-org/checkout@v4`
+   - Replace `github/codeql-action/init@v3` with `your-org/codeql-action/init@v3`
+   - Replace `actions/setup-node@v4` with `your-org/setup-node@v4`
+   - Replace `github/codeql-action/analyze@v3` with `your-org/codeql-action/analyze@v3`
+
+After enabling CodeQL, you'll see security analysis results in:
+- The **Security** tab of your repository
+- Pull request checks
+- Automated weekly reports
+
 ## Technology Stack
 
 - **Backend:** Node.js, Express
