@@ -250,10 +250,11 @@
       document.getElementById('loadingText').textContent = t('generatingTopics', lang);
       
       try {
+        const visitorId = localStorage.getItem('vcvq_visitor_id');
         const response = await fetch('/api/generate-topic', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang, count: 10 })
+          body: JSON.stringify({ language: lang, count: 10, visitorId: visitorId })
         });
 
         if (!response.ok) {
@@ -332,10 +333,11 @@
       document.getElementById('loadingText').textContent = t('generatingPlayerNames', lang);
       
       try {
+        const visitorId = localStorage.getItem('vcvq_visitor_id');
         const response = await fetch('/api/generate-player-names', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang, count, topic })
+          body: JSON.stringify({ language: lang, count, topic, visitorId: visitorId })
         });
 
         if (!response.ok) {
@@ -412,6 +414,7 @@
       startBtn.disabled = true;
 
       try {
+        const visitorId = localStorage.getItem('vcvq_visitor_id');
         const response = await fetch('/api/generate-quiz', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -419,7 +422,8 @@
             topic, 
             language, 
             numQuestions: questionCount, 
-            numAnswers: answerCount 
+            numAnswers: answerCount,
+            visitorId: visitorId
           })
         });
 

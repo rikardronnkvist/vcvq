@@ -202,9 +202,10 @@ app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (
       });
     }
 
-    const { topic, language, numQuestions = 10, numAnswers = 6 } = req.body;
+    const { topic, language, numQuestions = 10, numAnswers = 6, visitorId } = req.body;
     
-    console.log(`[VCVQ] Generating quiz - Topic: ${topic}, Language: ${language}, Questions: ${numQuestions}, Answers: ${numAnswers}`);
+    const visitorInfoStr = visitorId ? ` | Visitor: ${visitorId}` : '';
+    console.log(`[VCVQ] Generating quiz - Topic: ${topic}, Language: ${language}, Questions: ${numQuestions}, Answers: ${numAnswers}${visitorInfoStr}`);
 
     const langInstruction = language === 'en' 
       ? 'Generate questions in English.'
@@ -291,9 +292,10 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
       });
     }
 
-    const { language, count, topic } = req.body;
+    const { language, count, topic, visitorId } = req.body;
     
-    console.log(`[VCVQ] Generating ${count} player names in ${language} for topic: ${topic}`);
+    const visitorInfoStr = visitorId ? ` | Visitor: ${visitorId}` : '';
+    console.log(`[VCVQ] Generating ${count} player names in ${language} for topic: ${topic}${visitorInfoStr}`);
 
     const positions = {
       sv: ['Förare', 'Fram passagerare', 'Vänster bak', 'Höger bak', 'Mitten bak'],
@@ -370,9 +372,10 @@ app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async
       });
     }
 
-    const { language, count = 1 } = req.body;
+    const { language, count = 1, visitorId } = req.body;
     
-    console.log(`[VCVQ] Generating ${count} random funny topic(s) in ${language}`);
+    const visitorInfoStr = visitorId ? ` | Visitor: ${visitorId}` : '';
+    console.log(`[VCVQ] Generating ${count} random funny topic(s) in ${language}${visitorInfoStr}`);
     
     const langInstruction = language === 'en' 
       ? `Generate ${count} funny, creative, and entertaining quiz topics in English.`
