@@ -134,6 +134,8 @@
     const screenHeight = window.screen.height || window.innerHeight || 0;
     
     // Detect Tesla browser by user agent or screen resolution
+    // Tesla Model Y: 1180x919, Tesla Model 3/X: 1920x1200
+    // Note: 1920x1200 too generic, rely on runtime test instead
     const isTeslaBrowser = /Tesla/i.test(ua) || /QNXBrowser/i.test(ua) || 
                           (screenWidth === 1180 && screenHeight === 919);
     
@@ -146,16 +148,19 @@
     
     // Add runtime test for broken select elements (heuristic based on clicks)
     const playerCountSelect = document.getElementById('playerCount');
-    let selectClickCount = 0;
-    const selectClickHandler = () => {
-      selectClickCount++;
-      if (selectClickCount > 2) {
+    const selectClickMap = new Map();
+    const selectClickHandler = (e) => {
+      const sel = e.target;
+      const count = (selectClickMap.get(sel) || 0) + 1;
+      selectClickMap.set(sel, count);
+      
+      if (count > 2) {
         // If user clicks multiple times without opening, the select is broken
         console.log('[VCVQ] Select appears to be broken, switching to native styling');
         document.documentElement.classList.add('tesla-browser');
         // Remove this listener after fixing
-        document.querySelectorAll('select').forEach(sel => {
-          sel.removeEventListener('click', selectClickHandler);
+        document.querySelectorAll('select').forEach(s => {
+          s.removeEventListener('click', selectClickHandler);
         });
       }
     };
