@@ -79,6 +79,8 @@ You use logging for game flow in both container and browser console.
 - Add a .gitignore file to the project and exclude Docker environment file
 - Docker sample environment file should include a option to add Gemini API-key and port-selection for web
 - Use logo.ico as favicon and display logo.png on the start page
+- Include SECURITY.md file for vulnerability reporting and security policy
+- Maintain package-lock.json for reproducible builds and dependency tracking
 
 ## Security & Infrastructure
 ### Input Validation
@@ -103,6 +105,19 @@ You use logging for game flow in both container and browser console.
 - Payload size limited to 1MB to prevent memory exhaustion
 - All user input sanitized to prevent injection attacks
 
+### Log Security
+- All user-controlled values sanitized before logging using `sanitizeLog()` helper function
+- Prevents log injection attacks (CWE-117) by removing control characters
+- Log outputs sanitized to prevent forged log entries
+- User-Agent, page names, topics, visitor IDs, and other user inputs are sanitized
+- Numeric values (counts, dimensions) sanitized even though validated
+
+### Security Scanning
+- GitHub CodeQL analysis enabled for automated security scanning
+- Runs on push, pull requests, and weekly schedule
+- Detects common vulnerabilities and coding errors
+- Security policy defined in SECURITY.md for vulnerability reporting
+
 ### Health Monitoring
 - `/health` endpoint for container orchestration and load balancer checks
 - Returns service status, timestamp, and version info
@@ -119,6 +134,7 @@ You use logging for game flow in both container and browser console.
 - `/api/generate-quiz` - Generates quiz questions based on topic, language, number of questions, and number of answers
 - `/api/generate-player-names` - Generates AI-powered funny player names based on language, count, and topic
 - `/api/generate-topic` - Generates random funny quiz topics (single or multiple, up to 20)
+- `/api/log-client-info` - Logs client information (visitor tracking, first visit detection)
 - `/health` - Health check endpoint for monitoring and orchestration
 
 ### Dependencies
