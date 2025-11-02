@@ -164,7 +164,7 @@ After enabling CodeQL, you'll see security analysis results in:
 - `POST /api/generate-topic` - Generate random funny topics (requires: language, count)
 - `GET /health` - Health check endpoint for monitoring
 
-All endpoints include rate limiting and input validation. See `prompts/vibe.md` for detailed specifications.
+All endpoints include rate limiting and input validation. See `prompts/` directory for detailed specifications and development guidelines.
 
 ## License
 

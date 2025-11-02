@@ -1,0 +1,240 @@
+# Feature Specifications
+
+## Core Functionality
+
+### Game Play
+- Support 2-5 players simultaneously
+- Turn-based quiz format
+- Designed for car trips (easy controls, large buttons)
+- AI-generated quiz questions using Google Gemini
+- Multiple-choice questions with only 1 correct answer per question
+
+### Quiz Generation
+- User-specified topic for quiz generation
+- Topic length: 1-200 characters, sanitized against XSS
+- Multiple questions per game (5, 10, 15, 20, 25, 30, or 50)
+- Multiple answer options (4, 6, or 8 per question)
+
+## User Interface
+
+### Landing Page Options
+- **Topic Selection:**
+  - Text input field for custom topic
+  - "🎲 Random" button to get 10 AI-generated funny topics
+  - Dropdown appears after clicking random button
+  - Switch button to return to custom text input
+  
+- **Game Configuration:**
+  - Number of players: 2 (default), 3, 4, 5
+  - Number of questions: 5, 10 (default), 15, 20, 25, 30, 50
+  - Number of answers per question: 4, 6 (default), 8
+  
+- **Player Names:**
+  - Default names based on car positions:
+    1. Driver
+    2. Front Passenger
+    3. Left Back Passenger
+    4. Right Back Passenger
+    5. Middle Back Passenger
+  - "Generate Names" button for AI-generated funny names
+  - AI names are context-aware (language, topic, seating position)
+  - Manual customization available
+
+### Language Support
+- Swedish (standard) and English
+- All text strings in separate `i18n.js` file
+- Language switching via flag buttons
+
+### UI/UX Features
+- **Visual Design:**
+  - Clean, modern interface
+  - Distinct player colors (different color for each player)
+  - Visual highlight for current player's turn
+  - Green highlight for correct answers
+  - Red highlight for incorrect answers with correct answer shown
+  
+- **Interaction:**
+  - Smooth drag-and-drop for answer selection
+  - Click answer boxes as alternative to drag-and-drop
+  - Answer boxes display all answer options
+  - Players can drop on the whole answer-box
+  - Player badges appear on answer boxes showing selections
+  
+- **Feedback:**
+  - Real-time score tracking throughout game
+  - Statistics after each question:
+    - "🎉 Everyone answered correctly!"
+    - "😅 No one answered correctly!"
+    - "X/Y answered correctly"
+  - 5-second delay between questions for review
+  
+- **Controls:**
+  - "End Game" button at bottom to end early
+  - Winner declaration at end (supports ties)
+  - "Play Again" on summary page
+
+## Game Flow
+
+### Starting the Game
+1. User enters topic (custom or from random dropdown)
+2. User selects number of players, questions, and answers
+3. User configures player names (default or AI-generated)
+4. User clicks "Start Quiz" to begin
+
+### Turn Order
+- Random starting player for first question
+- Starting player rotates for each subsequent question
+  - Example: If player 2 starts Q1, player 3 starts Q2, etc.
+- Starting order follows numerical sequence from starting player
+  - Example: If player 2 starts, order is 2→3→4→5→1→2
+- ALL players answer ALL questions in same numerical sequence
+
+### Answer Submission
+- Current player drags their player number to answer box OR
+- Current player clicks an answer box to select answer
+- All players answer each question
+- Player badges visible on answer boxes
+
+### Ending the Game
+- After all questions answered OR
+- After clicking "End Game" button
+- Final scoreboard shows all players sorted by score
+- Winner(s) declared (ties supported)
+- "Play Again" option returns to front page with all settings preserved
+
+### Restarting the Game
+- All settings preserved on restart:
+  - Number of players
+  - Player names
+  - Topic
+  - Language
+  - Number of questions
+  - Number of answers
+- Returns user to front page with all options pre-filled
+
+## API Endpoints
+
+### POST /api/generate-quiz
+Generate quiz questions based on topic and configuration.
+
+**Request Body:**
+```json
+{
+  "topic": "string (1-200 chars)",
+  "language": "sv" | "en",
+  "numQuestions": "number (5-50)",
+  "numAnswers": "number (4-8)"
+}
+```
+
+**Response:**
+```json
+{
+  "questions": [
+    {
+      "question": "string",
+      "answers": ["string"],
+      "correctIndex": "number (0-based)"
+    }
+  ]
+}
+```
+
+### POST /api/generate-player-names
+Generate AI-powered funny player names.
+
+**Request Body:**
+```json
+{
+  "language": "sv" | "en",
+  "count": "number (2-5)",
+  "topic": "string"
+}
+```
+
+**Response:**
+```json
+{
+  "names": ["string"]
+}
+```
+
+### POST /api/generate-topic
+Generate random funny quiz topics.
+
+**Request Body:**
+```json
+{
+  "language": "sv" | "en",
+  "count": "number (1-20)"
+}
+```
+
+**Response:**
+```json
+{
+  "topics": ["string"]
+}
+```
+
+### POST /api/log-client-info
+Log client information for visitor tracking.
+
+**Request Body:**
+```json
+{
+  "pageName": "string",
+  "isFirstVisit": "boolean",
+  "visitorId": "string"
+}
+```
+
+**Response:**
+```json
+{
+  "logged": true
+}
+```
+
+### GET /health
+Health check endpoint for monitoring and orchestration.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "timestamp": "ISO 8601 timestamp",
+  "version": "string",
+  "hostname": "string"
+}
+```
+
+## Tesla Browser Optimization
+
+### Screen Size
+- Optimized for 1180x919 (Tesla Model Y web browser while driving)
+- Responsive design for desktop and tablets
+
+### Compatibility
+- Tesla browser detection via User-Agent
+- Special compatibility fixes for dropdown menus
+- Touch-friendly interactions
+- Large, accessible buttons
+
+## Bonus Features
+
+### File Management
+- `.gitignore` file excluding Docker environment file
+- `README.md` with deployment instructions
+- `SECURITY.md` for vulnerability reporting
+- `package-lock.json` for reproducible builds
+
+### Assets
+- `logo.ico` as favicon
+- `logo.png` displayed on start page
+
+### Docker Configuration
+- Sample `.env.example` file
+- Includes Gemini API key option
+- Port selection configuration
+
