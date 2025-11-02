@@ -49,14 +49,27 @@ const MODEL_NAMES = [
 // Get container/host information
 const HOSTNAME = os.hostname();
 
+// Visitor tracking - store first visit info
+const visitorInfo = new Map(); // Map<sessionId, {firstVisit: timestamp, ip, userAgent, resolution}>
+
 app.use(express.json({ limit: '1mb' })); // Limit payload size
+
+// Helper function to generate a short unique ID
+function generateVisitorId() {
+  return Math.random().toString(36).substring(2, 10);
+}
+
+// Helper function to get client IP
+function getClientIp(req) {
+  return req.ip || req.socket.remoteAddress || 'Unknown';
+}
 
 // Log user agent for page requests
 app.use((req, res, next) => {
   // Only log for HTML page requests, not static assets
   if (req.path === '/' || req.path === '/index.html' || req.path === '/game.html') {
-    const userAgent = req.headers['user-agent'] || 'Unknown';
-    console.log(`[VCVQ] Page access: ${req.path} | Container: ${HOSTNAME} | User-Agent: ${userAgent}`);
+    // This will be handled by the client info endpoint, so we can skip detailed logging here
+    // Just pass through
   }
   next();
 });
@@ -79,17 +92,64 @@ app.get('/health', (req, res) => {
 // Client info logging endpoint (no rate limiting, minimal payload)
 app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   const userAgent = req.headers['user-agent'] || 'Unknown';
-  const { resolution, viewport, page } = req.body || {};
+  const { resolution, viewport, page, visitorId } = req.body || {};
+  const clientIp = getClientIp(req);
   
-  if (resolution && viewport) {
-    console.log(`[VCVQ] Client info | Container: ${HOSTNAME} | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
-  } else if (resolution) {
-    console.log(`[VCVQ] Client info | Container: ${HOSTNAME} | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
+  // Check if this is a first visit (no visitorId) or returning visitor
+  if (!visitorId) {
+    // First visit - generate ID and log full info
+    const newVisitorId = generateVisitorId();
+    const now = new Date().toISOString();
+    
+    visitorInfo.set(newVisitorId, {
+      firstVisit: now,
+      ip: clientIp,
+      userAgent,
+      resolution: resolution ? `${resolution.width}x${resolution.height}` : 'Unknown'
+    });
+    
+    // Log first visit with full details
+    if (resolution && viewport) {
+      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
+    } else if (resolution) {
+      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
+    } else {
+      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | User-Agent: ${userAgent}`);
+    }
+    
+    // Return the visitor ID to store client-side
+    res.status(200).json({ status: 'ok', visitorId: newVisitorId });
   } else {
-    console.log(`[VCVQ] Client info | Container: ${HOSTNAME} | Page: ${page || 'unknown'} | User-Agent: ${userAgent}`);
+    // Returning visitor - just log with ID
+    const visitor = visitorInfo.get(visitorId);
+    if (visitor) {
+      console.log(`[VCVQ] Visitor: ${visitorId} | Page: ${page || 'unknown'} | User-Agent: ${userAgent}`);
+    } else {
+      // Visitor ID not found in map (server restarted), treat as first visit
+      const newVisitorId = generateVisitorId();
+      const now = new Date().toISOString();
+      
+      visitorInfo.set(newVisitorId, {
+        firstVisit: now,
+        ip: clientIp,
+        userAgent,
+        resolution: resolution ? `${resolution.width}x${resolution.height}` : 'Unknown'
+      });
+      
+      // Log first visit (ID expired) with full details
+      if (resolution && viewport) {
+        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
+      } else if (resolution) {
+        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
+      } else {
+        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | User-Agent: ${userAgent}`);
+      }
+      res.status(200).json({ status: 'ok', visitorId: newVisitorId });
+      return;
+    }
+    
+    res.status(200).json({ status: 'ok' });
   }
-  
-  res.status(200).json({ status: 'ok' });
 });
 
 async function tryGenerateWithModels(prompt) {
@@ -370,5 +430,5 @@ Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs"
 });
 
 app.listen(PORT, () => {
-  console.log(`[VCVQ] Server running on http://localhost:${PORT}`);
+  console.log(`[VCVQ] Server running on http://localhost:${PORT} | Container: ${HOSTNAME}`);
 });

@@ -114,15 +114,27 @@
         height: window.innerHeight || 0
       };
       
+      // Get or store visitor ID
+      let visitorId = localStorage.getItem('vcvq_visitor_id');
+      
       fetch('/api/log-client-info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           resolution: resolution,
           viewport: viewport,
-          page: 'index'
+          page: 'index',
+          visitorId: visitorId
         })
-      }).catch(() => {
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Store the visitor ID if server returned a new one
+        if (data.visitorId && data.visitorId !== visitorId) {
+          localStorage.setItem('vcvq_visitor_id', data.visitorId);
+        }
+      })
+      .catch(() => {
         // Silently fail if logging doesn't work
       });
     })();
