@@ -134,6 +134,24 @@ function setupInteractions() {
   });
 }
 
+function disableInteractions() {
+  const playerToken = document.getElementById('playerToken');
+  const answerBoxes = document.querySelectorAll('.answer-box');
+  
+  // Disable dragging
+  playerToken.setAttribute('draggable', 'false');
+  playerToken.style.opacity = '0';
+  playerToken.style.cursor = 'default';
+  
+  // Disable interactions on answer boxes
+  answerBoxes.forEach(box => {
+    box.style.pointerEvents = 'none';
+    box.style.cursor = 'default';
+  });
+  
+  console.log('[VCVQ] Interactions disabled - all players have answered');
+}
+
 function updatePlayerBadgesOnAnswer() {
   const answerBoxes = document.querySelectorAll('.answer-box');
   
@@ -178,6 +196,13 @@ function updatePlayerBadgesOnAnswer() {
 }
 
 function handleAnswer(selectedIndex) {
+  // Check if all players have already answered - if so, ignore this answer
+  const playersAnsweredBefore = Object.keys(playerAnswers[currentQuestionIndex] || {}).length;
+  if (playersAnsweredBefore >= players.length) {
+    console.log('[VCVQ] All players have already answered, ignoring additional answer');
+    return;
+  }
+
   const question = questions[currentQuestionIndex];
   const currentPlayer = players[currentPlayerIndex];
   
@@ -208,7 +233,8 @@ function handleAnswer(selectedIndex) {
   console.log(`[VCVQ] ${playersAnswered}/${players.length} players have answered`);
 
   if (allPlayersAnswered) {
-    // All players have answered, show feedback
+    // All players have answered, disable interactions and show feedback
+    disableInteractions();
     showFeedback();
   } else {
     // Move to next player
