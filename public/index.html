@@ -109,12 +109,17 @@
         width: window.screen.width || window.innerWidth || 0,
         height: window.screen.height || window.innerHeight || 0
       };
+      const viewport = {
+        width: window.innerWidth || 0,
+        height: window.innerHeight || 0
+      };
       
       fetch('/api/log-client-info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           resolution: resolution,
+          viewport: viewport,
           page: 'index'
         })
       }).catch(() => {
@@ -123,13 +128,41 @@
     })();
     
     // Detect Tesla browser and add class for compatibility
-    const isTeslaBrowser = /Tesla/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    console.log('[VCVQ] User Agent:', ua);
+    const screenWidth = window.screen.width || window.innerWidth || 0;
+    const screenHeight = window.screen.height || window.innerHeight || 0;
+    
+    // Detect Tesla browser by user agent or screen resolution
+    const isTeslaBrowser = /Tesla/i.test(ua) || /QNXBrowser/i.test(ua) || 
+                          (screenWidth === 1180 && screenHeight === 919);
+    
     if (isTeslaBrowser) {
       document.documentElement.classList.add('tesla-browser');
-      console.log('[VCVQ] Tesla browser detected, applying compatibility fixes');
+      console.log('[VCVQ] Tesla browser detected (UA:', /Tesla/i.test(ua), 'Resolution:', screenWidth + 'x' + screenHeight + '), applying compatibility fixes');
+    } else {
+      console.log('[VCVQ] Not a Tesla browser, using custom dropdown styling');
     }
     
+    // Add runtime test for broken select elements (heuristic based on clicks)
     const playerCountSelect = document.getElementById('playerCount');
+    let selectClickCount = 0;
+    const selectClickHandler = () => {
+      selectClickCount++;
+      if (selectClickCount > 2) {
+        // If user clicks multiple times without opening, the select is broken
+        console.log('[VCVQ] Select appears to be broken, switching to native styling');
+        document.documentElement.classList.add('tesla-browser');
+        // Remove this listener after fixing
+        document.querySelectorAll('select').forEach(sel => {
+          sel.removeEventListener('click', selectClickHandler);
+        });
+      }
+    };
+    // Add click listeners to all selects to detect if they're broken
+    document.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('click', selectClickHandler);
+    });
     const playerNameInputs = document.querySelectorAll('.player-name-input');
     const startBtn = document.getElementById('startBtn');
     const generateNamesBtn = document.getElementById('generateNamesBtn');
