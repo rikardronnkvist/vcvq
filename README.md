@@ -8,13 +8,16 @@ A real-time multiplayer quiz game designed for car trips! Generate AI-powered qu
 
 - 🚗 **Car-Friendly Design** - Perfect for road trips with easy drag-and-drop or click controls
 - 🤖 **AI-Generated Questions** - Powered by Google Gemini to create quizzes on any topic
+- 🎲 **Random Topics** - Get 10 AI-generated funny topics with one click, or enter your own
 - 👥 **2-5 Players** - Multiplayer support with AI-generated or customizable player names
-- 🌍 **Bilingual** - Support for Swedish and English
-- 🎨 **Visual Feedback** - Color-coded players with real-time scoring
+- 🌍 **Bilingual** - Support for Swedish and English with easy language switching
+- 🎨 **Visual Feedback** - Color-coded players with real-time scoring and player badges on answers
 - 📱 **Responsive** - Works on desktop and tablets (optimized for Tesla Model Y browser at 1180x919)
+- 🔋 **Tesla Compatible** - Special compatibility fixes for Tesla browser dropdown menus
 - 🐳 **Docker Ready** - Easy deployment with Docker and docker-compose
-- 🎲 **AI Player Names** - Generate fun, context-aware player names with one click
+- 🎯 **AI Player Names** - Generate fun, context-aware player names based on topic and car positions
 - ⚙️ **Customizable** - Choose 5-50 questions and 4-8 answer options per question
+- 🔄 **Game Restart** - Restart games while preserving all settings and player names
 
 ## Quick Start
 
@@ -50,25 +53,38 @@ http://localhost:3030
 ## How to Play
 
 1. **Setup:**
-   - Select language (Swedish or English)
-   - Enter a quiz topic (e.g., "Science", "Movies", "Geography")
+   - Select language (Swedish or English) using the flag buttons
+   - Choose a quiz topic:
+     - Enter your own topic (e.g., "Science", "Movies", "Geography")
+     - OR click "🎲 Random" to get 10 AI-generated funny topics to choose from
+     - Switch back to custom input anytime
    - Choose number of players (2-5, default: 2)
-   - Choose number of questions (5-50, default: 10)
-   - Choose number of answer options (4, 6, or 8, default: 6)
-   - Generate AI player names or customize them manually
+   - Choose number of questions (5, 10, 15, 20, 25, 30, or 50, default: 10)
+   - Choose number of answer options per question (4, 6, or 8, default: 6)
+   - Generate AI player names (context-aware, based on topic and car positions) or customize manually
+   - Click "Start Quiz" to begin
 
 2. **Game Flow:**
-   - A random player starts each question
-   - ALL players answer EACH question in numerical sequence
-   - Players can drag their numbered token OR click on answer boxes
-   - Feedback shown after all players have answered
-   - Green = correct, Red = incorrect (correct answer shown)
-   - 5-second delay between questions for review
+   - Random starting player for the first question
+   - Starting player rotates for each subsequent question (fair distribution)
+   - ALL players answer EACH question in numerical sequence from the starting player
+   - Players drag their numbered token OR click on answer boxes to select answers
+   - Player badges appear on answer boxes showing which players selected each answer
+   - After all players answer, feedback is shown:
+     - 🎉 "Everyone answered correctly!" (if all correct)
+     - 😅 "No one answered correctly!" (if all incorrect)
+     - "X/Y answered correctly" (shows how many got it right)
+   - Green highlight = correct answer, Red highlight = incorrect answer
+   - Correct answer is always highlighted
+   - 5-second delay between questions for answer review
+   - "End Game" button available to end early and see results
    - Game continues for your selected number of questions
 
 3. **Winning:**
-   - Player with highest score wins
-   - Option to replay with same players or start fresh
+   - Player(s) with highest score wins (ties are supported)
+   - Final scoreboard shows all players sorted by score
+   - "Play Again" button restarts with same settings, players, and topic
+   - All settings are preserved when restarting
 
 ## Development
 
@@ -90,13 +106,28 @@ http://localhost:3030
    npm run dev
 ```
 
+**Note:** Make sure you have `nodemon` installed for auto-reload during development. For production, use:
+```bash
+   npm start
+```
+
 ## Technology Stack
 
 - **Backend:** Node.js, Express
-- **AI:** Google Gemini Free Tier
+- **AI:** Google Gemini Free Tier (with automatic fallback: gemini-2.5-flash → gemini-2.0-flash → gemini-flash-latest → gemini-2.5-pro → gemini-pro-latest)
 - **Frontend:** Vanilla JavaScript, HTML5, CSS3
-- **Features:** HTML5 Drag and Drop API
+- **Features:** HTML5 Drag and Drop API, Internationalization (i18n)
+- **Security:** express-rate-limit, express-validator
 - **Deployment:** Docker, docker-compose
+
+## API Endpoints
+
+- `POST /api/generate-quiz` - Generate quiz questions (requires: topic, language, numQuestions, numAnswers)
+- `POST /api/generate-player-names` - Generate AI player names (requires: language, count, topic)
+- `POST /api/generate-topic` - Generate random funny topics (requires: language, count)
+- `GET /health` - Health check endpoint for monitoring
+
+All endpoints include rate limiting and input validation. See `prompts/vibe.md` for detailed specifications.
 
 ## License
 
