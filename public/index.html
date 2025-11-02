@@ -15,7 +15,7 @@
         <button class="language-flag" id="flag-sv" data-lang="sv">🇸🇪</button>
         <button class="language-flag" id="flag-en" data-lang="en">🇬🇧</button>
       </div>
-      <img src="logo.png" alt="VCVQ Logo" class="logo">
+      <img src="logo.png" alt="" id="logoImg" class="logo">
     </header>
 
     <div class="setup-form">
@@ -145,6 +145,7 @@
       document.getElementById(`flag-${lang}`).classList.add('active');
       
       // Update labels
+      document.getElementById('logoImg').alt = t('logoAlt', lang);
       document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
       document.getElementById('topicInput').placeholder = t('topicPlaceholder', lang);
       document.getElementById('randomTopicBtn').textContent = t('randomTopic', lang);

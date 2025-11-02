@@ -44,6 +44,14 @@ const translations = {
     endGame: 'Avsluta Spelet',
     confirmEndGame: 'Är du säker på att du vill avsluta spelet?',
     
+    // Feedback messages
+    allCorrect: '🎉 Alla svarade rätt!',
+    noneCorrect: '😅 Ingen svarade rätt!',
+    someCorrect: 'svarade rätt',
+    
+    // UI elements
+    logoAlt: 'VCVQ Logotyp',
+    
     // Answer options
     answers: 'svar'
   },
@@ -90,6 +98,14 @@ const translations = {
     newGameSetup: 'New Game Setup',
     endGame: 'End Game',
     confirmEndGame: 'Are you sure you want to end the game?',
+    
+    // Feedback messages
+    allCorrect: '🎉 Everyone answered correctly!',
+    noneCorrect: '😅 No one answered correctly!',
+    someCorrect: 'answered correctly',
+    
+    // UI elements
+    logoAlt: 'VCVQ Logo',
     
     // Answer options
     answers: 'answers'

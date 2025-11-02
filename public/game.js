@@ -241,19 +241,13 @@ function showFeedback() {
 
   const feedback = document.getElementById('feedback');
   if (correctCount === players.length) {
-    feedback.textContent = language === 'sv' 
-      ? '🎉 Alla svarade rätt!' 
-      : '🎉 Everyone answered correctly!';
+    feedback.textContent = t('allCorrect', language);
     feedback.className = 'feedback correct';
   } else if (correctCount === 0) {
-    feedback.textContent = language === 'sv' 
-      ? '😅 Ingen svarade rätt!' 
-      : '😅 No one answered correctly!';
+    feedback.textContent = t('noneCorrect', language);
     feedback.className = 'feedback incorrect';
   } else {
-    feedback.textContent = language === 'sv' 
-      ? `${correctCount}/${players.length} svarade rätt` 
-      : `${correctCount}/${players.length} answered correctly`;
+    feedback.textContent = `${correctCount}/${players.length} ${t('someCorrect', language)}`;
     feedback.className = 'feedback';
     feedback.style.background = '#f3f4f6';
     feedback.style.color = '#333';
