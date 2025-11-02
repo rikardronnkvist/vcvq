@@ -1,4 +1,19 @@
 {
+  // Enable custom vibe prompts
+  "chat.promptFiles": true,
+  "chat.promptFilesLocations": {
+    ".github/prompts": true,
+    "prompts": true
+  },
+  "chat.customCommands": {
+    "vibe": {
+      "description": "Get VCVQ project-specific suggestions",
+      "context": "Use the VCVQ (Vibe Coded Vibe Quiz) project context to provide specific, actionable suggestions focused on Tesla-optimized quiz game development.",
+      "helpText": "Type /vibe followed by your question about VCVQ development"
+    }
+  },
+  "chat.promptPrefix.vibe": "As a VCVQ developer assistant, focus on: Tesla browser compatibility, clean code patterns, and security requirements from prompts/",
+
   // Markdown settings for prompts
   "[markdown]": {
     "editor.wordWrap": "on",
