@@ -148,6 +148,66 @@ After enabling CodeQL, you'll see security analysis results in:
 - Pull request checks
 - Automated weekly reports
 
+## Development Prompts and AI Assistance
+
+VCVQ includes built-in AI assistance for development through VS Code. The project contains comprehensive prompts and guidelines in the `prompts/` directory that help maintain consistency and best practices.
+
+### Using the `/vibe` Command
+
+VS Code is configured with a custom `/vibe` command for project-specific assistance:
+
+1. **Access the Command:**
+   - Open VS Code command palette (Cmd+Shift+P or Ctrl+Shift+P)
+   - Type `/vibe` followed by your question
+   - Get contextual help based on project requirements
+
+2. **Example Queries:**
+   ```
+   /vibe How do I add a new language?
+   /vibe What's the pattern for adding new question types?
+   /vibe How should I implement Tesla browser optimizations?
+   ```
+
+3. **Key Features:**
+   - Tesla browser compatibility focus (1180x919)
+   - Security requirement checking
+   - Code pattern suggestions
+   - Project-specific best practices
+
+### Prompt Files Structure
+
+```
+prompts/
+├── copilot-role.md       # AI assistant role definition
+├── development-guidelines.md  # Technical standards
+├── feature-specifications.md  # Feature requirements
+├── security-requirements.md   # Security implementations
+└── README.md             # Prompt documentation
+```
+
+### Using AI Assistance
+
+1. **For New Features:**
+   - Check `prompts/feature-specifications.md`
+   - Use `/vibe` for implementation guidance
+   - Follow patterns in example code
+
+2. **For Security:**
+   - Reference `prompts/security-requirements.md`
+   - Use `/vibe` to verify security practices
+   - Check existing validation patterns
+
+3. **For UI Changes:**
+   - Consider Tesla browser compatibility
+   - Follow existing UI patterns
+   - Test at 1180x919 resolution
+
+4. **Best Practices:**
+   - Start with prompt files for context
+   - Use `/vibe` for specific guidance
+   - Follow existing code patterns
+   - Maintain security standards
+
 ## Technology Stack
 
 - **Backend:** Node.js, Express
