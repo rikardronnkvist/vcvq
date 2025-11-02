@@ -1,0 +1,38 @@
+{
+  // Markdown settings for prompts
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  // File associations for prompts directory
+  "files.associations": {
+    "prompts/*.md": "markdown",
+    ".github/copilot-instructions.md": "markdown"
+  },
+
+  // Workspace dictionary for project-specific terms
+  "cSpell.words": [
+    "VCVQ",
+    "Gemini",
+    "sessionStorage"
+  ],
+
+  // Markdown preview settings
+  "markdown.preview.breaks": true,
+  "markdown.preview.doubleClickToSwitchToEditor": true,
+  "markdown.updateLinksOnFileMove.enabled": "always",
+  "markdown.validate.enabled": true,
+
+  // Extensions recommendations
+  "extensions.recommendations": [
+    "yzhang.markdown-all-in-one",
+    "esbenp.prettier-vscode",
+    "DavidAnson.vscode-markdownlint"
+  ]
+}
