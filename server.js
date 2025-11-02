@@ -83,6 +83,13 @@ function getClientIp(req) {
   return ip || 'Unknown';
 }
 
+// Helper function to determine if we should log IP
+function shouldLogClientIp() {
+  // If running behind multiple proxies where we only get internal IPs,
+  // we can disable IP logging to avoid noise
+  return false; // Set to true if you want IP logging
+}
+
 // Log user agent for page requests
 app.use((req, res, next) => {
   // Only log for HTML page requests, not static assets
@@ -113,16 +120,7 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   const userAgent = req.headers['user-agent'] || 'Unknown';
   const { resolution, viewport, page, visitorId } = req.body || {};
   const clientIp = getClientIp(req);
-  
-  // Debug logging to see what IP info we have
-  const debugInfo = {
-    'req.ip': req.ip,
-    'req.socket.remoteAddress': req.socket.remoteAddress,
-    'x-forwarded-for': req.headers['x-forwarded-for'],
-    'x-real-ip': req.headers['x-real-ip'],
-    'computed_ip': clientIp
-  };
-  console.log('[VCVQ] IP Debug:', JSON.stringify(debugInfo, null, 2));
+  const logIp = shouldLogClientIp();
   
   // Check if this is a first visit (no visitorId) or returning visitor
   if (!visitorId) {
@@ -138,12 +136,13 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
     });
     
     // Log first visit with full details
+    const ipStr = logIp ? ` | IP: ${clientIp}` : '';
     if (resolution && viewport) {
-      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
+      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'}${ipStr} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
     } else if (resolution) {
-      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
+      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'}${ipStr} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
     } else {
-      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | User-Agent: ${userAgent}`);
+      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${page || 'unknown'}${ipStr} | User-Agent: ${userAgent}`);
     }
     
     // Return the visitor ID to store client-side
@@ -166,12 +165,13 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
       });
       
       // Log first visit (ID expired) with full details
+      const ipStr = logIp ? ` | IP: ${clientIp}` : '';
       if (resolution && viewport) {
-        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
+        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'}${ipStr} | Resolution: ${resolution.width}x${resolution.height} | Viewport: ${viewport.width}x${viewport.height} | User-Agent: ${userAgent}`);
       } else if (resolution) {
-        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
+        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'}${ipStr} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
       } else {
-        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'} | IP: ${clientIp} | User-Agent: ${userAgent}`);
+        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${page || 'unknown'}${ipStr} | User-Agent: ${userAgent}`);
       }
       res.status(200).json({ status: 'ok', visitorId: newVisitorId });
       return;
