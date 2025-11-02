@@ -61,7 +61,26 @@ function generateVisitorId() {
 
 // Helper function to get client IP
 function getClientIp(req) {
-  return req.ip || req.socket.remoteAddress || 'Unknown';
+  // req.ip should be the real client IP if trust proxy is set correctly
+  const ip = req.ip || req.socket.remoteAddress;
+  
+  // If we still get a local IP, try parsing x-forwarded-for manually
+  if (ip && (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.') || ip === '127.0.0.1')) {
+    const xForwardedFor = req.headers['x-forwarded-for'];
+    if (xForwardedFor) {
+      // Take the first IP in the chain (the real client)
+      const forwardedIps = xForwardedFor.split(',').map(ip => ip.trim());
+      for (const forwardedIp of forwardedIps) {
+        // Skip if it's another local/proxy IP
+        if (!forwardedIp.startsWith('192.168.') && !forwardedIp.startsWith('10.') && 
+            !forwardedIp.startsWith('172.16.') && forwardedIp !== '127.0.0.1') {
+          return forwardedIp;
+        }
+      }
+    }
+  }
+  
+  return ip || 'Unknown';
 }
 
 // Log user agent for page requests
@@ -94,6 +113,16 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   const userAgent = req.headers['user-agent'] || 'Unknown';
   const { resolution, viewport, page, visitorId } = req.body || {};
   const clientIp = getClientIp(req);
+  
+  // Debug logging to see what IP info we have
+  const debugInfo = {
+    'req.ip': req.ip,
+    'req.socket.remoteAddress': req.socket.remoteAddress,
+    'x-forwarded-for': req.headers['x-forwarded-for'],
+    'x-real-ip': req.headers['x-real-ip'],
+    'computed_ip': clientIp
+  };
+  console.log('[VCVQ] IP Debug:', JSON.stringify(debugInfo, null, 2));
   
   // Check if this is a first visit (no visitorId) or returning visitor
   if (!visitorId) {
