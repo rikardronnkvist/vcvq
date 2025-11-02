@@ -103,6 +103,25 @@
   </div>
 
   <script>
+    // Log client info (resolution and user agent) to server
+    (function() {
+      const resolution = {
+        width: window.screen.width || window.innerWidth || 0,
+        height: window.screen.height || window.innerHeight || 0
+      };
+      
+      fetch('/api/log-client-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resolution: resolution,
+          page: 'index'
+        })
+      }).catch(() => {
+        // Silently fail if logging doesn't work
+      });
+    })();
+    
     // Detect Tesla browser and add class for compatibility
     const isTeslaBrowser = /Tesla/i.test(navigator.userAgent);
     if (isTeslaBrowser) {

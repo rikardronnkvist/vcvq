@@ -46,6 +46,17 @@ const MODEL_NAMES = [
 ];
 
 app.use(express.json({ limit: '1mb' })); // Limit payload size
+
+// Log user agent for page requests
+app.use((req, res, next) => {
+  // Only log for HTML page requests, not static assets
+  if (req.path === '/' || req.path === '/index.html' || req.path === '/game.html') {
+    const userAgent = req.headers['user-agent'] || 'Unknown';
+    console.log(`[VCVQ] Page access: ${req.path} | User-Agent: ${userAgent}`);
+  }
+  next();
+});
+
 app.use(express.static('public'));
 
 // Apply rate limiting to API routes
@@ -59,6 +70,20 @@ app.get('/health', (req, res) => {
     service: 'vcvq',
     version: '1.0.0'
   });
+});
+
+// Client info logging endpoint (no rate limiting, minimal payload)
+app.post('/api/log-client-info', express.json({ limit: '100b' }), (req, res) => {
+  const userAgent = req.headers['user-agent'] || 'Unknown';
+  const { resolution, page } = req.body || {};
+  
+  if (resolution) {
+    console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | Resolution: ${resolution.width}x${resolution.height} | User-Agent: ${userAgent}`);
+  } else {
+    console.log(`[VCVQ] Client info | Page: ${page || 'unknown'} | User-Agent: ${userAgent}`);
+  }
+  
+  res.status(200).json({ status: 'ok' });
 });
 
 async function tryGenerateWithModels(prompt) {
