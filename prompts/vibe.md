@@ -14,8 +14,8 @@ You use logging for game flow in both container and browser console.
 - Support 2-5 players simultaneously in a turn-based quiz format
 - Should be designed to play in a car
 - AI-generated quiz questions using Google Gemini Free Tier
-- Default to API gemini-2.0-flash and use gemini-1.5-flash and gemini-1.5-pro as backup
-- Generate multiple-choice questions per game with answers options each (only 1 correct)
+- Model fallback order: gemini-2.5-flash (primary), gemini-2.0-flash, gemini-flash-latest, gemini-2.5-pro, gemini-pro-latest
+- Generate multiple-choice questions per game with answer options each (only 1 correct)
 - Allow users to specify any topic for quiz generation
 
 ## User selectable options on landing page
@@ -26,20 +26,24 @@ You use logging for game flow in both container and browser console.
 - Number of questions for the quiz: 5, 10 (default), 15, 20, 25, 30 and 50
 - Number of answers per question: 4, 6 (default) and 8
 - Option to set names of players
-- Default names for players should be generated from AI and use funny names based on selected language, selected topic for questions and: 1 - Driver, 2 - Front Passanger, 3 - Left Back Passanger, 4 - Right Back Passanger, 5 - Middle back Passanger
+- Default names for players are static based on car positions: 1 - Driver, 2 - Front Passenger, 3 - Left Back Passenger, 4 - Right Back Passenger, 5 - Middle Back Passenger
+- Optional AI-generated funny player names via "Generate Names" button, which creates context-aware names based on selected language, quiz topic, and car seating positions
 
 ## Game Flow
-- Landing page where users enter a topic to generate questions from, they also select number of players
+- Landing page where users enter a topic to generate questions from, they also select number of players, questions, and answers per question
 - Random starting player for first question
-- Starting order follows numerical sequence (Example with 2 starting 2→3→4→5→1→2)
-- All players should answer all questions in same numerical sequence
-- Current player drags their player number to one of the answer boxes to select their answer
+- For each subsequent question, the starting player rotates (e.g., if player 2 starts question 1, player 3 starts question 2, etc.)
+- Starting order follows numerical sequence from the starting player (Example: if player 2 starts, order is 2→3→4→5→1→2)
+- All players answer all questions in the same numerical sequence
+- Current player drags their player number to one of the answer boxes OR clicks an answer box to select their answer
+- Player badges appear on answer boxes showing which players have selected each answer
 - Visual feedback (green for correct, red for incorrect with correct answer shown) when all players have answered
+- Feedback shows statistics: "🎉 Everyone answered correctly!", "😅 No one answered correctly!", or "X/Y answered correctly"
 - Real-time score tracking throughout the game
 - "End Game" button at the bottom of the game area allows players to end the game early and jump to scoring
-- Winner declaration at the end
-- If the game is restarted, number of players and their names should be kept intact
-- On the summary page at the end there should be a option to restart the game returning the user to the frontpage with all options filled in with current topic, names etc.
+- Winner declaration at the end (supports ties)
+- If the game is restarted, all settings are preserved: number of players, player names, topic, language, number of questions, and number of answers
+- On the summary page at the end there should be an option to restart the game returning the user to the frontpage with all options filled in with current topic, names etc.
 
 ## Technical Requirements
 - Node.js/Express backend
@@ -54,7 +58,7 @@ You use logging for game flow in both container and browser console.
 - Visual highlight showing whose turn it is
 - Smooth drag-and-drop interaction for answering
 - Allow the player to click an answer-box instead of drag-and-drop
-- Boxes with answers should only contain correct answer 
+- Answer boxes display all answer options (not just correct answer) 
 - Players should be able to drop on the whole answer-box
 - Real-time score display
 - 5-second delay between questions for answer review
@@ -65,6 +69,7 @@ You use logging for game flow in both container and browser console.
 - All text strings that are shown to the user should be in a separate file for easy translation
 - Responsive design that works on desktop and tablets
 - Screen size should be optimized for 1180x919 (Tesla Model Y web browser while driving)
+- Tesla browser detection via user agent with compatibility fixes for dropdown menus
 - Create a README.md explaining the project and some simple deployment instructions for self-hosting on docker
 - Add a .gitignore file to the project and exclude Docker environment file
 - Docker sample environment file should include a option to add Gemini API-key and port-selection for web
@@ -105,6 +110,13 @@ You use logging for game flow in both container and browser console.
 - Security options: no-new-privileges flag
 - Environment-based configuration (NODE_ENV)
 
+### API Endpoints
+- `/api/generate-quiz` - Generates quiz questions based on topic, language, number of questions, and number of answers
+- `/api/generate-player-names` - Generates AI-powered funny player names based on language, count, and topic
+- `/api/generate-topic` - Generates random funny quiz topics (single or multiple, up to 20)
+- `/health` - Health check endpoint for monitoring and orchestration
+
 ### Dependencies
 - express-rate-limit: ^7.1.5
 - express-validator: ^7.0.1
+- @google/generative-ai: For Google Gemini API integration
