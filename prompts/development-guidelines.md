@@ -13,6 +13,11 @@
 - **UI:** HTML5 with native Drag and Drop API
 - **Styling:** CSS3 with responsive design
 - **Internationalization:** Separate i18n file for translations
+  - **CRITICAL:** ALL language-specific strings MUST be in `public/i18n.js`
+  - Never hardcode language strings in `server.js`, `game.js`, or HTML files
+  - Server-side AI prompts must use translations from `i18n.js` via `t()` function
+  - Client-side text must use `t(key, language)` function
+  - When adding new features, add all text strings to `i18n.js` for both Swedish and English
 
 ### AI Integration
 - **Provider:** Google Gemini Free Tier
@@ -36,6 +41,22 @@
 - Keep functions focused and single-purpose
 - Use consistent indentation (2 spaces for JavaScript)
 - Follow existing code patterns in the codebase
+
+### Internationalization (i18n) Requirements
+- **MANDATORY:** All user-facing text and language-specific strings MUST be in `public/i18n.js`
+- **Server-side strings:** AI prompt instructions, error messages, and any language-specific text must be in `i18n.js`
+- **Client-side strings:** All UI text, labels, buttons, messages must use `t(key, language)` from `i18n.js`
+- **Never hardcode:** Do not put language strings directly in:
+  - `server.js` (use `t()` function with keys from `i18n.js`)
+  - `public/game.js` (use `t()` function)
+  - `public/index.html` (use `t()` function in JavaScript)
+- **Adding new languages:** When adding a new language:
+  1. Add all translation keys to `public/i18n.js`
+  2. Update server-side validation to accept the new language code
+  3. Add AI prompt instructions for the new language in `i18n.js`
+  4. Add language selector button in `public/index.html`
+- **Server-side usage:** Use `const { t, getPositions } = require('./public/i18n.js')` in `server.js`
+- **Function-based translations:** Some server-side strings are functions (e.g., `aiPlayerNamesInstruction`) that accept parameters - these are handled automatically by the `t()` function
 
 ### Logging
 - Use `console.log()` for game flow logging

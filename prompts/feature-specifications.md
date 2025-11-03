@@ -42,8 +42,14 @@
 
 ### Language Support
 - Swedish (standard) and English
-- All text strings in separate `i18n.js` file
+- **All text strings MUST be in `public/i18n.js` file** - NO EXCEPTIONS
 - Language switching via flag buttons
+- Server-side AI prompts use translations from `i18n.js` via `t()` function
+- When implementing new features:
+  - Add all text strings to `i18n.js` for both languages
+  - Use `t(key, language)` function in client-side code
+  - Use `t(key, language, ...args)` for server-side code (supports function-based translations)
+  - Never hardcode language strings in any other file
 
 ### UI/UX Features
 - **Visual Design:**
