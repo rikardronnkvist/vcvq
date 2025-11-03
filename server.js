@@ -210,6 +210,7 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
 
 async function tryGenerateWithModels(prompt) {
   let lastError = null;
+  let isOverloaded = false;
   
   for (const modelName of MODEL_NAMES) {
     try {
@@ -221,9 +222,25 @@ async function tryGenerateWithModels(prompt) {
       return response.text();
     } catch (error) {
       console.log(`Model ${modelName} failed: ${error.message}`);
+      // Check if this is an overload/service unavailable error
+      if (error.message && (
+        error.message.includes('503') || 
+        error.message.includes('Service Unavailable') || 
+        error.message.includes('overloaded') ||
+        error.message.includes('try again later')
+      )) {
+        isOverloaded = true;
+      }
       lastError = error;
       continue;
     }
+  }
+  
+  // If we detected overload errors, throw a special error
+  if (isOverloaded) {
+    const overloadError = new Error('Service temporarily unavailable');
+    overloadError.isOverloaded = true;
+    throw overloadError;
   }
   
   throw new Error(`All models failed. Last error: ${lastError.message}`);
@@ -320,6 +337,16 @@ Rules:
   } catch (error) {
     const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
     console.error(`[VCVQ] Error generating quiz: ${sanitizedError}`);
+    
+    // Check if this is an overload error
+    if (error.isOverloaded) {
+      return res.status(503).json({ 
+        error: 'Service temporarily unavailable',
+        errorCode: 'OVERLOADED',
+        message: 'The AI service is currently overloaded. Please try again in a few moments.'
+      });
+    }
+    
     // Don't expose detailed error messages in production
     const isDevelopment = process.env.NODE_ENV === 'development';
     res.status(500).json({ 
@@ -410,6 +437,16 @@ Rules:
   } catch (error) {
     const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
     console.error(`[VCVQ] Error generating player names: ${sanitizedError}`);
+    
+    // Check if this is an overload error
+    if (error.isOverloaded) {
+      return res.status(503).json({ 
+        error: 'Service temporarily unavailable',
+        errorCode: 'OVERLOADED',
+        message: 'The AI service is currently overloaded. Please try again in a few moments.'
+      });
+    }
+    
     const isDevelopment = process.env.NODE_ENV === 'development';
     res.status(500).json({ 
       error: 'Failed to generate player names',
@@ -495,6 +532,16 @@ Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs"
   } catch (error) {
     const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
     console.error(`[VCVQ] Error generating topic: ${sanitizedError}`);
+    
+    // Check if this is an overload error
+    if (error.isOverloaded) {
+      return res.status(503).json({ 
+        error: 'Service temporarily unavailable',
+        errorCode: 'OVERLOADED',
+        message: 'The AI service is currently overloaded. Please try again in a few moments.'
+      });
+    }
+    
     const isDevelopment = process.env.NODE_ENV === 'development';
     res.status(500).json({ 
       error: 'Failed to generate topic',

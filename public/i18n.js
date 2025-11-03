@@ -22,6 +22,7 @@ const translations = {
     generatingPlayerNames: 'Genererar spelarnamn...',
     enterTopic: 'Ange ett ämne!',
     generateFailed: 'Misslyckades att generera quiz. Försök igen.',
+    serviceOverloaded: 'AI-tjänsten är för närvarande överbelastad. Försök igen om några ögonblick.',
     
     // Player positions
     position1: 'Förare',
@@ -77,6 +78,7 @@ const translations = {
     generatingPlayerNames: 'Generating player names...',
     enterTopic: 'Please enter a topic!',
     generateFailed: 'Failed to generate quiz. Please try again.',
+    serviceOverloaded: 'The AI service is currently overloaded. Please try again in a few moments.',
     
     // Player positions
     position1: 'Driver',

@@ -242,6 +242,14 @@
         });
 
         if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 503 && errorData.errorCode === 'OVERLOADED') {
+            errorDiv.textContent = t('serviceOverloaded', lang);
+            errorDiv.style.display = 'block';
+            loading.style.display = 'none';
+            randomTopicBtn.disabled = false;
+            return;
+          }
           throw new Error('Failed to generate topics');
         }
 
@@ -353,6 +361,18 @@
         });
 
         if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 503 && errorData.errorCode === 'OVERLOADED') {
+            errorDiv.textContent = t('serviceOverloaded', lang);
+            errorDiv.style.display = 'block';
+            loading.style.display = 'none';
+            generateNamesBtn.textContent = '✗';
+            setTimeout(() => {
+              generateNamesBtn.textContent = t('generateNames', lang);
+              generateNamesBtn.disabled = false;
+            }, 1500);
+            return;
+          }
           throw new Error('Failed to generate names');
         }
 
@@ -519,6 +539,14 @@
         });
 
         if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 503 && errorData.errorCode === 'OVERLOADED') {
+            errorDiv.textContent = t('serviceOverloaded', language);
+            errorDiv.style.display = 'block';
+            loading.style.display = 'none';
+            startBtn.disabled = false;
+            return;
+          }
           throw new Error('Failed to generate quiz');
         }
 
