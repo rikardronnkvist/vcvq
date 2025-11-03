@@ -80,8 +80,8 @@
 - Translations in the i18n file
 - Development prompts and documentation in the prompts directory
 - Docker configuration files in the root
-- Configuration files (package.json, .env.example) in the root
-- Documentation files (README.md, SECURITY.md) in the root
+- Configuration files in the root
+- Documentation files in the root
 
 ## Docker Development
 

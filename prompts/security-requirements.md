@@ -140,7 +140,7 @@ See project README section "Security Analysis with GitHub CodeQL" for setup inst
 See server-side health endpoint handler.
 
 ## Docker Security & Optimization
-**Status: ✅ Implemented in Dockerfile**
+**Status: ✅ Implemented in Docker configuration**
 
 ### Security Features
 - **Multi-stage builds:** Smaller images (~40% size reduction)

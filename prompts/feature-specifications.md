@@ -236,8 +236,8 @@ Health check endpoint for monitoring and orchestration.
 
 ### File Management
 - `.gitignore` file excluding Docker environment file
-- `README.md` with deployment instructions
-- `SECURITY.md` for vulnerability reporting
+- Project README with deployment instructions
+- Security policy document for vulnerability reporting
 - `package-lock.json` for reproducible builds
 
 ### Assets

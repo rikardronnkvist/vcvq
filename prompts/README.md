@@ -93,9 +93,9 @@ These prompts are part of the project and should be:
 
 ## Related Documentation
 
-- `../README.md` - User-facing project documentation
-- `../SECURITY.md` - Security policy and vulnerability reporting
-- `../.github/workflows/codeql-analysis.yml` - Security scanning workflow
+- Project README - User-facing project documentation
+- Security policy document - Security policy and vulnerability reporting
+- GitHub Actions workflows - Security scanning and automation
 
 ## Security Note
 
