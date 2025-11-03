@@ -4,6 +4,7 @@ const os = require('os');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 const helmet = require('helmet');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -35,6 +36,12 @@ app.use(helmet({
     }
   },
   crossOriginEmbedderPolicy: false // Allow static assets
+}));
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
+  credentials: true
 }));
 
 const genAI = new GoogleGenerativeAI(API_KEY);
