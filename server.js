@@ -391,8 +391,8 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
     console.log(`[VCVQ] Generating ${sanitizedCount} player names in ${sanitizedLanguage} for topic: ${sanitizedTopic}${visitorInfoStr}`);
 
     const positions = {
-      sv: ['Förare', 'Fram passagerare', 'Vänster bak', 'Höger bak', 'Mitten bak'],
-      en: ['Driver', 'Front Passenger', 'Left Back Passenger', 'Right Back Passenger', 'Middle Back Passenger']
+      sv: ['Förare', 'Fram passagerare', 'Höger bak', 'Vänster bak', 'Mitten bak'],
+      en: ['Driver', 'Front Passenger', 'Right Back Passenger', 'Left Back Passenger', 'Middle Back Passenger']
     };
 
     const topicContext = topic 
