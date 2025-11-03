@@ -59,14 +59,19 @@ app.use(cors({
     
     // No ALLOWED_ORIGINS configured: allow localhost origins (common for local development/Docker)
     // and deny other cross-origin requests
-    const localhostPatterns = [
-      /^http:\/\/localhost(:\d+)?$/,
-      /^http:\/\/127\.0\.0\.1(:\d+)?$/,
-      /^http:\/\/\[::1\](:\d+)?$/
-    ];
-    
-    if (localhostPatterns.some(pattern => pattern.test(origin))) {
-      return callback(null, true);
+    try {
+      const originUrl = new URL(origin);
+      const hostname = originUrl.hostname.toLowerCase();
+      
+      // Allow localhost variants
+      if (hostname === 'localhost' || 
+          hostname === '127.0.0.1' || 
+          hostname === '[::1]' ||
+          hostname === '::1') {
+        return callback(null, true);
+      }
+    } catch (error) {
+      // Invalid URL format, continue to deny
     }
     
     // For non-localhost origins, require explicit ALLOWED_ORIGINS configuration
