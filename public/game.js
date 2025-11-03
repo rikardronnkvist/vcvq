@@ -216,16 +216,55 @@ function updatePlayerBadgesOnAnswer() {
     );
     
     if (answerBox) {
-      playerIndices.forEach((playerIndex, badgeIdx) => {
+      playerIndices.forEach((playerIndex) => {
         const badge = document.createElement('div');
         badge.className = 'player-badge';
         badge.textContent = playerIndex + 1;
         badge.style.background = playerColors[playerIndex];
-        // Arrange in two columns
-        const row = Math.floor(badgeIdx / 2);
-        const col = badgeIdx % 2;
-        badge.style.top = `${8 + row * 32}px`;
-        badge.style.right = `${8 + col * 32}px`;
+        
+        // Position badges based on player number
+        // P1: Upper left, P2: Upper right, P3: Lower right, P4: Lower left, P5: Lower middle
+        const playerNumber = playerIndex + 1; // Convert 0-indexed to 1-indexed
+        switch (playerNumber) {
+          case 1: // P1 - Upper left corner
+            badge.style.top = '8px';
+            badge.style.left = '8px';
+            badge.style.right = 'auto';
+            badge.style.bottom = 'auto';
+            break;
+          case 2: // P2 - Upper right corner
+            badge.style.top = '8px';
+            badge.style.right = '8px';
+            badge.style.left = 'auto';
+            badge.style.bottom = 'auto';
+            break;
+          case 3: // P3 - Lower right corner
+            badge.style.bottom = '8px';
+            badge.style.right = '8px';
+            badge.style.top = 'auto';
+            badge.style.left = 'auto';
+            break;
+          case 4: // P4 - Lower left corner
+            badge.style.bottom = '8px';
+            badge.style.left = '8px';
+            badge.style.top = 'auto';
+            badge.style.right = 'auto';
+            break;
+          case 5: // P5 - Lower middle
+            badge.style.bottom = '8px';
+            badge.style.left = '50%';
+            badge.style.transform = 'translateX(-50%)';
+            badge.style.top = 'auto';
+            badge.style.right = 'auto';
+            break;
+          default:
+            // Fallback to upper right for any unexpected player numbers
+            badge.style.top = '8px';
+            badge.style.right = '8px';
+            badge.style.left = 'auto';
+            badge.style.bottom = 'auto';
+        }
+        
         answerBox.appendChild(badge);
       });
     }
