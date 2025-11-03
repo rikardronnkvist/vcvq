@@ -8,7 +8,7 @@ A real-time multiplayer quiz game designed for car trips! Generate AI-powered qu
 
 - 🚗 **Car-Friendly Design** - Perfect for road trips with easy drag-and-drop or click controls
 - 🤖 **AI-Generated Questions** - Powered by Google Gemini to create quizzes on any topic
-- 🎲 **Random Topics** - Get 10 AI-generated funny topics with one click, or enter your own
+- 🎲 **Random Topics** - Get 15 AI-generated funny topics with one click, or enter your own
 - 👥 **2-5 Players** - Multiplayer support with AI-generated or customizable player names
 - 🌍 **Bilingual** - Support for Swedish and English with easy language switching
 - 🎨 **Visual Feedback** - Color-coded players with real-time scoring and player badges on answers
@@ -39,6 +39,8 @@ A real-time multiplayer quiz game designed for car trips! Generate AI-powered qu
 ```env
    GEMINI_API_KEY=your_actual_api_key_here
    PORT=3030
+   # Optional: For cross-origin requests, set ALLOWED_ORIGINS
+   # ALLOWED_ORIGINS=http://example.com,https://another-domain.com
 ```
 
 4. **Start the application:**
@@ -56,7 +58,7 @@ http://localhost:3030
    - Select language (Swedish or English) using the flag buttons
    - Choose a quiz topic:
      - Enter your own topic (e.g., "Science", "Movies", "Geography")
-     - OR click "🎲 Random" to get 10 AI-generated funny topics to choose from
+     - OR click "🎲 Random" to get 15 AI-generated funny topics to choose from
      - Switch back to custom input anytime
    - Choose number of players (2-5, default: 2)
    - Choose number of questions (5, 10, 15, 20, 25, 30, or 50, default: 10)
@@ -148,6 +150,21 @@ After enabling CodeQL, you'll see security analysis results in:
 - Pull request checks
 - Automated weekly reports
 
+## Security Features
+
+VCVQ implements comprehensive security measures:
+
+- **Security Headers:** Helmet middleware provides security headers including CSP, X-Frame-Options, and more
+- **CORS Protection:** Configurable CORS with secure defaults (allows localhost, requires ALLOWED_ORIGINS for cross-origin)
+- **Rate Limiting:** API endpoints are rate-limited to prevent abuse
+- **Input Validation:** Server-side validation using express-validator
+- **XSS Protection:** HTML escaping for all user-controlled and AI-generated content
+- **Prompt Injection Prevention:** Sanitization of user inputs in AI prompts
+- **JSON Parsing Error Handling:** Prevents server crashes from malformed responses
+- **Docker Security:** Non-root user, security options, resource limits
+
+For detailed security information, see `SECURITY.md`.
+
 ## Development Prompts and AI Assistance
 
 VCVQ includes built-in AI assistance for development through VS Code. The project contains comprehensive prompts and guidelines in the `prompts/` directory that help maintain consistency and best practices.
@@ -210,11 +227,11 @@ prompts/
 
 ## Technology Stack
 
-- **Backend:** Node.js, Express
-- **AI:** Google Gemini Free Tier (with automatic fallback: gemini-2.5-flash → gemini-2.0-flash → gemini-flash-latest → gemini-2.5-pro → gemini-pro-latest)
+- **Backend:** Node.js, Express 5.x
+- **AI:** Google Gemini API (with automatic fallback: gemini-2.5-flash → gemini-2.0-flash → gemini-flash-latest → gemini-2.5-pro → gemini-pro-latest)
 - **Frontend:** Vanilla JavaScript, HTML5, CSS3
 - **Features:** HTML5 Drag and Drop API, Internationalization (i18n)
-- **Security:** express-rate-limit, express-validator
+- **Security:** Helmet (security headers), CORS, express-rate-limit, express-validator
 - **Deployment:** Docker, docker-compose
 
 ## API Endpoints
@@ -222,9 +239,17 @@ prompts/
 - `POST /api/generate-quiz` - Generate quiz questions (requires: topic, language, numQuestions, numAnswers)
 - `POST /api/generate-player-names` - Generate AI player names (requires: language, count, topic)
 - `POST /api/generate-topic` - Generate random funny topics (requires: language, count)
+- `POST /api/log-client-info` - Log client information for analytics
 - `GET /health` - Health check endpoint for monitoring
 
-All endpoints include rate limiting and input validation. See `prompts/` directory for detailed specifications and development guidelines.
+All endpoints include rate limiting, input validation, and security headers. See `prompts/` directory for detailed specifications and development guidelines.
+
+## Environment Variables
+
+- `GEMINI_API_KEY` (required) - Your Google Gemini API key
+- `PORT` (optional) - Server port, defaults to 3030
+- `NODE_ENV` (optional) - Environment mode (development/production), defaults to production in Docker
+- `ALLOWED_ORIGINS` (optional) - Comma-separated list of allowed CORS origins for cross-origin requests. If not set, only localhost and same-origin requests are allowed.
 
 ## License
 
