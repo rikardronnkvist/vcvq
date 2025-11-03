@@ -174,10 +174,10 @@
 
     let currentLang = 'en';
 
-    const defaultNames = {
-      sv: ['Förare', 'Fram passagerare', 'Vänster bak', 'Höger bak', 'Mitten bak'],
-      en: ['Driver', 'Front Passenger', 'Left Back Passenger', 'Right Back Passenger', 'Middle Back Passenger']
-    };
+    // Use position translations from i18n.js instead of duplicating
+    function getDefaultName(index, lang) {
+      return t(`position${index + 1}`, lang);
+    }
 
     function updatePlayerInputs() {
       const count = parseInt(playerCountSelect.value);
@@ -215,9 +215,15 @@
       for (let i = 1; i <= 5; i++) {
         document.getElementById(`labelPlayer${i}`).textContent = `${t('player', lang)} ${i}:`;
         const input = document.getElementById(`player${i}`);
-        // Update if it's still a default name from the other language or empty
-        if (input.value === '' || defaultNames.sv.includes(input.value) || defaultNames.en.includes(input.value)) {
-          input.value = defaultNames[lang][i - 1];
+        // Update if it's empty or matches a position name from either language
+        const currentValue = input.value;
+        const allPositionNames = [];
+        for (let pos = 1; pos <= 5; pos++) {
+          allPositionNames.push(t(`position${pos}`, 'sv'));
+          allPositionNames.push(t(`position${pos}`, 'en'));
+        }
+        if (currentValue === '' || allPositionNames.includes(currentValue)) {
+          input.value = getDefaultName(i - 1, lang);
         }
       }
     }
