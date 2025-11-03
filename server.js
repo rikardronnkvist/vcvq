@@ -3,6 +3,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const os = require('os');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
+const helmet = require('helmet');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -16,6 +17,25 @@ if (!API_KEY) {
 // Trust proxy when behind reverse proxy (Docker, nginx, load balancer, etc.)
 // This is required for accurate rate limiting by IP address
 app.set('trust proxy', 1); // Trust first proxy
+
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for dynamic styling
+      imgSrc: ["'self'", "data:"],
+      fontSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"]
+    }
+  },
+  crossOriginEmbedderPolicy: false // Allow static assets
+}));
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
