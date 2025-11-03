@@ -1,0 +1,40 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "rikardronnkvist"
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Group updates to reduce PR noise
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+    # Ignore major version updates (require manual review)
+    ignore:
+      - dependency-name: "express"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@google/generative-ai"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "express-rate-limit"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "helmet"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "express-validator"
+        update-types: ["version-update:semver-major"]
+

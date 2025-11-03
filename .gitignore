@@ -1,5 +1,12 @@
 # Environment variables
 .env
+.env.*
+!.env.example
+*.key
+*.pem
+*.cert
+secrets/
+.secrets
 
 # Node modules
 node_modules/
