@@ -27,8 +27,8 @@ const translations = {
     // Player positions
     position1: 'Förare',
     position2: 'Fram passagerare',
-    position3: 'Vänster bak',
-    position4: 'Höger bak',
+    position3: 'Höger bak',
+    position4: 'Vänster bak',
     position5: 'Mitten bak',
     
     // Game page
@@ -83,8 +83,8 @@ const translations = {
     // Player positions
     position1: 'Driver',
     position2: 'Front Passenger',
-    position3: 'Left Back Passenger',
-    position4: 'Right Back Passenger',
+    position3: 'Right Back Passenger',
+    position4: 'Left Back Passenger',
     position5: 'Middle Back Passenger',
     
     // Game page
