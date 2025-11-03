@@ -27,11 +27,11 @@
       <div class="form-group">
         <label for="topic" id="labelTopic">Quiz Topic:</label>
         <div style="display: flex; gap: 10px;">
-          <input type="text" id="topicInput" placeholder="Enter any topic (e.g., Science, Movies, Sports)" style="flex: 1;" aria-label="Quiz topic input">
+          <input type="text" id="topicInput" placeholder="Enter any topic (e.g., Science, Movies, Sports)" style="flex: 1;">
           <div id="topicButtonGroup" class="topic-button-group" style="flex: 1; display: none;"></div>
           <select id="topicDropdown" style="display: none;"></select>
-          <button id="randomTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap;" aria-label="Generate random topics">🎲 Random</button>
-          <button id="customTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap; display: none;" aria-label="Switch to custom topic input">✏️ Custom</button>
+          <button id="randomTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap;">🎲 Random</button>
+          <button id="customTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap; display: none;">✏️ Custom</button>
         </div>
       </div>
 
@@ -75,7 +75,7 @@
       <div id="playerNames">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
           <h3 id="labelPlayerNames">Player Names:</h3>
-          <button id="generateNamesBtn" class="btn-generate" aria-label="Generate AI player names"></button>
+          <button id="generateNamesBtn" class="btn-generate"></button>
         </div>
         <div class="player-name-input">
           <label id="labelPlayer1">Player 1:</label>
@@ -99,7 +99,7 @@
         </div>
       </div>
 
-      <button id="startBtn" class="btn-primary" aria-label="Start Quiz">Start Quiz</button>
+      <button id="startBtn" class="btn-primary">Start Quiz</button>
       <div id="loading" class="loading" style="display: none;">
         <div class="spinner"></div>
         <p id="loadingText">Generating quiz questions...</p>
@@ -277,27 +277,14 @@
         randomTopicBtn.style.display = 'none';
         customTopicBtn.style.display = 'block';
         
-        // HTML escaping function to prevent XSS
-        function escapeHtml(text) {
-          if (text == null) return '';
-          const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-          };
-          return String(text).replace(/[&<>"']/g, m => map[m]);
-        }
-        
         // Populate hidden select for compatibility
         topicDropdown.innerHTML = data.topics.map(topic => 
-          `<option value="${escapeHtml(topic)}">${escapeHtml(topic)}</option>`
+          `<option value="${topic}">${topic}</option>`
         ).join('');
         
         // Populate button group
         topicButtonGroup.innerHTML = data.topics.map((topic, idx) => 
-          `<button type="button" class="topic-option-btn ${idx === 0 ? 'active' : ''}" data-value="${escapeHtml(topic)}" data-group="topic">${escapeHtml(topic)}</button>`
+          `<button type="button" class="topic-option-btn ${idx === 0 ? 'active' : ''}" data-value="${topic}" data-group="topic">${topic}</button>`
         ).join('');
         
         // Set first topic as selected by default
@@ -317,14 +304,11 @@
         randomTopicBtn.disabled = false;
       } catch (error) {
         console.error('[VCVQ] Error generating topics:', error);
-        errorDiv.textContent = t('generateFailed', lang);
-        errorDiv.style.display = 'block';
         loading.style.display = 'none';
         randomTopicBtn.textContent = '✗';
         setTimeout(() => {
           randomTopicBtn.textContent = t('randomTopic', lang);
           randomTopicBtn.disabled = false;
-          errorDiv.style.display = 'none';
         }, 1500);
       }
     }
@@ -415,14 +399,11 @@
         }, 1500);
       } catch (error) {
         console.error('[VCVQ] Error generating names:', error);
-        errorDiv.textContent = t('generateFailed', lang);
-        errorDiv.style.display = 'block';
         loading.style.display = 'none';
         generateNamesBtn.textContent = '✗';
         setTimeout(() => {
           generateNamesBtn.textContent = t('generateNames', lang);
           generateNamesBtn.disabled = false;
-          errorDiv.style.display = 'none';
         }, 1500);
       }
     }

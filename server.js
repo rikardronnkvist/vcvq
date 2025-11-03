@@ -3,8 +3,6 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const os = require('os');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
-const helmet = require('helmet');
-const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -18,31 +16,6 @@ if (!API_KEY) {
 // Trust proxy when behind reverse proxy (Docker, nginx, load balancer, etc.)
 // This is required for accurate rate limiting by IP address
 app.set('trust proxy', 1); // Trust first proxy
-
-// Security headers
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for dynamic styling
-      imgSrc: ["'self'", "data:"],
-      fontSrc: ["'self'"],
-      connectSrc: ["'self'"],
-      frameSrc: ["'none'"],
-      objectSrc: ["'none'"],
-      baseUri: ["'self'"],
-      formAction: ["'self'"]
-    }
-  },
-  crossOriginEmbedderPolicy: false // Allow static assets
-}));
-
-// CORS configuration
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
-  credentials: true
-}));
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -75,19 +48,8 @@ const MODEL_NAMES = [
 // Get container/host information
 const HOSTNAME = os.hostname();
 
-// Visitor tracking - store first visit info with TTL
-const visitorInfo = new Map(); // Map<sessionId, {firstVisit: timestamp, ip, userAgent, resolution, expiresAt}>
-const VISITOR_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
-// Cleanup expired visitor entries every hour
-setInterval(() => {
-  const now = Date.now();
-  for (const [id, info] of visitorInfo.entries()) {
-    if (info.expiresAt && now > info.expiresAt) {
-      visitorInfo.delete(id);
-    }
-  }
-}, 60 * 60 * 1000); // Run every hour
+// Visitor tracking - store first visit info
+const visitorInfo = new Map(); // Map<sessionId, {firstVisit: timestamp, ip, userAgent, resolution}>
 
 app.use(express.json({ limit: '1mb' })); // Limit payload size
 
@@ -178,8 +140,7 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
       firstVisit: now,
       ip: clientIp,
       userAgent,
-      resolution: resolution ? `${resolution.width}x${resolution.height}` : 'Unknown',
-      expiresAt: Date.now() + VISITOR_TTL
+      resolution: resolution ? `${resolution.width}x${resolution.height}` : 'Unknown'
     });
     
     // Log first visit with full details
@@ -358,12 +319,7 @@ Rules:
 
     text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    let questions;
-    try {
-      questions = JSON.parse(text);
-    } catch (error) {
-      throw new Error(`Invalid JSON response from AI: ${error.message}`);
-    }
+    const questions = JSON.parse(text);
 
     if (!Array.isArray(questions) || questions.length !== numQuestions) {
       throw new Error(`Invalid response format: Expected ${numQuestions} questions`);
@@ -470,12 +426,7 @@ Rules:
 
     text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    let names;
-    try {
-      names = JSON.parse(text);
-    } catch (error) {
-      throw new Error(`Invalid JSON response from AI: ${error.message}`);
-    }
+    const names = JSON.parse(text);
 
     if (!Array.isArray(names) || names.length !== count) {
       throw new Error(`Invalid response format: Expected ${count} names`);
@@ -563,12 +514,7 @@ Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs"
 
     text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (error) {
-      throw new Error(`Invalid JSON response from AI: ${error.message}`);
-    }
+    const data = JSON.parse(text);
 
     if (count === 1) {
       if (!data.topic || typeof data.topic !== 'string') {

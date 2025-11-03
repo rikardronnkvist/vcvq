@@ -1,16 +1,3 @@
-// HTML escaping function to prevent XSS
-function escapeHtml(text) {
-  if (text == null) return '';
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  };
-  return String(text).replace(/[&<>"']/g, m => map[m]);
-}
-
 const gameState = JSON.parse(sessionStorage.getItem('gameState'));
 
 if (!gameState) {
@@ -55,8 +42,8 @@ function renderScoreboard() {
          style="border-color: ${playerColors[idx]}">
       <div class="player-number" style="background: ${playerColors[idx]}">${player.id}</div>
       <div class="player-info">
-        <div class="player-name">${escapeHtml(player.name)}</div>
-        <div class="player-points">${player.score} ${escapeHtml(t('points', language))}</div>
+        <div class="player-name">${player.name}</div>
+        <div class="player-points">${player.score} ${t('points', language)}</div>
       </div>
     </div>
   `).join('');
@@ -123,7 +110,7 @@ function renderQuestion() {
   answersGrid.innerHTML = shuffledOptions.map((item, displayIdx) => `
     <div class="answer-box" data-index="${item.originalIndex}" data-display-index="${displayIdx}">
       <div class="answer-number">${displayIdx + 1}</div>
-      <div class="answer-text">${escapeHtml(item.text)}</div>
+      <div class="answer-text">${item.text}</div>
     </div>
   `).join('');
 
@@ -411,8 +398,8 @@ function endGame() {
   const winners = players.filter(p => p.score === maxScore);
 
   const winnerText = winners.length === 1
-    ? `${escapeHtml(winners[0].name)} ${escapeHtml(t('winner', language))}! 🎉`
-    : `${escapeHtml(t('tie', language))}! 🎉`;
+    ? `${winners[0].name} ${t('winner', language)}! 🎉`
+    : `${t('tie', language)}! 🎉`;
 
   console.log(`[VCVQ] Winner(s): ${winners.map(w => w.name).join(', ')}`);
 
@@ -423,7 +410,7 @@ function endGame() {
     .sort((a, b) => b.score - a.score)
     .map((player) => `
       <div class="final-score" style="border-left: 4px solid ${playerColors[player.id - 1]}">
-        <span class="player-name">${escapeHtml(player.name)}</span>
+        <span class="player-name">${player.name}</span>
         <span class="score">${player.score}/${questions.length}</span>
       </div>
     `).join('');
