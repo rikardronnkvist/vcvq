@@ -47,33 +47,7 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Build the server's origin for comparison
-    const serverProtocol = process.env.SERVER_PROTOCOL || 'http';
-    const serverHost = process.env.SERVER_HOST || 'localhost';
-    const serverPort = String(process.env.PORT || PORT);
-    
-    // Construct expected same-origin URLs
-    const sameOrigins = [
-      `${serverProtocol}://${serverHost}:${serverPort}`,
-      `${serverProtocol}://${serverHost}`, // In case port is omitted
-    ];
-    
-    // Add default port variants if not using default ports
-    if (serverPort !== '80' && serverPort !== '443') {
-      // If accessing via default port, browser might omit it
-      if (serverProtocol === 'http') {
-        sameOrigins.push(`http://${serverHost}:80`);
-      } else if (serverProtocol === 'https') {
-        sameOrigins.push(`https://${serverHost}:443`);
-      }
-    }
-    
-    // Check if origin matches server's origin (same-origin request)
-    if (sameOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    
-    // If ALLOWED_ORIGINS is set, validate against the whitelist
+    // If ALLOWED_ORIGINS is set, validate against the whitelist first
     if (process.env.ALLOWED_ORIGINS) {
       const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
       if (allowedOrigins.includes(origin)) {
@@ -83,8 +57,19 @@ app.use(cors({
       return callback(new Error('Not allowed by CORS'));
     }
     
-    // No ALLOWED_ORIGINS configured: deny all cross-origin requests
-    // This prevents the permissive "allow all origins" default
+    // No ALLOWED_ORIGINS configured: allow localhost origins (common for local development/Docker)
+    // and deny other cross-origin requests
+    const localhostPatterns = [
+      /^http:\/\/localhost(:\d+)?$/,
+      /^http:\/\/127\.0\.0\.1(:\d+)?$/,
+      /^http:\/\/\[::1\](:\d+)?$/
+    ];
+    
+    if (localhostPatterns.some(pattern => pattern.test(origin))) {
+      return callback(null, true);
+    }
+    
+    // For non-localhost origins, require explicit ALLOWED_ORIGINS configuration
     return callback(new Error('CORS: ALLOWED_ORIGINS must be configured for cross-origin requests'));
   },
   credentials: true
