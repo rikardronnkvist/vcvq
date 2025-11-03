@@ -245,7 +245,7 @@ Health check endpoint for monitoring and orchestration.
 - `logo.png` displayed on start page
 
 ### Docker Configuration
-- Sample `.env.example` file
+- Sample environment configuration example file
 - Includes Gemini API key option
 - Port selection configuration
 

@@ -17,7 +17,7 @@ All API endpoints use `express-validator` middleware with the following rules:
 - **Topic count:** Integer between 1-20
 
 ### Implementation Reference
-See `server.js` validation middleware for all endpoints.
+See server-side validation middleware for all endpoints.
 
 ## Rate Limiting
 **Status: ✅ Implemented using express-rate-limit**
@@ -32,10 +32,10 @@ See `server.js` validation middleware for all endpoints.
 - IP-based tracking with proxy support
 
 ### Implementation Reference
-See `server.js`:
+See server-side code:
 - `apiLimiter` for general API endpoints
 - `strictApiLimiter` for AI generation endpoints
-- `app.set('trust proxy', 1)` for accurate IP detection
+- Trust proxy configuration for accurate IP detection
 
 ## Error Handling
 **Status: ✅ Implemented with environment-aware messages**
@@ -50,7 +50,7 @@ See `server.js`:
   - HTTP 503 status with errorCode: 'OVERLOADED' for frontend detection
 
 ### Implementation Reference
-See `server.js` error handling middleware.
+See server-side error handling middleware.
 
 ## Request Security
 **Status: ✅ Implemented**
@@ -66,8 +66,8 @@ See `server.js` error handling middleware.
 - See input validation section above
 
 ### Implementation Reference
-See `server.js`:
-- `app.use(express.json({ limit: '1mb' }))`
+See server-side code:
+- Payload size limits via express.json configuration
 - Validation middleware on all endpoints
 
 ## Log Security
@@ -88,9 +88,9 @@ See `server.js`:
 - Numeric values (even though validated)
 
 ### Implementation Reference
-See `server.js`:
+See server-side code:
 - `sanitizeLog()` helper function
-- Used before all `console.log()` calls with user data
+- Used before all logging calls with user data
 
 ## Security Scanning
 **Status: ✅ Implemented with GitHub CodeQL**
@@ -101,10 +101,10 @@ See `server.js`:
 - Detects common vulnerabilities and coding errors
 
 ### Workflow File
-`.github/workflows/codeql-analysis.yml`
+GitHub Actions workflow for CodeQL analysis
 
 ### Security Policy
-Defined in `SECURITY.md` for vulnerability reporting
+Defined in the security policy document for vulnerability reporting
 
 ### Access
 Security analysis results available in:
@@ -113,7 +113,7 @@ Security analysis results available in:
 - Automated weekly reports
 
 ### Documentation
-See `README.md` section "Security Analysis with GitHub CodeQL" for setup instructions.
+See project README section "Security Analysis with GitHub CodeQL" for setup instructions.
 
 ## Health Monitoring
 **Status: ✅ Implemented**
@@ -137,7 +137,7 @@ See `README.md` section "Security Analysis with GitHub CodeQL" for setup instruc
 - Service uptime tracking
 
 ### Implementation Reference
-See `server.js` health endpoint handler.
+See server-side health endpoint handler.
 
 ## Docker Security & Optimization
 **Status: ✅ Implemented in Dockerfile**
@@ -157,7 +157,7 @@ See `server.js` health endpoint handler.
 - Security-focused final stage
 
 ### Implementation Reference
-See `Dockerfile` and `docker-compose.yml`.
+See Docker configuration files.
 
 ## Environment Configuration
 **Status: ✅ Implemented**
@@ -168,12 +168,12 @@ See `Dockerfile` and `docker-compose.yml`.
 - `NODE_ENV`: Environment mode (development/production)
 
 ### Secrets Management
-- `.env` file excluded from git (via `.gitignore`)
-- `.env.example` provided as template
+- Environment file excluded from git (via gitignore)
+- Environment example file provided as template
 - No hardcoded secrets in codebase
 
 ### Implementation Reference
-See `.env.example` and `server.js` environment variable usage.
+See environment configuration example and server-side environment variable usage.
 
 ## API Security Summary
 

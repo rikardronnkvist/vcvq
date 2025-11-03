@@ -63,7 +63,7 @@
 - Use `console.error()` for errors
 - All user-controlled values must be sanitized before logging using `sanitizeLog()` helper function
 - Prevent log injection attacks (CWE-117)
-- See `server.js` for sanitization implementation
+- See server-side code for sanitization implementation
 
 ### Error Handling
 - Environment-aware error messages
@@ -93,7 +93,7 @@
 - Security options: `no-new-privileges` flag
 
 ### Environment Variables
-Create `.env` file from `.env.example`:
+Create environment file from the example template:
 ```env
 GEMINI_API_KEY=your_actual_api_key_here
 PORT=3030
@@ -111,6 +111,8 @@ docker-compose logs -f
 # Stop container
 docker-compose down
 ```
+
+Note: Use docker-compose commands as appropriate for your Docker setup.
 
 ## Testing
 
