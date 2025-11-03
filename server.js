@@ -23,7 +23,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts (needed for inline script tags)
       styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for dynamic styling
       imgSrc: ["'self'", "data:"],
       fontSrc: ["'self'"],
