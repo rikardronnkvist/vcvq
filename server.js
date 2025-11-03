@@ -40,45 +40,55 @@ app.use(helmet({
 
 // CORS configuration
 // Default to same-origin only for security. Set ALLOWED_ORIGINS env var for cross-origin access.
-app.use(cors({
-  origin: (origin, callback) => {
-    // Requests without Origin header (same-origin navigation, direct requests) are allowed
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    // If ALLOWED_ORIGINS is set, validate against the whitelist first
-    if (process.env.ALLOWED_ORIGINS) {
-      const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
-      if (allowedOrigins.includes(origin)) {
+app.use((req, res, next) => {
+  cors({
+    origin: (origin, callback) => {
+      // Requests without Origin header (same-origin navigation, direct requests) are allowed
+      if (!origin) {
         return callback(null, true);
       }
-      // Origin not in whitelist, deny
-      return callback(new Error('Not allowed by CORS'));
-    }
-    
-    // No ALLOWED_ORIGINS configured: allow localhost origins (common for local development/Docker)
-    // and deny other cross-origin requests
-    try {
-      const originUrl = new URL(origin);
-      const hostname = originUrl.hostname.toLowerCase();
       
-      // Allow localhost variants
-      if (hostname === 'localhost' || 
-          hostname === '127.0.0.1' || 
-          hostname === '[::1]' ||
-          hostname === '::1') {
-        return callback(null, true);
+      // If ALLOWED_ORIGINS is set, validate against the whitelist first
+      if (process.env.ALLOWED_ORIGINS) {
+        const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        // Origin not in whitelist, deny
+        return callback(new Error('Not allowed by CORS'));
       }
-    } catch (error) {
-      // Invalid URL format, continue to deny
-    }
-    
-    // For non-localhost origins, require explicit ALLOWED_ORIGINS configuration
-    return callback(new Error('CORS: ALLOWED_ORIGINS must be configured for cross-origin requests'));
-  },
-  credentials: true
-}));
+      
+      // No ALLOWED_ORIGINS configured: allow localhost origins and check if same-origin
+      try {
+        const originUrl = new URL(origin);
+        const hostname = originUrl.hostname.toLowerCase();
+        
+        // Allow localhost variants
+        if (hostname === 'localhost' || 
+            hostname === '127.0.0.1' || 
+            hostname === '[::1]' ||
+            hostname === '::1') {
+          return callback(null, true);
+        }
+        
+        // Check if origin matches request host (same-origin)
+        const requestHost = req.get('host');
+        if (requestHost) {
+          const requestHostname = requestHost.split(':')[0].toLowerCase();
+          if (hostname === requestHostname) {
+            return callback(null, true);
+          }
+        }
+      } catch (error) {
+        // Invalid URL format, continue to deny
+      }
+      
+      // For non-localhost/non-same-origin requests, require explicit ALLOWED_ORIGINS configuration
+      return callback(new Error('CORS: ALLOWED_ORIGINS must be configured for cross-origin requests'));
+    },
+    credentials: true
+  })(req, res, next);
+});
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
