@@ -125,6 +125,31 @@ function sanitizeLog(value, maxLength = 200) {
   return str.replace(/[\r\n\t\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
 }
 
+// Helper function to sanitize topic for AI prompts (prevents prompt injection)
+// Removes prompt injection attempts and sanitizes the input
+function sanitizePromptInput(topic) {
+  if (!topic) return '';
+  let sanitized = String(topic);
+  
+  // Remove common prompt injection patterns
+  // Remove newlines and carriage returns
+  sanitized = sanitized.replace(/[\r\n]/g, ' ');
+  // Remove common injection keywords/patterns
+  sanitized = sanitized.replace(/\b(ignore|forget|override|system|admin|assistant|instructions|prompt|role|persona)\s+(previous|above|instructions|all|the|this)\b/gi, '');
+  // Remove multiple consecutive spaces
+  sanitized = sanitized.replace(/\s+/g, ' ').trim();
+  
+  // Limit length to prevent overly long prompts
+  return sanitized.substring(0, 200);
+}
+
+// Helper function to validate visitorId format
+function isValidVisitorId(visitorId) {
+  if (!visitorId || typeof visitorId !== 'string') return false;
+  // Visitor ID should be alphanumeric, 8 characters max (as generated)
+  return /^[a-z0-9]{1,20}$/i.test(visitorId);
+}
+
 // Log user agent for page requests
 app.use((req, res, next) => {
   // Only log for HTML page requests, not static assets
@@ -156,6 +181,11 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   const { resolution, viewport, page, visitorId } = req.body || {};
   const clientIp = getClientIp(req);
   const logIp = shouldLogClientIp();
+  
+  // Validate visitorId if provided
+  if (visitorId && !isValidVisitorId(visitorId)) {
+    return res.status(400).json({ error: 'Invalid visitor ID format' });
+  }
   
   // Check if this is a first visit (no visitorId) or returning visitor
   if (!visitorId) {
@@ -296,13 +326,22 @@ app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('[VCVQ] Validation errors:', errors.array());
+      const isDevelopment = process.env.NODE_ENV === 'development';
       return res.status(400).json({ 
         error: 'Validation failed', 
-        details: errors.array().map(e => e.msg).join(', ')
+        ...(isDevelopment && { details: errors.array().map(e => e.msg).join(', ') })
       });
     }
 
     const { topic, language, numQuestions = 10, numAnswers = 6, visitorId } = req.body;
+    
+    // Validate visitorId if provided
+    if (visitorId && !isValidVisitorId(visitorId)) {
+      return res.status(400).json({ error: 'Invalid visitor ID format' });
+    }
+    
+    // Sanitize topic for prompt injection prevention
+    const sanitizedTopicForPrompt = sanitizePromptInput(topic);
     
     const sanitizedTopic = sanitizeLog(topic);
     const sanitizedLanguage = sanitizeLog(language);
@@ -321,7 +360,7 @@ app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (
 
     const prompt = `${langInstruction}
 
-Create exactly ${numQuestions} multiple-choice quiz questions about: ${topic}
+Create exactly ${numQuestions} multiple-choice quiz questions about: ${sanitizedTopicForPrompt}
 
 IMPORTANT: You must respond ONLY with valid JSON. Do not include any markdown formatting, code blocks, or explanatory text.
 
@@ -407,13 +446,22 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('[VCVQ] Validation errors:', errors.array());
+      const isDevelopment = process.env.NODE_ENV === 'development';
       return res.status(400).json({ 
         error: 'Validation failed', 
-        details: errors.array().map(e => e.msg).join(', ')
+        ...(isDevelopment && { details: errors.array().map(e => e.msg).join(', ') })
       });
     }
 
     const { language, count, topic, visitorId } = req.body;
+    
+    // Validate visitorId if provided
+    if (visitorId && !isValidVisitorId(visitorId)) {
+      return res.status(400).json({ error: 'Invalid visitor ID format' });
+    }
+    
+    // Sanitize topic for prompt injection prevention
+    const sanitizedTopicForPrompt = topic ? sanitizePromptInput(topic) : '';
     
     const sanitizedTopic = sanitizeLog(topic);
     const sanitizedLanguage = sanitizeLog(language);
@@ -427,10 +475,10 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
       en: ['Driver', 'Front Passenger', 'Right Back Passenger', 'Left Back Passenger', 'Middle Back Passenger']
     };
 
-    const topicContext = topic 
+    const topicContext = sanitizedTopicForPrompt 
       ? (language === 'en' 
-        ? ` The quiz topic is "${topic}", so make the names relate to both the car position AND the quiz topic.`
-        : ` Quizämnet är "${topic}", så gör namnen relaterade till både bilpositionen OCH quizämnet.`)
+        ? ` The quiz topic is "${sanitizedTopicForPrompt}", so make the names relate to both the car position AND the quiz topic.`
+        : ` Quizämnet är "${sanitizedTopicForPrompt}", så gör namnen relaterade till både bilpositionen OCH quizämnet.`)
       : '';
 
     const langInstruction = language === 'en' 
@@ -507,13 +555,19 @@ app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('[VCVQ] Validation errors:', errors.array());
+      const isDevelopment = process.env.NODE_ENV === 'development';
       return res.status(400).json({ 
         error: 'Validation failed', 
-        details: errors.array().map(e => e.msg).join(', ')
+        ...(isDevelopment && { details: errors.array().map(e => e.msg).join(', ') })
       });
     }
 
     const { language, count = 1, visitorId } = req.body;
+    
+    // Validate visitorId if provided
+    if (visitorId && !isValidVisitorId(visitorId)) {
+      return res.status(400).json({ error: 'Invalid visitor ID format' });
+    }
     
     const sanitizedLanguage = sanitizeLog(language);
     const sanitizedCount = sanitizeLog(count);

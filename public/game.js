@@ -11,7 +11,21 @@ function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
-const gameState = JSON.parse(sessionStorage.getItem('gameState'));
+let gameState;
+try {
+  const gameStateStr = sessionStorage.getItem('gameState');
+  if (!gameStateStr) {
+    console.error('[VCVQ] No game state found, redirecting to index');
+    window.location.href = 'index.html';
+    throw new Error('No game state'); // Prevent further execution
+  }
+  gameState = JSON.parse(gameStateStr);
+} catch (error) {
+  console.error('[VCVQ] Error parsing game state:', error);
+  sessionStorage.removeItem('gameState');
+  window.location.href = 'index.html';
+  throw error; // Prevent further execution
+}
 
 if (!gameState) {
   console.error('[VCVQ] No game state found, redirecting to index');
