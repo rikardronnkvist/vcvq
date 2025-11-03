@@ -39,8 +39,28 @@ app.use(helmet({
 }));
 
 // CORS configuration
+// Default to same-origin only for security. Set ALLOWED_ORIGINS env var for cross-origin access.
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
+  origin: (origin, callback) => {
+    // Same-origin requests don't have an Origin header, allow them
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // If ALLOWED_ORIGINS is set, validate against the whitelist
+    if (process.env.ALLOWED_ORIGINS) {
+      const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      // Origin not in whitelist, deny
+      return callback(new Error('Not allowed by CORS'));
+    }
+    
+    // No ALLOWED_ORIGINS configured: deny all cross-origin requests
+    // This prevents the permissive "allow all origins" default
+    return callback(new Error('CORS: ALLOWED_ORIGINS must be configured for cross-origin requests'));
+  },
   credentials: true
 }));
 
