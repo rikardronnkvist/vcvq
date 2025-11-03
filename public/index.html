@@ -72,19 +72,6 @@
             <option value="50">50</option>
           </select>
         </div>
-        <div class="inline-field">
-          <label for="answerCount" id="labelAnswerCount">Number of Answers:</label>
-          <div class="button-group" id="answerCountGroup">
-            <button type="button" class="option-btn" data-value="4" data-group="answerCount">4</button>
-            <button type="button" class="option-btn active" data-value="6" data-group="answerCount">6</button>
-            <button type="button" class="option-btn" data-value="8" data-group="answerCount">8</button>
-          </div>
-          <select id="answerCount" style="display: none;">
-            <option value="4">4</option>
-            <option value="6" selected>6</option>
-            <option value="8">8</option>
-          </select>
-        </div>
       </div>
 
       <div id="playerNames">
@@ -221,7 +208,6 @@
       document.getElementById('customTopicBtn').textContent = t('customTopic', lang);
       document.getElementById('labelPlayerCount').textContent = t('numberOfPlayers', lang) + ':';
       document.getElementById('labelQuestionCount').textContent = t('numberOfQuestions', lang) + ':';
-      document.getElementById('labelAnswerCount').textContent = t('numberOfAnswers', lang) + ':';
       document.getElementById('labelPlayerNames').textContent = t('playerNames', lang) + ':';
       document.getElementById('generateNamesBtn').textContent = t('generateNames', lang);
       startBtn.textContent = t('startQuiz', lang);
@@ -422,16 +408,6 @@
         });
       });
       
-      // Answer count buttons
-      document.querySelectorAll('#answerCountGroup .option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#answerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const select = document.getElementById('answerCount');
-          select.value = btn.dataset.value;
-          select.dispatchEvent(new Event('change'));
-        });
-      });
     }
     
     // Initialize button groups
@@ -465,7 +441,7 @@
       const topic = getCurrentTopic();
       const playerCount = parseInt(playerCountSelect.value);
       const questionCount = parseInt(document.getElementById('questionCount').value);
-      const answerCount = parseInt(document.getElementById('answerCount').value);
+      const answerCount = 6; // Fixed to 6 answers
       const language = languageSelect.value;
       
       console.log(`[VCVQ] Starting quiz - Topic: ${topic}, Players: ${playerCount}, Questions: ${questionCount}, Answers: ${answerCount}, Language: ${language}`);
@@ -556,13 +532,6 @@
         document.querySelectorAll('#questionCountGroup .option-btn').forEach(b => b.classList.remove('active'));
         const questionBtn = document.querySelector(`#questionCountGroup .option-btn[data-value="${questionCountValue}"]`);
         if (questionBtn) questionBtn.classList.add('active');
-        
-        // Restore answer count
-        const answerCountValue = (settings.numAnswers || 6).toString();
-        document.getElementById('answerCount').value = answerCountValue;
-        document.querySelectorAll('#answerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
-        const answerBtn = document.querySelector(`#answerCountGroup .option-btn[data-value="${answerCountValue}"]`);
-        if (answerBtn) answerBtn.classList.add('active');
         
         // Update player inputs visibility
         const event = new Event('change');
