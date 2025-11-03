@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 const helmet = require('helmet');
 const cors = require('cors');
+const { translations, t, getPositions } = require('./public/i18n.js');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -397,9 +398,7 @@ app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (
     const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
     console.log(`[VCVQ] Generating quiz - Topic: ${sanitizedTopic}, Language: ${sanitizedLanguage}, Questions: ${sanitizedNumQuestions}, Answers: ${sanitizedNumAnswers}${visitorInfoStr}`);
 
-    const langInstruction = language === 'en' 
-      ? 'Generate questions in English.'
-      : 'Generera frågor på svenska.';
+    const langInstruction = t('aiQuizInstruction', language);
 
     const maxAnswerIndex = numAnswers - 1;
     const exampleOptions = Array.from({ length: numAnswers }, (_, i) => `Option ${i + 1}`);
@@ -516,22 +515,14 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
     const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
     console.log(`[VCVQ] Generating ${sanitizedCount} player names in ${sanitizedLanguage} for topic: ${sanitizedTopic}${visitorInfoStr}`);
 
-    const positions = {
-      sv: ['Förare', 'Fram passagerare', 'Höger bak', 'Vänster bak', 'Mitten bak'],
-      en: ['Driver', 'Front Passenger', 'Right Back Passenger', 'Left Back Passenger', 'Middle Back Passenger']
-    };
-
+    const positions = getPositions(language);
+    const positionList = positions.slice(0, count);
+    
     const topicContext = sanitizedTopicForPrompt 
-      ? (language === 'en' 
-        ? ` The quiz topic is "${sanitizedTopicForPrompt}", so make the names relate to both the car position AND the quiz topic.`
-        : ` Quizämnet är "${sanitizedTopicForPrompt}", så gör namnen relaterade till både bilpositionen OCH quizämnet.`)
+      ? t('aiPlayerNamesTopicContext', language, sanitizedTopicForPrompt)
       : '';
-
-    const langInstruction = language === 'en' 
-      ? `Generate exactly ${count} funny, creative names in English for car passengers in these positions:${topicContext}`
-      : `Generera exakt ${count} roliga, kreativa namn på svenska för bilpassagerare i dessa positioner:${topicContext}`;
-
-    const positionList = positions[language].slice(0, count);
+    
+    const langInstruction = t('aiPlayerNamesInstruction', language, count, topicContext);
     
     const prompt = `${langInstruction}
 ${positionList.map((pos, i) => `${i + 1}. ${pos}`).join('\n')}
@@ -545,7 +536,7 @@ Rules:
 - Names should be funny, memorable, and family-friendly
 - Names should relate to the car position${topic ? ' AND the quiz topic' : ' or driving context'}
 - Keep names short (1-2 words max)
-- Make them culturally appropriate for ${language === 'sv' ? 'Swedish' : 'English'} speakers
+- Make them culturally appropriate for ${t('languageName', language)} speakers
 - Be creative and fun!`;
 
     let text = await tryGenerateWithModels(prompt);
@@ -621,9 +612,7 @@ app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async
     const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
     console.log(`[VCVQ] Generating ${sanitizedCount} random funny topic(s) in ${sanitizedLanguage}${visitorInfoStr}`);
     
-    const langInstruction = language === 'en' 
-      ? `Generate ${count} funny, creative, and entertaining quiz topics in English.`
-      : `Generera ${count} roliga, kreativa och underhållande quizämnen på svenska.`;
+    const langInstruction = t('aiTopicsInstruction', language, count);
 
     const responseFormat = count === 1 
       ? '{\n  "topic": "Your funny topic here"\n}'

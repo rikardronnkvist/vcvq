@@ -1,4 +1,5 @@
 // Internationalization strings for VCVQ
+// Works on both client-side (browser) and server-side (Node.js)
 const translations = {
   sv: {
     // Landing page
@@ -54,7 +55,20 @@ const translations = {
     logoAlt: 'VCVQ Logotyp',
     
     // Answer options
-    answers: 'svar'
+    answers: 'svar',
+    
+    // Server-side: AI prompt instructions
+    aiQuizInstruction: 'Generera frågor på svenska.',
+    aiPlayerNamesInstruction: (count, topicContext) => 
+      `Generera exakt ${count} roliga, kreativa namn på svenska för bilpassagerare i dessa positioner:${topicContext}`,
+    aiPlayerNamesTopicContext: (topic) => 
+      ` Quizämnet är "${topic}", så gör namnen relaterade till både bilpositionen OCH quizämnet.`,
+    aiTopicsInstruction: (count) => 
+      `Generera ${count} roliga, kreativa och underhållande quizämnen på svenska.`,
+    aiCulturalContext: 'Swedish',
+    
+    // Server-side: Language name for prompts
+    languageName: 'Swedish'
   },
   en: {
     // Landing page
@@ -110,11 +124,59 @@ const translations = {
     logoAlt: 'VCVQ Logo',
     
     // Answer options
-    answers: 'answers'
+    answers: 'answers',
+    
+    // Server-side: AI prompt instructions
+    aiQuizInstruction: 'Generate questions in English.',
+    aiPlayerNamesInstruction: (count, topicContext) => 
+      `Generate exactly ${count} funny, creative names in English for car passengers in these positions:${topicContext}`,
+    aiPlayerNamesTopicContext: (topic) => 
+      ` The quiz topic is "${topic}", so make the names relate to both the car position AND the quiz topic.`,
+    aiTopicsInstruction: (count) => 
+      `Generate ${count} funny, creative, and entertaining quiz topics in English.`,
+    aiCulturalContext: 'English',
+    
+    // Server-side: Language name for prompts
+    languageName: 'English'
   }
 };
 
-function t(key, lang = 'en') {
-  return translations[lang]?.[key] || translations.en[key] || key;
+// Helper function to get player positions array
+function getPositions(lang = 'en') {
+  const langTranslations = translations[lang] || translations.en;
+  return [
+    langTranslations.position1,
+    langTranslations.position2,
+    langTranslations.position3,
+    langTranslations.position4,
+    langTranslations.position5
+  ];
+}
+
+function t(key, lang = 'en', ...args) {
+  const langTranslations = translations[lang] || translations.en;
+  const value = langTranslations[key];
+  
+  // Handle function values (for server-side prompt instructions)
+  if (typeof value === 'function') {
+    // If called from server-side (Node.js), execute the function with arguments
+    if (typeof module !== 'undefined' && module.exports) {
+      return value(...args);
+    }
+    // For client-side, return the key if it's a function
+    // Functions should only be called server-side
+    return key;
+  }
+  
+  return value || translations.en[key] || key;
+}
+
+// Export for Node.js (server-side)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    translations,
+    t,
+    getPositions
+  };
 }
 
