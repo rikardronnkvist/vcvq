@@ -319,7 +319,12 @@ Rules:
 
     text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    const questions = JSON.parse(text);
+    let questions;
+    try {
+      questions = JSON.parse(text);
+    } catch (error) {
+      throw new Error(`Invalid JSON response from AI: ${error.message}`);
+    }
 
     if (!Array.isArray(questions) || questions.length !== numQuestions) {
       throw new Error(`Invalid response format: Expected ${numQuestions} questions`);
@@ -426,7 +431,12 @@ Rules:
 
     text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    const names = JSON.parse(text);
+    let names;
+    try {
+      names = JSON.parse(text);
+    } catch (error) {
+      throw new Error(`Invalid JSON response from AI: ${error.message}`);
+    }
 
     if (!Array.isArray(names) || names.length !== count) {
       throw new Error(`Invalid response format: Expected ${count} names`);
@@ -514,7 +524,12 @@ Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs"
 
     text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    const data = JSON.parse(text);
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (error) {
+      throw new Error(`Invalid JSON response from AI: ${error.message}`);
+    }
 
     if (count === 1) {
       if (!data.topic || typeof data.topic !== 'string') {
