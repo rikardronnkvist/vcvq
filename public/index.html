@@ -38,11 +38,10 @@
       <div class="form-group form-group-inline">
         <div class="inline-field">
           <label for="playerCount" id="labelPlayerCount">Number of Players:</label>
-          <div class="button-group" id="playerCountGroup">
-            <button type="button" class="option-btn" data-value="2" data-group="playerCount">2</button>
-            <button type="button" class="option-btn" data-value="3" data-group="playerCount">3</button>
-            <button type="button" class="option-btn" data-value="4" data-group="playerCount">4</button>
-            <button type="button" class="option-btn" data-value="5" data-group="playerCount">5</button>
+          <div class="number-selector">
+            <button type="button" class="number-btn" id="playerCountDecrease">−</button>
+            <div class="number-display" id="playerCountDisplay">2</div>
+            <button type="button" class="number-btn" id="playerCountIncrease">+</button>
           </div>
           <select id="playerCount" style="display: none;">
             <option value="2" selected>2</option>
@@ -53,14 +52,10 @@
         </div>
         <div class="inline-field">
           <label for="questionCount" id="labelQuestionCount">Number of Questions:</label>
-          <div class="button-group" id="questionCountGroup">
-            <button type="button" class="option-btn" data-value="5" data-group="questionCount">5</button>
-            <button type="button" class="option-btn active" data-value="10" data-group="questionCount">10</button>
-            <button type="button" class="option-btn" data-value="15" data-group="questionCount">15</button>
-            <button type="button" class="option-btn" data-value="20" data-group="questionCount">20</button>
-            <button type="button" class="option-btn" data-value="25" data-group="questionCount">25</button>
-            <button type="button" class="option-btn" data-value="30" data-group="questionCount">30</button>
-            <button type="button" class="option-btn" data-value="50" data-group="questionCount">50</button>
+          <div class="number-selector">
+            <button type="button" class="number-btn" id="questionCountDecrease">−</button>
+            <div class="number-display" id="questionCountDisplay">10</div>
+            <button type="button" class="number-btn" id="questionCountIncrease">+</button>
           </div>
           <select id="questionCount" style="display: none;">
             <option value="5">5</option>
@@ -69,6 +64,9 @@
             <option value="20">20</option>
             <option value="25">25</option>
             <option value="30">30</option>
+            <option value="35">35</option>
+            <option value="40">40</option>
+            <option value="45">45</option>
             <option value="50">50</option>
           </select>
         </div>
@@ -384,40 +382,83 @@
       }
     }
 
+    // Question count state (needs to be accessible globally for restore functionality)
+    let currentQuestionCount = 10; // Default value
+    
+    // Player count state (needs to be accessible globally for restore functionality)
+    let currentPlayerCount = 2; // Default value
+    
     // Set up button group handlers for all option groups
     function setupButtonGroups() {
-      // Player count buttons
-      document.querySelectorAll('#playerCountGroup .option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#playerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const select = document.getElementById('playerCount');
-          select.value = btn.dataset.value;
-          select.dispatchEvent(new Event('change'));
-        });
+      // Player count +/- buttons
+      const playerCountDisplay = document.getElementById('playerCountDisplay');
+      const playerCountSelect = document.getElementById('playerCount');
+      const playerCountDecrease = document.getElementById('playerCountDecrease');
+      const playerCountIncrease = document.getElementById('playerCountIncrease');
+      
+      function updatePlayerCountDisplay() {
+        playerCountDisplay.textContent = currentPlayerCount;
+        playerCountSelect.value = currentPlayerCount;
+        playerCountSelect.dispatchEvent(new Event('change'));
+        
+        // Update button disabled states
+        playerCountDecrease.disabled = currentPlayerCount <= 2;
+        playerCountIncrease.disabled = currentPlayerCount >= 5;
+      }
+      
+      playerCountDecrease.addEventListener('click', () => {
+        if (currentPlayerCount > 2) {
+          currentPlayerCount = Math.max(2, currentPlayerCount - 1);
+          updatePlayerCountDisplay();
+        }
       });
       
-      // Question count buttons
-      document.querySelectorAll('#questionCountGroup .option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#questionCountGroup .option-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const select = document.getElementById('questionCount');
-          select.value = btn.dataset.value;
-          select.dispatchEvent(new Event('change'));
-        });
+      playerCountIncrease.addEventListener('click', () => {
+        if (currentPlayerCount < 5) {
+          currentPlayerCount = Math.min(5, currentPlayerCount + 1);
+          updatePlayerCountDisplay();
+        }
       });
       
+      // Initialize display and button states
+      updatePlayerCountDisplay();
+      
+      // Question count +/- buttons
+      const questionCountDisplay = document.getElementById('questionCountDisplay');
+      const questionCountSelect = document.getElementById('questionCount');
+      const questionCountDecrease = document.getElementById('questionCountDecrease');
+      const questionCountIncrease = document.getElementById('questionCountIncrease');
+      
+      function updateQuestionCountDisplay() {
+        questionCountDisplay.textContent = currentQuestionCount;
+        questionCountSelect.value = currentQuestionCount;
+        questionCountSelect.dispatchEvent(new Event('change'));
+        
+        // Update button disabled states
+        questionCountDecrease.disabled = currentQuestionCount <= 5;
+        questionCountIncrease.disabled = currentQuestionCount >= 50;
+      }
+      
+      questionCountDecrease.addEventListener('click', () => {
+        if (currentQuestionCount > 5) {
+          currentQuestionCount = Math.max(5, currentQuestionCount - 5);
+          updateQuestionCountDisplay();
+        }
+      });
+      
+      questionCountIncrease.addEventListener('click', () => {
+        if (currentQuestionCount < 50) {
+          currentQuestionCount = Math.min(50, currentQuestionCount + 5);
+          updateQuestionCountDisplay();
+        }
+      });
+      
+      // Initialize display and button states
+      updateQuestionCountDisplay();
     }
     
     // Initialize button groups
     setupButtonGroups();
-    
-    // Set initial active state for player count (default is 2)
-    const initialPlayerBtn = document.querySelector('#playerCountGroup .option-btn[data-value="2"]');
-    if (initialPlayerBtn) {
-      initialPlayerBtn.classList.add('active');
-    }
     
     const playerCountSelect = document.getElementById('playerCount');
     playerCountSelect.addEventListener('change', updatePlayerInputs);
@@ -520,18 +561,29 @@
         // Restore topic
         document.getElementById('topicInput').value = settings.topic || '';
         
-        // Restore player count
-        const playerCountValue = settings.players.length.toString();
-        document.getElementById('playerCount').value = playerCountValue;
-        document.querySelectorAll('#playerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector(`#playerCountGroup .option-btn[data-value="${playerCountValue}"]`).classList.add('active');
+        // Restore player count (clamp to valid range 2-5)
+        const playerCountValue = settings.players.length || 2;
+        currentPlayerCount = Math.max(2, Math.min(5, playerCountValue));
+        const playerCountDisplay = document.getElementById('playerCountDisplay');
+        const playerCountSelect = document.getElementById('playerCount');
+        const playerCountDecrease = document.getElementById('playerCountDecrease');
+        const playerCountIncrease = document.getElementById('playerCountIncrease');
+        playerCountDisplay.textContent = currentPlayerCount;
+        playerCountSelect.value = currentPlayerCount;
+        playerCountDecrease.disabled = currentPlayerCount <= 2;
+        playerCountIncrease.disabled = currentPlayerCount >= 5;
         
-        // Restore question count
-        const questionCountValue = (settings.numQuestions || 10).toString();
-        document.getElementById('questionCount').value = questionCountValue;
-        document.querySelectorAll('#questionCountGroup .option-btn').forEach(b => b.classList.remove('active'));
-        const questionBtn = document.querySelector(`#questionCountGroup .option-btn[data-value="${questionCountValue}"]`);
-        if (questionBtn) questionBtn.classList.add('active');
+        // Restore question count (clamp to valid range 5-50)
+        const questionCountValue = settings.numQuestions || 10;
+        currentQuestionCount = Math.max(5, Math.min(50, questionCountValue));
+        const questionCountDisplay = document.getElementById('questionCountDisplay');
+        const questionCountSelect = document.getElementById('questionCount');
+        const questionCountDecrease = document.getElementById('questionCountDecrease');
+        const questionCountIncrease = document.getElementById('questionCountIncrease');
+        questionCountDisplay.textContent = currentQuestionCount;
+        questionCountSelect.value = currentQuestionCount;
+        questionCountDecrease.disabled = currentQuestionCount <= 5;
+        questionCountIncrease.disabled = currentQuestionCount >= 50;
         
         // Update player inputs visibility
         const event = new Event('change');
@@ -547,11 +599,16 @@
         // Backwards compatibility with old restart method
         console.log('[VCVQ] Restoring players from previous game (old method)');
         const players = JSON.parse(oldRestartPlayers);
-        const playerCountValue = players.length.toString();
-        document.getElementById('playerCount').value = playerCountValue;
-        document.querySelectorAll('#playerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
-        const playerBtn = document.querySelector(`#playerCountGroup .option-btn[data-value="${playerCountValue}"]`);
-        if (playerBtn) playerBtn.classList.add('active');
+        const playerCountValue = players.length || 2;
+        currentPlayerCount = Math.max(2, Math.min(5, playerCountValue));
+        const playerCountDisplay = document.getElementById('playerCountDisplay');
+        const playerCountSelect = document.getElementById('playerCount');
+        const playerCountDecrease = document.getElementById('playerCountDecrease');
+        const playerCountIncrease = document.getElementById('playerCountIncrease');
+        playerCountDisplay.textContent = currentPlayerCount;
+        playerCountSelect.value = currentPlayerCount;
+        playerCountDecrease.disabled = currentPlayerCount <= 2;
+        playerCountIncrease.disabled = currentPlayerCount >= 5;
         
         const event = new Event('change');
         document.getElementById('playerCount').dispatchEvent(event);
