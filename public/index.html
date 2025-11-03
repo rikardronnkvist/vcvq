@@ -232,7 +232,7 @@
       const lang = languageSelect.value;
       const randomTopicBtn = document.getElementById('randomTopicBtn');
       
-      console.log(`[VCVQ] Generating 10 random topics in ${lang}`);
+      console.log(`[VCVQ] Generating 15 random topics in ${lang}`);
       randomTopicBtn.disabled = true;
       
       // Show loading overlay
@@ -244,7 +244,7 @@
         const response = await fetch('/api/generate-topic', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang, count: 10, visitorId: visitorId })
+          body: JSON.stringify({ language: lang, count: 15, visitorId: visitorId })
         });
 
         if (!response.ok) {
