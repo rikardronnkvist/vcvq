@@ -10,6 +10,7 @@ let currentQuestionIndex = 0;
 let currentPlayerIndex = gameState.currentPlayer || 0;
 const initialStartingPlayer = gameState.currentPlayer || 0; // Track the random starting player
 let playerAnswers = {}; // Tracks which players have answered the current question
+let answerShuffles = {}; // Maps question index to shuffled order: { originalIndex: shuffledIndex }
 
 // Player colors - vibrant retro theme matching logo
 const playerColors = ['#FF2E97', '#00D9FF', '#FFD700', '#FF8C00', '#9B59B6'];
@@ -48,6 +49,16 @@ function renderScoreboard() {
   `).join('');
 }
 
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 function renderQuestion() {
   if (currentQuestionIndex >= questions.length) {
     console.log('[VCVQ] All questions answered, ending game');
@@ -73,11 +84,33 @@ function renderQuestion() {
   document.getElementById('turnIndicator').textContent = 
     `${currentPlayer.name}${t('turn', language)}`;
 
+  // Create shuffled order for this question (if not already created)
+  if (!answerShuffles[currentQuestionIndex]) {
+    const originalIndices = question.options.map((_, idx) => idx);
+    const shuffledIndices = shuffleArray(originalIndices);
+    
+    // Create mapping: originalIndex -> shuffledIndex
+    answerShuffles[currentQuestionIndex] = {};
+    shuffledIndices.forEach((originalIdx, shuffledIdx) => {
+      answerShuffles[currentQuestionIndex][originalIdx] = shuffledIdx;
+    });
+    
+    console.log(`[VCVQ] Shuffled answer order for question ${currentQuestionIndex + 1}:`, shuffledIndices);
+  }
+
+  // Get shuffled order
+  const shuffleMap = answerShuffles[currentQuestionIndex];
+  const shuffledOptions = question.options.map((option, originalIdx) => ({
+    text: option,
+    originalIndex: originalIdx,
+    shuffledIndex: shuffleMap[originalIdx]
+  })).sort((a, b) => a.shuffledIndex - b.shuffledIndex);
+
   const answersGrid = document.getElementById('answersGrid');
-  answersGrid.innerHTML = question.options.map((option, idx) => `
-    <div class="answer-box" data-index="${idx}">
-      <div class="answer-number">${idx + 1}</div>
-      <div class="answer-text">${option}</div>
+  answersGrid.innerHTML = shuffledOptions.map((item, displayIdx) => `
+    <div class="answer-box" data-index="${item.originalIndex}" data-display-index="${displayIdx}">
+      <div class="answer-number">${displayIdx + 1}</div>
+      <div class="answer-text">${item.text}</div>
     </div>
   `).join('');
 
@@ -154,6 +187,7 @@ function disableInteractions() {
 
 function updatePlayerBadgesOnAnswer() {
   const answerBoxes = document.querySelectorAll('.answer-box');
+  const shuffleMap = answerShuffles[currentQuestionIndex];
   
   // Clear existing player badges
   answerBoxes.forEach(box => {
@@ -164,19 +198,22 @@ function updatePlayerBadgesOnAnswer() {
   // Get all answers for current question
   const currentAnswers = playerAnswers[currentQuestionIndex] || {};
   
-  // Group players by their answer
+  // Group players by their answer (answers are stored as original indices)
   const answerGroups = {};
-  Object.entries(currentAnswers).forEach(([playerIdx, answerIdx]) => {
-    if (!answerGroups[answerIdx]) {
-      answerGroups[answerIdx] = [];
+  Object.entries(currentAnswers).forEach(([playerIdx, originalAnswerIdx]) => {
+    if (!answerGroups[originalAnswerIdx]) {
+      answerGroups[originalAnswerIdx] = [];
     }
-    answerGroups[answerIdx].push(parseInt(playerIdx));
+    answerGroups[originalAnswerIdx].push(parseInt(playerIdx));
   });
   
   // Add badges for each player's answer, stacked
-  Object.entries(answerGroups).forEach(([answerIdx, playerIndices]) => {
-    const answerIndex = parseInt(answerIdx);
-    const answerBox = Array.from(answerBoxes).find(box => parseInt(box.dataset.index) === answerIndex);
+  Object.entries(answerGroups).forEach(([originalAnswerIdx, playerIndices]) => {
+    const originalIndex = parseInt(originalAnswerIdx);
+    const displayIndex = shuffleMap[originalIndex];
+    const answerBox = Array.from(answerBoxes).find(box => 
+      parseInt(box.dataset.displayIndex) === displayIndex
+    );
     
     if (answerBox) {
       playerIndices.forEach((playerIndex, badgeIdx) => {
@@ -247,16 +284,30 @@ function handleAnswer(selectedIndex) {
 function showFeedback() {
   const question = questions[currentQuestionIndex];
   const answerBoxes = document.querySelectorAll('.answer-box');
+  const shuffleMap = answerShuffles[currentQuestionIndex];
   
   console.log('[VCVQ] Showing feedback for all player answers');
   
-  // Highlight correct answer
-  answerBoxes[question.correctAnswer].classList.add('correct');
+  // Find the answer box for the correct answer (using original index)
+  const correctOriginalIndex = question.correctAnswer;
+  const correctDisplayIndex = shuffleMap[correctOriginalIndex];
+  const correctBox = Array.from(answerBoxes).find(box => 
+    parseInt(box.dataset.displayIndex) === correctDisplayIndex
+  );
+  if (correctBox) {
+    correctBox.classList.add('correct');
+  }
   
   // Show which answers were selected (if incorrect)
-  Object.entries(playerAnswers[currentQuestionIndex]).forEach(([playerIdx, answerIdx]) => {
-    if (answerIdx !== question.correctAnswer) {
-      answerBoxes[answerIdx].classList.add('incorrect');
+  Object.entries(playerAnswers[currentQuestionIndex]).forEach(([playerIdx, originalAnswerIdx]) => {
+    if (originalAnswerIdx !== question.correctAnswer) {
+      const displayIndex = shuffleMap[originalAnswerIdx];
+      const incorrectBox = Array.from(answerBoxes).find(box => 
+        parseInt(box.dataset.displayIndex) === displayIndex
+      );
+      if (incorrectBox) {
+        incorrectBox.classList.add('incorrect');
+      }
     }
   });
 
