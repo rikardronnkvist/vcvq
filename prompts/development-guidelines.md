@@ -49,6 +49,9 @@
 - Detailed errors in development mode
 - Generic errors in production mode
 - Never leak sensitive information in production
+- User-friendly messages for AI service overload (503 errors)
+- Specific error code (OVERLOADED) returned with HTTP 503 status
+- Localized error messages via i18n system
 
 ### File Organization
 ```

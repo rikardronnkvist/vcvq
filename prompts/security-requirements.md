@@ -44,6 +44,10 @@ See `server.js`:
 - **Development:** Detailed error messages with stack traces
 - **Production:** Generic error messages to prevent information leakage
 - Never expose sensitive data (API keys, internal paths)
+- **AI Service Overload:** Specific handling for 503/overloaded errors
+  - Detects overload errors from Gemini API (503, "overloaded", "Service Unavailable")
+  - Returns user-friendly, localized messages
+  - HTTP 503 status with errorCode: 'OVERLOADED' for frontend detection
 
 ### Implementation Reference
 See `server.js` error handling middleware.

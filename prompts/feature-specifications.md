@@ -67,6 +67,10 @@
     - "😅 No one answered correctly!"
     - "X/Y answered correctly"
   - 5-second delay between questions for review
+  - User-friendly error messages for AI service issues:
+    - Specific message when AI service is overloaded (503 errors)
+    - Localized messages in Swedish and English
+    - Clear guidance to retry after a few moments
   
 - **Controls:**
   - "End Game" button at bottom to end early
