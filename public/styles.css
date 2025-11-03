@@ -495,12 +495,15 @@ select:active {
 }
 
 .question-number {
-  font-size: 14px;
+  font-size: 20px;
   color: #FF2E97;
   font-weight: 700;
   margin-bottom: 15px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
+  display: inline-block;
+  transform: translateX(20px);
 }
 
 .question-text {
