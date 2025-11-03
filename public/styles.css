@@ -797,3 +797,208 @@ select:active {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Dark mode support - responds to browser preferences */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #0a0a14 0%, #050810 50%, #0f1419 100%);
+  }
+
+  .container,
+  .game-area,
+  .game-over {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #00D9FF;
+  }
+
+  .language-flag {
+    background: #1e293b;
+    border-color: #475569;
+  }
+
+  .language-flag:hover {
+    border-color: #00D9FF;
+  }
+
+  .subtitle {
+    color: #94a3b8;
+  }
+
+  label {
+    color: #e2e8f0;
+  }
+
+  input[type="text"] {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+
+  input[type="text"]:focus {
+    border-color: #00D9FF;
+    background: #1e293b;
+  }
+
+  select {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e2e8f0' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+  }
+
+  select:focus {
+    border-color: #00D9FF;
+    background: #1e293b;
+  }
+
+  .option-btn {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+
+  .option-btn:hover {
+    background: #1e293b;
+    border-color: #00D9FF;
+  }
+
+  .number-btn {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+
+  .number-btn:hover:not(:disabled) {
+    background: #1e293b;
+    border-color: #00D9FF;
+  }
+
+  .number-btn:disabled {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .number-display {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+
+  .topic-option-btn {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+
+  .topic-option-btn:hover {
+    background: #1e293b;
+    border-color: #00D9FF;
+  }
+
+  #playerNames {
+    background: #0f172a;
+  }
+
+  .player-name-input label {
+    color: #e2e8f0;
+  }
+
+  .btn-secondary {
+    background: #334155;
+    color: #FFD700;
+  }
+
+  .btn-generate {
+    color: #e2e8f0;
+  }
+
+  .error {
+    background: #7f1d1d;
+    color: #fca5a5;
+  }
+
+  .player-score {
+    background: #334155;
+  }
+
+  .player-score.active {
+    background: #475569;
+  }
+
+  .player-name {
+    color: #e2e8f0;
+  }
+
+  .player-points {
+    color: #94a3b8;
+  }
+
+  .question-text {
+    color: #e2e8f0;
+  }
+
+  .answer-box {
+    background: #0f172a;
+    border-color: #475569;
+  }
+
+  .answer-box:hover {
+    background: #1e293b;
+    border-color: #00D9FF;
+  }
+
+  .answer-box.drag-over {
+    background: #4c1d47;
+    border-color: #FF2E97;
+  }
+
+  .answer-text {
+    color: #e2e8f0;
+  }
+
+  .answer-box.correct {
+    background: #064e3b;
+    border-color: #1DE9B6;
+  }
+
+  .answer-box.incorrect {
+    background: #7f1d1d;
+    border-color: #FF2E97;
+  }
+
+  .feedback {
+    background: #1e293b;
+    color: #e2e8f0;
+  }
+
+  .btn-end-game {
+    background: #1e293b;
+    color: #FF2E97;
+    border-color: #FF2E97;
+  }
+
+  .btn-end-game:hover {
+    background: #FF2E97;
+    color: #1e293b;
+  }
+
+  .final-score {
+    background: #0f172a;
+  }
+
+  .final-score .player-name {
+    color: #e2e8f0;
+  }
+
+  .spinner {
+    border-color: #334155;
+  }
+
+  /* Tesla browser compatibility - maintain dark theme for selects */
+  .tesla-browser select {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-color: #475569;
+  }
+}
