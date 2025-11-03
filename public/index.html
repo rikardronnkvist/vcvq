@@ -28,7 +28,8 @@
         <label for="topic" id="labelTopic">Quiz Topic:</label>
         <div style="display: flex; gap: 10px;">
           <input type="text" id="topicInput" placeholder="Enter any topic (e.g., Science, Movies, Sports)" style="flex: 1;">
-          <select id="topicDropdown" style="flex: 1; display: none;"></select>
+          <div id="topicButtonGroup" class="topic-button-group" style="flex: 1; display: none;"></div>
+          <select id="topicDropdown" style="display: none;"></select>
           <button id="randomTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap;">🎲 Random</button>
           <button id="customTopicBtn" class="btn-generate" style="padding: 12px 20px; white-space: nowrap; display: none;">✏️ Custom</button>
         </div>
@@ -37,7 +38,13 @@
       <div class="form-group form-group-inline">
         <div class="inline-field">
           <label for="playerCount" id="labelPlayerCount">Number of Players:</label>
-          <select id="playerCount">
+          <div class="button-group" id="playerCountGroup">
+            <button type="button" class="option-btn" data-value="2" data-group="playerCount">2</button>
+            <button type="button" class="option-btn" data-value="3" data-group="playerCount">3</button>
+            <button type="button" class="option-btn" data-value="4" data-group="playerCount">4</button>
+            <button type="button" class="option-btn" data-value="5" data-group="playerCount">5</button>
+          </div>
+          <select id="playerCount" style="display: none;">
             <option value="2" selected>2</option>
             <option value="3">3</option>
             <option value="4">4</option>
@@ -46,7 +53,16 @@
         </div>
         <div class="inline-field">
           <label for="questionCount" id="labelQuestionCount">Number of Questions:</label>
-          <select id="questionCount">
+          <div class="button-group" id="questionCountGroup">
+            <button type="button" class="option-btn" data-value="5" data-group="questionCount">5</button>
+            <button type="button" class="option-btn active" data-value="10" data-group="questionCount">10</button>
+            <button type="button" class="option-btn" data-value="15" data-group="questionCount">15</button>
+            <button type="button" class="option-btn" data-value="20" data-group="questionCount">20</button>
+            <button type="button" class="option-btn" data-value="25" data-group="questionCount">25</button>
+            <button type="button" class="option-btn" data-value="30" data-group="questionCount">30</button>
+            <button type="button" class="option-btn" data-value="50" data-group="questionCount">50</button>
+          </div>
+          <select id="questionCount" style="display: none;">
             <option value="5">5</option>
             <option value="10" selected>10</option>
             <option value="15">15</option>
@@ -58,7 +74,12 @@
         </div>
         <div class="inline-field">
           <label for="answerCount" id="labelAnswerCount">Number of Answers:</label>
-          <select id="answerCount">
+          <div class="button-group" id="answerCountGroup">
+            <button type="button" class="option-btn" data-value="4" data-group="answerCount">4</button>
+            <button type="button" class="option-btn active" data-value="6" data-group="answerCount">6</button>
+            <button type="button" class="option-btn" data-value="8" data-group="answerCount">8</button>
+          </div>
+          <select id="answerCount" style="display: none;">
             <option value="4">4</option>
             <option value="6" selected>6</option>
             <option value="8">8</option>
@@ -158,28 +179,7 @@
       console.log('[VCVQ] Not a Tesla browser, using custom dropdown styling');
     }
     
-    // Add runtime test for broken select elements (heuristic based on clicks)
-    const playerCountSelect = document.getElementById('playerCount');
-    const selectClickMap = new Map();
-    const selectClickHandler = (e) => {
-      const sel = e.target;
-      const count = (selectClickMap.get(sel) || 0) + 1;
-      selectClickMap.set(sel, count);
-      
-      if (count > 2) {
-        // If user clicks multiple times without opening, the select is broken
-        console.log('[VCVQ] Select appears to be broken, switching to native styling');
-        document.documentElement.classList.add('tesla-browser');
-        // Remove this listener after fixing
-        document.querySelectorAll('select').forEach(s => {
-          s.removeEventListener('click', selectClickHandler);
-        });
-      }
-    };
-    // Add click listeners to all selects to detect if they're broken
-    document.querySelectorAll('select').forEach(sel => {
-      sel.addEventListener('click', selectClickHandler);
-    });
+    // All selects are now hidden and controlled by button groups for Tesla compatibility
     const playerNameInputs = document.querySelectorAll('.player-name-input');
     const startBtn = document.getElementById('startBtn');
     const generateNamesBtn = document.getElementById('generateNamesBtn');
@@ -267,20 +267,41 @@
         // Hide loading overlay
         loading.style.display = 'none';
         
-        // Switch to dropdown
+        // Switch to button group
         const topicInput = document.getElementById('topicInput');
+        const topicButtonGroup = document.getElementById('topicButtonGroup');
         const topicDropdown = document.getElementById('topicDropdown');
         const customTopicBtn = document.getElementById('customTopicBtn');
         
         topicInput.style.display = 'none';
-        topicDropdown.style.display = 'block';
+        topicButtonGroup.style.display = 'flex';
+        topicDropdown.style.display = 'none';
         randomTopicBtn.style.display = 'none';
         customTopicBtn.style.display = 'block';
         
-        // Populate dropdown
+        // Populate hidden select for compatibility
         topicDropdown.innerHTML = data.topics.map(topic => 
           `<option value="${topic}">${topic}</option>`
         ).join('');
+        
+        // Populate button group
+        topicButtonGroup.innerHTML = data.topics.map((topic, idx) => 
+          `<button type="button" class="topic-option-btn ${idx === 0 ? 'active' : ''}" data-value="${topic}" data-group="topic">${topic}</button>`
+        ).join('');
+        
+        // Set first topic as selected by default
+        if (data.topics.length > 0) {
+          topicDropdown.value = data.topics[0];
+        }
+        
+        // Add click handlers for topic buttons
+        topicButtonGroup.querySelectorAll('.topic-option-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            topicButtonGroup.querySelectorAll('.topic-option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            topicDropdown.value = btn.dataset.value;
+          });
+        });
         
         randomTopicBtn.disabled = false;
       } catch (error) {
@@ -296,10 +317,12 @@
 
     function switchToCustomTopic() {
       const topicInput = document.getElementById('topicInput');
+      const topicButtonGroup = document.getElementById('topicButtonGroup');
       const topicDropdown = document.getElementById('topicDropdown');
       const randomTopicBtn = document.getElementById('randomTopicBtn');
       const customTopicBtn = document.getElementById('customTopicBtn');
       
+      topicButtonGroup.style.display = 'none';
       topicDropdown.style.display = 'none';
       topicInput.style.display = 'block';
       customTopicBtn.style.display = 'none';
@@ -311,12 +334,17 @@
 
     function getCurrentTopic() {
       const topicInput = document.getElementById('topicInput');
+      const topicButtonGroup = document.getElementById('topicButtonGroup');
       const topicDropdown = document.getElementById('topicDropdown');
       
-      if (topicDropdown.style.display === 'none') {
+      if (topicButtonGroup.style.display !== 'none' && topicButtonGroup.style.display !== '') {
+        // Using button group - get selected button value
+        const selectedBtn = topicButtonGroup.querySelector('.topic-option-btn.active');
+        return selectedBtn ? selectedBtn.dataset.value : '';
+      } else if (topicInput.style.display !== 'none') {
         return topicInput.value.trim();
       } else {
-        return topicDropdown.value;
+        return topicDropdown.value || '';
       }
     }
 
@@ -370,6 +398,52 @@
       }
     }
 
+    // Set up button group handlers for all option groups
+    function setupButtonGroups() {
+      // Player count buttons
+      document.querySelectorAll('#playerCountGroup .option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#playerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const select = document.getElementById('playerCount');
+          select.value = btn.dataset.value;
+          select.dispatchEvent(new Event('change'));
+        });
+      });
+      
+      // Question count buttons
+      document.querySelectorAll('#questionCountGroup .option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#questionCountGroup .option-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const select = document.getElementById('questionCount');
+          select.value = btn.dataset.value;
+          select.dispatchEvent(new Event('change'));
+        });
+      });
+      
+      // Answer count buttons
+      document.querySelectorAll('#answerCountGroup .option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#answerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const select = document.getElementById('answerCount');
+          select.value = btn.dataset.value;
+          select.dispatchEvent(new Event('change'));
+        });
+      });
+    }
+    
+    // Initialize button groups
+    setupButtonGroups();
+    
+    // Set initial active state for player count (default is 2)
+    const initialPlayerBtn = document.querySelector('#playerCountGroup .option-btn[data-value="2"]');
+    if (initialPlayerBtn) {
+      initialPlayerBtn.classList.add('active');
+    }
+    
+    const playerCountSelect = document.getElementById('playerCount');
     playerCountSelect.addEventListener('change', updatePlayerInputs);
     languageSelect.addEventListener('change', updateLanguage);
     
@@ -471,13 +545,24 @@
         document.getElementById('topicInput').value = settings.topic || '';
         
         // Restore player count
-        document.getElementById('playerCount').value = settings.players.length;
+        const playerCountValue = settings.players.length.toString();
+        document.getElementById('playerCount').value = playerCountValue;
+        document.querySelectorAll('#playerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector(`#playerCountGroup .option-btn[data-value="${playerCountValue}"]`).classList.add('active');
         
         // Restore question count
-        document.getElementById('questionCount').value = settings.numQuestions || 10;
+        const questionCountValue = (settings.numQuestions || 10).toString();
+        document.getElementById('questionCount').value = questionCountValue;
+        document.querySelectorAll('#questionCountGroup .option-btn').forEach(b => b.classList.remove('active'));
+        const questionBtn = document.querySelector(`#questionCountGroup .option-btn[data-value="${questionCountValue}"]`);
+        if (questionBtn) questionBtn.classList.add('active');
         
         // Restore answer count
-        document.getElementById('answerCount').value = settings.numAnswers || 6;
+        const answerCountValue = (settings.numAnswers || 6).toString();
+        document.getElementById('answerCount').value = answerCountValue;
+        document.querySelectorAll('#answerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
+        const answerBtn = document.querySelector(`#answerCountGroup .option-btn[data-value="${answerCountValue}"]`);
+        if (answerBtn) answerBtn.classList.add('active');
         
         // Update player inputs visibility
         const event = new Event('change');
@@ -493,7 +578,11 @@
         // Backwards compatibility with old restart method
         console.log('[VCVQ] Restoring players from previous game (old method)');
         const players = JSON.parse(oldRestartPlayers);
-        document.getElementById('playerCount').value = players.length;
+        const playerCountValue = players.length.toString();
+        document.getElementById('playerCount').value = playerCountValue;
+        document.querySelectorAll('#playerCountGroup .option-btn').forEach(b => b.classList.remove('active'));
+        const playerBtn = document.querySelector(`#playerCountGroup .option-btn[data-value="${playerCountValue}"]`);
+        if (playerBtn) playerBtn.classList.add('active');
         
         const event = new Event('change');
         document.getElementById('playerCount').dispatchEvent(event);
