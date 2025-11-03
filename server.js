@@ -42,8 +42,34 @@ app.use(helmet({
 // Default to same-origin only for security. Set ALLOWED_ORIGINS env var for cross-origin access.
 app.use(cors({
   origin: (origin, callback) => {
-    // Same-origin requests don't have an Origin header, allow them
+    // Requests without Origin header (same-origin navigation, direct requests) are allowed
     if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Build the server's origin for comparison
+    const serverProtocol = process.env.SERVER_PROTOCOL || 'http';
+    const serverHost = process.env.SERVER_HOST || 'localhost';
+    const serverPort = String(process.env.PORT || PORT);
+    
+    // Construct expected same-origin URLs
+    const sameOrigins = [
+      `${serverProtocol}://${serverHost}:${serverPort}`,
+      `${serverProtocol}://${serverHost}`, // In case port is omitted
+    ];
+    
+    // Add default port variants if not using default ports
+    if (serverPort !== '80' && serverPort !== '443') {
+      // If accessing via default port, browser might omit it
+      if (serverProtocol === 'http') {
+        sameOrigins.push(`http://${serverHost}:80`);
+      } else if (serverProtocol === 'https') {
+        sameOrigins.push(`https://${serverHost}:443`);
+      }
+    }
+    
+    // Check if origin matches server's origin (same-origin request)
+    if (sameOrigins.includes(origin)) {
       return callback(null, true);
     }
     
