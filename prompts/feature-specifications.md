@@ -12,8 +12,8 @@
 ### Quiz Generation
 - User-specified topic for quiz generation
 - Topic length: 1-200 characters, sanitized against XSS
-- Multiple questions per game (5, 10, 15, 20, 25, 30, or 50)
-- Multiple answer options (4, 6, or 8 per question)
+- Multiple questions per game (5, 10, 15, 20, 25, 30, 35, 40, 45, or 50)
+- Fixed 6 answer options per question
 
 ## User Interface
 
@@ -21,13 +21,13 @@
 - **Topic Selection:**
   - Text input field for custom topic
   - "🎲 Random" button to get 10 AI-generated funny topics
-  - Dropdown appears after clicking random button
+  - Button group appears after clicking random button (Tesla-compatible)
   - Switch button to return to custom text input
   
 - **Game Configuration:**
-  - Number of players: 2 (default), 3, 4, 5
-  - Number of questions: 5, 10 (default), 15, 20, 25, 30, 50
-  - Number of answers per question: 4, 6 (default), 8
+  - Number of players: +/- selector, 2 (default/min), 3, 4, 5 (max)
+  - Number of questions: +/- selector, 5 (min), 10 (default), up to 50 (max), increments of 5
+  - Fixed 6 answer options per question (no selector)
   
 - **Player Names:**
   - Default names based on car positions:
@@ -76,8 +76,8 @@
 ## Game Flow
 
 ### Starting the Game
-1. User enters topic (custom or from random dropdown)
-2. User selects number of players, questions, and answers
+1. User enters topic (custom or from random button group)
+2. User selects number of players and questions using +/- selectors
 3. User configures player names (default or AI-generated)
 4. User clicks "Start Quiz" to begin
 
@@ -109,7 +109,7 @@
   - Topic
   - Language
   - Number of questions
-  - Number of answers
+  - (Number of answers is always 6)
 - Returns user to front page with all options pre-filled
 
 ## API Endpoints
@@ -123,7 +123,7 @@ Generate quiz questions based on topic and configuration.
   "topic": "string (1-200 chars)",
   "language": "sv" | "en",
   "numQuestions": "number (5-50)",
-  "numAnswers": "number (4-8)"
+  "numAnswers": "number (always 6, optional parameter)"
 }
 ```
 
@@ -217,7 +217,8 @@ Health check endpoint for monitoring and orchestration.
 
 ### Compatibility
 - Tesla browser detection via User-Agent
-- Special compatibility fixes for dropdown menus
+- Button groups instead of dropdowns for Tesla compatibility
+- +/- selectors for number configuration
 - Touch-friendly interactions
 - Large, accessible buttons
 

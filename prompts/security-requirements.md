@@ -12,7 +12,7 @@ All API endpoints use `express-validator` middleware with the following rules:
 - **Topic:** 1-200 characters, sanitized against XSS
 - **Language:** Must be 'sv' or 'en' (enum validation)
 - **numQuestions:** Integer between 5-50
-- **numAnswers:** Integer between 4-8
+- **numAnswers:** Integer (always 6 in UI, optional in API, defaults to 6)
 - **Player names count:** Integer between 2-5
 - **Topic count:** Integer between 1-20
 

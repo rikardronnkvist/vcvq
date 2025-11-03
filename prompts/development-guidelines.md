@@ -130,7 +130,7 @@ npm start
 - Modern desktop browsers (Chrome, Firefox, Safari, Edge)
 - Tablet browsers
 - Tesla Model Y browser (1180x919 resolution)
-- Tesla-specific compatibility fixes for dropdown menus
+- Tesla-compatible: Button groups and +/- selectors instead of dropdowns
 
 ### Responsive Design
 - Optimize for 1180x919 (Tesla Model Y)
