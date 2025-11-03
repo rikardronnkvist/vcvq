@@ -856,44 +856,61 @@ select:active {
     background: #0f172a;
     border-color: #475569;
     color: #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .option-btn:hover {
     background: #1e293b;
     border-color: #00D9FF;
+    box-shadow: 0 4px 8px rgba(0, 217, 255, 0.3);
+  }
+
+  .option-btn.active {
+    box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.3), 0 4px 12px rgba(29, 233, 182, 0.4);
   }
 
   .number-btn {
     background: #0f172a;
     border-color: #475569;
     color: #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .number-btn:hover:not(:disabled) {
     background: #1e293b;
     border-color: #00D9FF;
+    box-shadow: 0 4px 8px rgba(0, 217, 255, 0.3);
+    transform: scale(1.08);
   }
 
   .number-btn:disabled {
     background: #1e293b;
     border-color: #334155;
+    opacity: 0.4;
   }
 
   .number-display {
     background: #0f172a;
     border-color: #475569;
     color: #e2e8f0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .topic-option-btn {
     background: #0f172a;
     border-color: #475569;
     color: #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .topic-option-btn:hover {
     background: #1e293b;
     border-color: #00D9FF;
+    box-shadow: 0 4px 8px rgba(0, 217, 255, 0.3);
+  }
+
+  .topic-option-btn.active {
+    box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.3), 0 4px 12px rgba(29, 233, 182, 0.4);
   }
 
   #playerNames {
@@ -904,13 +921,49 @@ select:active {
     color: #e2e8f0;
   }
 
+  .btn-primary {
+    background: linear-gradient(135deg, #FF2E97 0%, #FF8C00 50%, #FFD700 100%);
+    color: white;
+    border-color: #00D9FF;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.3), 0 4px 12px rgba(255, 46, 151, 0.4);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.5), 0 8px 20px rgba(255, 46, 151, 0.6);
+    transform: translateY(-3px);
+  }
+
   .btn-secondary {
-    background: #334155;
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
     color: #FFD700;
+    border-color: #00D9FF;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.2);
+  }
+
+  .btn-secondary:hover {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.4), 0 8px 20px rgba(255, 215, 0, 0.3);
+    transform: translateY(-3px);
   }
 
   .btn-generate {
-    color: #e2e8f0;
+    background: linear-gradient(135deg, #00D9FF 0%, #1DE9B6 100%);
+    color: #0f172a;
+    border-color: #00D9FF;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.3);
+    font-weight: 700;
+  }
+
+  .btn-generate:hover {
+    background: linear-gradient(135deg, #1DE9B6 0%, #00D9FF 100%);
+    box-shadow: 0 0 0 2px rgba(29, 233, 182, 0.5), 0 6px 16px rgba(0, 217, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary:disabled,
+  .btn-generate:disabled {
+    opacity: 0.5;
+    box-shadow: none;
   }
 
   .error {
