@@ -5,7 +5,7 @@ const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 const helmet = require('helmet');
 const cors = require('cors');
-const { translations, t, getPositions } = require('./public/i18n.js');
+const { t, getPositions } = require('./public/i18n.js');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
