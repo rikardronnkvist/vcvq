@@ -171,6 +171,8 @@ app.get('/health', (req, res) => {
 // Helper function to build visitor log message
 function buildVisitorLogMessage(options) {
   const { prefix, visitorId, page, userAgent, clientIp, resolution, viewport, logIp } = options;
+  const sanitizedPrefix = sanitizeLog(prefix);
+  const sanitizedVisitorId = sanitizeLog(visitorId);
   const ipStr = logIp ? ` | IP: ${sanitizeLog(clientIp)}` : '';
   const sanitizedPage = sanitizeLog(page);
   const sanitizedUserAgent = sanitizeLog(userAgent, 150);
@@ -188,7 +190,7 @@ function buildVisitorLogMessage(options) {
     resolutionStr = ` | Resolution: ${sanitizedWidth}x${sanitizedHeight}`;
   }
   
-  return `[VCVQ] ${prefix} | ID: ${visitorId} | Page: ${sanitizedPage}${ipStr}${resolutionStr} | User-Agent: ${sanitizedUserAgent}`;
+  return `[VCVQ] ${sanitizedPrefix} | ID: ${sanitizedVisitorId} | Page: ${sanitizedPage}${ipStr}${resolutionStr} | User-Agent: ${sanitizedUserAgent}`;
 }
 
 // Helper function to create and store new visitor
@@ -577,8 +579,9 @@ function validateTopicResponse(text, count) {
 
 // Helper function to handle AI generation errors
 function handleGenerationError(error, res, context) {
+  const sanitizedContext = sanitizeLog(context);
   const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
-  console.error(`[VCVQ] Error generating ${context}: ${sanitizedError}`);
+  console.error(`[VCVQ] Error generating ${sanitizedContext}: ${sanitizedError}`);
   
   if (error.isOverloaded) {
     return res.status(503).json({ 
