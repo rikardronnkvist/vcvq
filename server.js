@@ -88,8 +88,9 @@ app.use((req, res, next) => {
           }
         }
       } catch (error) {
-        // Invalid URL format, continue to deny
+        // Invalid URL format, deny the request
         console.debug('[VCVQ] CORS: Invalid URL format for origin:', sanitizeLog(origin, 100));
+        return callback(null, false);
       }
       
       // For non-localhost/non-same-origin requests, require explicit ALLOWED_ORIGINS configuration
