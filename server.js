@@ -167,7 +167,8 @@ app.get('/health', (req, res) => {
 });
 
 // Helper function to build visitor log message
-function buildVisitorLogMessage(prefix, visitorId, page, userAgent, clientIp, resolution, viewport, logIp) {
+function buildVisitorLogMessage(options) {
+  const { prefix, visitorId, page, userAgent, clientIp, resolution, viewport, logIp } = options;
   const ipStr = logIp ? ` | IP: ${sanitizeLog(clientIp)}` : '';
   const sanitizedPage = sanitizeLog(page);
   const sanitizedUserAgent = sanitizeLog(userAgent, 150);
@@ -203,7 +204,16 @@ function createNewVisitor(visitorId, clientIp, userAgent, resolution) {
 function handleFirstVisit(clientIp, userAgent, page, resolution, viewport, logIp, prefix = 'First visit') {
   const newVisitorId = generateVisitorId();
   createNewVisitor(newVisitorId, clientIp, userAgent, resolution);
-  const logMessage = buildVisitorLogMessage(prefix, newVisitorId, page, userAgent, clientIp, resolution, viewport, logIp);
+  const logMessage = buildVisitorLogMessage({ 
+    prefix, 
+    visitorId: newVisitorId, 
+    page, 
+    userAgent, 
+    clientIp, 
+    resolution, 
+    viewport, 
+    logIp 
+  });
   console.log(logMessage);
   return newVisitorId;
 }
