@@ -28,8 +28,8 @@ test('sanitizeLog - should never contain control characters', () => {
   fc.assert(
     fc.property(fc.string(), (input) => {
       const result = sanitizeLog(input);
-      // Check for newlines, carriage returns, tabs, and other control chars
-      const hasControlChars = /[\r\n\x00-\x1F\x7F-\x9F]/.test(result);
+      // Check for control characters
+      const hasControlChars = /[\x00-\x1F\x7F-\x9F]/.test(result);
       assert.strictEqual(hasControlChars, false, 'Result contains control characters');
     })
   );

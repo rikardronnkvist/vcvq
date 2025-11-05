@@ -14,8 +14,8 @@ function sanitizeLog(value, maxLength = 200) {
   if (value == null) return 'unknown';
   try {
     const str = String(value);
-    // Remove newlines, carriage returns, and other control characters that could be used for log injection
-    return str.replaceAll(/[\r\n\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
+    // Remove control characters that could be used for log injection
+    return str.replaceAll(/[\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
   } catch (error) {
     // Handle objects that can't be converted to string
     console.debug('[VCVQ] sanitizeLog: Failed to convert value to string:', error.message);
@@ -31,18 +31,25 @@ function sanitizeLog(value, maxLength = 200) {
  */
 function sanitizePromptInput(topic) {
   if (!topic) return '';
-  let sanitized = String(topic);
   
-  // Remove common prompt injection patterns
-  // Remove newlines and carriage returns
-  sanitized = sanitized.replaceAll(/[\r\n]/g, ' ');
-  // Remove common injection keywords/patterns (expanded to catch more variations)
-  sanitized = sanitized.replaceAll(/\b(ignore|forget|override|system|admin|assistant|instructions|prompt|role|persona)\s+(previous|above|instructions|all|the|this|prompt|system)\b/gi, '');
-  // Remove multiple consecutive spaces
-  sanitized = sanitized.replaceAll(/\s+/g, ' ').trim();
-  
-  // Limit length to prevent overly long prompts
-  return sanitized.substring(0, 200);
+  try {
+    let sanitized = String(topic);
+    
+    // Remove common prompt injection patterns
+    // Remove newlines and carriage returns
+    sanitized = sanitized.replaceAll(/[\r\n]/g, ' ');
+    // Remove common injection keywords/patterns (expanded to catch more variations)
+    sanitized = sanitized.replaceAll(/\b(ignore|forget|override|system|admin|assistant|instructions|prompt|role|persona)\s+(previous|above|instructions|all|the|this|prompt|system)\b/gi, '');
+    // Remove multiple consecutive spaces
+    sanitized = sanitized.replaceAll(/\s+/g, ' ').trim();
+    
+    // Limit length to prevent overly long prompts
+    return sanitized.substring(0, 200);
+  } catch (error) {
+    // Handle objects that can't be converted to string
+    console.debug('[VCVQ] sanitizePromptInput: Failed to convert value to string:', error.message);
+    return '';
+  }
 }
 
 /**

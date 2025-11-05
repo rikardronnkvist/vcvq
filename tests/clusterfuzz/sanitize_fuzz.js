@@ -21,7 +21,7 @@ function verifySanitizeLog(result, maxLength) {
   if (result.length > maxLength) {
     throw new Error(`sanitizeLog exceeded max length: ${result.length} > ${maxLength}`);
   }
-  if (/[\r\n\x00-\x1F\x7F-\x9F]/.test(result)) {
+  if (/[\x00-\x1F\x7F-\x9F]/.test(result)) {
     throw new Error('sanitizeLog contains control characters');
   }
 }
