@@ -23,6 +23,8 @@
     "nodemon": "^3.1.10"
   },
   "overrides": {
-    "supports-color": "^10.2.2"
+    "supports-color": "^10.2.2",
+    "minimatch": "^10.1.1",
+    "brace-expansion": "^4.0.1"
   }
 }
