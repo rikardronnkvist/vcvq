@@ -1,8 +1,23 @@
 # 🎮 Vibe Coded Vibe Quiz (VCVQ)
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/YOUR_PROJECT_ID/badge)](https://www.bestpractices.dev/projects/YOUR_PROJECT_ID)
+
 A real-time multiplayer quiz game designed for car trips! Generate AI-powered quiz questions on any topic and compete with 2-5 players using an intuitive drag-and-drop or click interface.
 
 **Project home:** https://github.com/rikardronnkvist/vcvq
+
+## 📚 Documentation
+
+For detailed documentation, see the [`docs/`](docs/) folder:
+
+- **[📖 External Interface Reference](docs/interface-reference.md)** - Complete reference for all inputs/outputs
+- **[🔌 API Reference](docs/api.md)** - Detailed API documentation with examples
+- **[📥 Installation Guide](docs/installation.md)** - How to install and run VCVQ
+- **[🎮 User Guide](docs/usage.md)** - How to play and use all features
+- **[👨‍💻 Development Guide](docs/development.md)** - How to contribute and develop
+- **[🔒 Security Policy](SECURITY.md)** - How to report security vulnerabilities
+- **[🧪 Fuzzing Guide](FUZZING.md)** - Testing and security testing information
+- **[📝 Changelog](CHANGELOG.md)** - Version history and release notes
 
 ## Features
 
