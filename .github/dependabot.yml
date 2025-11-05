@@ -38,3 +38,13 @@ updates:
       - dependency-name: "express-validator"
         update-types: ["version-update:semver-major"]
 
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: daily
