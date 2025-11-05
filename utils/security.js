@@ -15,7 +15,7 @@ function sanitizeLog(value, maxLength = 200) {
   try {
     const str = String(value);
     // Remove newlines, carriage returns, and other control characters that could be used for log injection
-    return str.replace(/[\r\n\t\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
+    return str.replace(/[\r\n\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
   } catch (error) {
     // Handle objects that can't be converted to string
     return 'unknown';

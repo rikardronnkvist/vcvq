@@ -21,7 +21,7 @@ function verifySanitizeLog(result, maxLength) {
   if (result.length > maxLength) {
     throw new Error(`sanitizeLog exceeded max length: ${result.length} > ${maxLength}`);
   }
-  if (/[\r\n\t\x00-\x1F\x7F-\x9F]/.test(result)) {
+  if (/[\r\n\x00-\x1F\x7F-\x9F]/.test(result)) {
     throw new Error('sanitizeLog contains control characters');
   }
 }
@@ -40,7 +40,7 @@ function verifySanitizePromptInput(result) {
   if (/[\r\n]/.test(result)) {
     throw new Error('sanitizePromptInput contains newlines');
   }
-  if (/  +/.test(result)) {
+  if (/ {2,}/.test(result)) {
     throw new Error('sanitizePromptInput has multiple consecutive spaces');
   }
 }

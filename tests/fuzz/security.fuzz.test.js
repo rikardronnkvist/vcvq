@@ -29,7 +29,7 @@ test('sanitizeLog - should never contain control characters', () => {
     fc.property(fc.string(), (input) => {
       const result = sanitizeLog(input);
       // Check for newlines, carriage returns, tabs, and other control chars
-      const hasControlChars = /[\r\n\t\x00-\x1F\x7F-\x9F]/.test(result);
+      const hasControlChars = /[\r\n\x00-\x1F\x7F-\x9F]/.test(result);
       assert.strictEqual(hasControlChars, false, 'Result contains control characters');
     })
   );
@@ -135,7 +135,7 @@ test('sanitizePromptInput - should normalize whitespace', () => {
     fc.property(fc.string(), (input) => {
       const result = sanitizePromptInput(input);
       // Should not have multiple consecutive spaces
-      const hasMultipleSpaces = /  +/.test(result);
+      const hasMultipleSpaces = / {2,}/.test(result);
       assert.strictEqual(hasMultipleSpaces, false, 'Result has multiple consecutive spaces');
     })
   );
