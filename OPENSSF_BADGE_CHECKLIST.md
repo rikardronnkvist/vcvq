@@ -320,10 +320,40 @@ Add all Silver requirements plus:
 - Enhanced documentation
 - Formal security response team
 
+## 🎯 OpenSSF Scorecard
+
+In addition to the Best Practices Badge, the project also uses OpenSSF Scorecard for automated security analysis.
+
+**Scorecard URL:** https://scorecard.dev/viewer/?uri=github.com/rikardronnkvist/vcvq
+
+### Scorecard vs. Badge
+
+- **Scorecard:** Automated security checks, runs via GitHub Actions
+- **Badge:** Manual questionnaire about project practices
+
+Both complement each other and improve project security posture.
+
+### Setting Up Scorecard
+
+See the complete setup guide: **[SCORECARD_SETUP.md](SCORECARD_SETUP.md)**
+
+**Quick steps:**
+1. Create GitHub Personal Access Token (PAT) with `public_repo` scope
+2. Add as repository secret named `SCORECARD_TOKEN`
+3. Enable branch protection rules on `main`
+4. Run Scorecard workflow to verify
+
+The workflow is already configured in `.github/workflows/scorecards.yml` and runs:
+- On every push to main
+- Weekly on Tuesdays at 7:20 AM
+- On branch protection rule changes
+
 ## 🔗 Useful Links
 
 - **OpenSSF Badge Site:** https://www.bestpractices.dev/
 - **Badge Criteria:** https://www.bestpractices.dev/criteria
+- **OpenSSF Scorecard:** https://scorecard.dev/viewer/?uri=github.com/rikardronnkvist/vcvq
+- **Scorecard Setup Guide:** [SCORECARD_SETUP.md](SCORECARD_SETUP.md)
 - **Your Repository:** https://github.com/rikardronnkvist/vcvq
 - **OpenSSF Documentation:** https://openssf.org/
 
