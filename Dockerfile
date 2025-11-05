@@ -1,5 +1,5 @@
 # Multi-stage build for optimized image size
-FROM node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e AS builder
+FROM node:20-alpine@sha256:6178e78b972f79c335df281f4b7674a2d85071aae2af020ffa39f0a770265435 AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN npm install --production && \
     npm cache clean --force
 
 # Production stage
-FROM node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+FROM node:20-alpine@sha256:6178e78b972f79c335df281f4b7674a2d85071aae2af020ffa39f0a770265435
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
