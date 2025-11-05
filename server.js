@@ -312,43 +312,47 @@ const validateQuizGeneration = [
     .isInt({ min: 4, max: 8 }).withMessage('Number of answers must be between 4 and 8')
 ];
 
-app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (req, res) => {
-  try {
-    // Check validation results
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log('[VCVQ] Validation errors:', errors.array());
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      return res.status(400).json({ 
+function validateQuizRequest(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log('[VCVQ] Validation errors:', errors.array());
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    return { 
+      valid: false, 
+      response: { 
         error: 'Validation failed', 
         ...(isDevelopment && { details: errors.array().map(e => e.msg).join(', ') })
-      });
-    }
+      }
+    };
+  }
+  
+  const { visitorId } = req.body;
+  if (visitorId && !isValidVisitorId(visitorId)) {
+    return { 
+      valid: false, 
+      response: { error: 'Invalid visitor ID format' }
+    };
+  }
+  
+  return { valid: true };
+}
 
-    const { topic, language, numQuestions = 10, numAnswers = 6, visitorId } = req.body;
-    
-    // Validate visitorId if provided
-    if (visitorId && !isValidVisitorId(visitorId)) {
-      return res.status(400).json({ error: 'Invalid visitor ID format' });
-    }
-    
-    // Sanitize topic for prompt injection prevention
-    const sanitizedTopicForPrompt = sanitizePromptInput(topic);
-    
-    const sanitizedTopic = sanitizeLog(topic);
-    const sanitizedLanguage = sanitizeLog(language);
-    const sanitizedNumQuestions = sanitizeLog(numQuestions);
-    const sanitizedNumAnswers = sanitizeLog(numAnswers);
-    const sanitizedVisitorId = sanitizeLog(visitorId);
-    const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
-    console.log(`[VCVQ] Generating quiz - Topic: ${sanitizedTopic}, Language: ${sanitizedLanguage}, Questions: ${sanitizedNumQuestions}, Answers: ${sanitizedNumAnswers}${visitorInfoStr}`);
+function logQuizRequest(topic, language, numQuestions, numAnswers, visitorId) {
+  const sanitizedTopic = sanitizeLog(topic);
+  const sanitizedLanguage = sanitizeLog(language);
+  const sanitizedNumQuestions = sanitizeLog(numQuestions);
+  const sanitizedNumAnswers = sanitizeLog(numAnswers);
+  const sanitizedVisitorId = sanitizeLog(visitorId);
+  const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
+  console.log(`[VCVQ] Generating quiz - Topic: ${sanitizedTopic}, Language: ${sanitizedLanguage}, Questions: ${sanitizedNumQuestions}, Answers: ${sanitizedNumAnswers}${visitorInfoStr}`);
+}
 
-    const langInstruction = t('aiQuizInstruction', language);
+function buildQuizPrompt(sanitizedTopicForPrompt, language, numQuestions, numAnswers) {
+  const langInstruction = t('aiQuizInstruction', language);
+  const maxAnswerIndex = numAnswers - 1;
+  const exampleOptions = Array.from({ length: numAnswers }, (_, i) => `Option ${i + 1}`);
 
-    const maxAnswerIndex = numAnswers - 1;
-    const exampleOptions = Array.from({ length: numAnswers }, (_, i) => `Option ${i + 1}`);
-
-    const prompt = `${langInstruction}
+  return `${langInstruction}
 
 Create exactly ${numQuestions} multiple-choice quiz questions about: ${sanitizedTopicForPrompt}
 
@@ -370,50 +374,53 @@ Rules:
 - Only one correct answer per question
 - Make questions engaging and appropriate for a car quiz game
 - Vary difficulty from easy to challenging`;
+}
 
-    let text = await tryGenerateWithModels(prompt);
+function parseAndValidateQuizResponse(text, numQuestions, numAnswers) {
+  const cleanedText = text.replaceAll(/```json\n?/g, '').replaceAll(/```\n?/g, '').trim();
+  
+  let questions;
+  try {
+    questions = JSON.parse(cleanedText);
+  } catch (error) {
+    throw new Error(`Invalid JSON response from AI: ${error.message}`);
+  }
 
-    text = text.replaceAll(/```json\n?/g, '').replaceAll(/```\n?/g, '').trim();
+  if (!Array.isArray(questions) || questions.length !== numQuestions) {
+    throw new Error(`Invalid response format: Expected ${numQuestions} questions`);
+  }
 
-    let questions;
-    try {
-      questions = JSON.parse(text);
-    } catch (error) {
-      throw new Error(`Invalid JSON response from AI: ${error.message}`);
+  const maxAnswerIndex = numAnswers - 1;
+  for (const [idx, q] of questions.entries()) {
+    if (!q.question || !Array.isArray(q.options) || q.options.length !== numAnswers || 
+        typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > maxAnswerIndex) {
+      throw new Error(`Invalid question format at index ${idx}`);
+    }
+  }
+  
+  return questions;
+}
+
+app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (req, res) => {
+  try {
+    const validation = validateQuizRequest(req, res);
+    if (!validation.valid) {
+      return res.status(400).json(validation.response);
     }
 
-    if (!Array.isArray(questions) || questions.length !== numQuestions) {
-      throw new Error(`Invalid response format: Expected ${numQuestions} questions`);
-    }
+    const { topic, language, numQuestions = 10, numAnswers = 6, visitorId } = req.body;
+    
+    const sanitizedTopicForPrompt = sanitizePromptInput(topic);
+    logQuizRequest(topic, language, numQuestions, numAnswers, visitorId);
 
-    for (const [idx, q] of questions.entries()) {
-      if (!q.question || !Array.isArray(q.options) || q.options.length !== numAnswers || 
-          typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > maxAnswerIndex) {
-        throw new Error(`Invalid question format at index ${idx}`);
-      }
-    }
+    const prompt = buildQuizPrompt(sanitizedTopicForPrompt, language, numQuestions, numAnswers);
+    const text = await tryGenerateWithModels(prompt);
+    const questions = parseAndValidateQuizResponse(text, numQuestions, numAnswers);
 
     console.log(`[VCVQ] Successfully generated ${questions.length} questions`);
     res.json({ questions });
   } catch (error) {
-    const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
-    console.error(`[VCVQ] Error generating quiz: ${sanitizedError}`);
-    
-    // Check if this is an overload error
-    if (error.isOverloaded) {
-      return res.status(503).json({ 
-        error: 'Service temporarily unavailable',
-        errorCode: 'OVERLOADED',
-        message: 'The AI service is currently overloaded. Please try again in a few moments.'
-      });
-    }
-    
-    // Don't expose detailed error messages in production
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    res.status(500).json({ 
-      error: 'Failed to generate quiz',
-      ...(isDevelopment && { details: error.message })
-    });
+    handleGenerationError(error, res);
   }
 });
 

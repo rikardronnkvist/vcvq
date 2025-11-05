@@ -212,22 +212,16 @@ function disableInteractions() {
   console.log('[VCVQ] Interactions disabled - all players have answered');
 }
 
-function updatePlayerBadgesOnAnswer() {
-  const answerBoxes = document.querySelectorAll('.answer-box');
-  const shuffleMap = answerShuffles[currentQuestionIndex];
-  
-  // Clear existing player badges
+function clearPlayerBadges(answerBoxes) {
   for (const box of answerBoxes) {
     const existingBadges = box.querySelectorAll('.player-badge');
     for (const badge of existingBadges) {
       badge.remove();
     }
   }
-  
-  // Get all answers for current question
-  const currentAnswers = playerAnswers[currentQuestionIndex] || {};
-  
-  // Group players by their answer (answers are stored as original indices)
+}
+
+function groupPlayersByAnswer(currentAnswers) {
   const answerGroups = {};
   for (const [playerIdx, originalAnswerIdx] of Object.entries(currentAnswers)) {
     if (!answerGroups[originalAnswerIdx]) {
@@ -235,6 +229,38 @@ function updatePlayerBadgesOnAnswer() {
     }
     answerGroups[originalAnswerIdx].push(Number.parseInt(playerIdx));
   }
+  return answerGroups;
+}
+
+function positionPlayerBadge(badge, playerNumber) {
+  const positions = {
+    1: { top: '8px', left: '8px', right: 'auto', bottom: 'auto' },
+    3: { bottom: '8px', right: '8px', top: 'auto', left: 'auto' },
+    4: { bottom: '8px', left: '8px', top: 'auto', right: 'auto' },
+    5: { bottom: '8px', left: '50%', top: 'auto', right: 'auto', transform: 'translateX(-50%)' }
+  };
+  
+  const position = positions[playerNumber] || { top: '8px', right: '8px', left: 'auto', bottom: 'auto' };
+  Object.assign(badge.style, position);
+}
+
+function createPlayerBadge(playerIndex) {
+  const badge = document.createElement('div');
+  badge.className = 'player-badge';
+  badge.textContent = playerIndex + 1;
+  badge.style.background = playerColors[playerIndex];
+  positionPlayerBadge(badge, playerIndex + 1);
+  return badge;
+}
+
+function updatePlayerBadgesOnAnswer() {
+  const answerBoxes = document.querySelectorAll('.answer-box');
+  const shuffleMap = answerShuffles[currentQuestionIndex];
+  
+  clearPlayerBadges(answerBoxes);
+  
+  const currentAnswers = playerAnswers[currentQuestionIndex] || {};
+  const answerGroups = groupPlayersByAnswer(currentAnswers);
   
   // Add badges for each player's answer, stacked
   for (const [originalAnswerIdx, playerIndices] of Object.entries(answerGroups)) {
@@ -246,55 +272,7 @@ function updatePlayerBadgesOnAnswer() {
     
     if (answerBox) {
       for (const playerIndex of playerIndices) {
-        const badge = document.createElement('div');
-        badge.className = 'player-badge';
-        badge.textContent = playerIndex + 1;
-        badge.style.background = playerColors[playerIndex];
-        
-        // Position badges based on player number
-        // P1: Upper left, P2: Upper right, P3: Lower right, P4: Lower left, P5: Lower middle
-        const playerNumber = playerIndex + 1; // Convert 0-indexed to 1-indexed
-        switch (playerNumber) {
-          case 1: // P1 - Upper left corner
-            badge.style.top = '8px';
-            badge.style.left = '8px';
-            badge.style.right = 'auto';
-            badge.style.bottom = 'auto';
-            break;
-          case 2: // P2 - Upper right corner
-            badge.style.top = '8px';
-            badge.style.right = '8px';
-            badge.style.left = 'auto';
-            badge.style.bottom = 'auto';
-            break;
-          case 3: // P3 - Lower right corner
-            badge.style.bottom = '8px';
-            badge.style.right = '8px';
-            badge.style.top = 'auto';
-            badge.style.left = 'auto';
-            break;
-          case 4: // P4 - Lower left corner
-            badge.style.bottom = '8px';
-            badge.style.left = '8px';
-            badge.style.top = 'auto';
-            badge.style.right = 'auto';
-            break;
-          case 5: // P5 - Lower middle
-            badge.style.bottom = '8px';
-            badge.style.left = '50%';
-            badge.style.transform = 'translateX(-50%)';
-            badge.style.top = 'auto';
-            badge.style.right = 'auto';
-            break;
-          default: // Fallback to upper right for any unexpected player numbers
-            badge.style.top = '8px';
-            badge.style.right = '8px';
-            badge.style.left = 'auto';
-            badge.style.bottom = 'auto';
-            break;
-        }
-        
-        answerBox.appendChild(badge);
+        answerBox.appendChild(createPlayerBadge(playerIndex));
       }
     }
   }
@@ -367,7 +345,7 @@ function showFeedback() {
   }
   
   // Show which answers were selected (if incorrect)
-  for (const [playerIdx, originalAnswerIdx] of Object.entries(playerAnswers[currentQuestionIndex])) {
+  for (const [, originalAnswerIdx] of Object.entries(playerAnswers[currentQuestionIndex])) {
     if (originalAnswerIdx !== question.correctAnswer) {
       const displayIndex = shuffleMap[originalAnswerIdx];
       const incorrectBox = Array.from(answerBoxes).find(box => 
