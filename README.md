@@ -2,6 +2,8 @@
 
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11431/badge)](https://www.bestpractices.dev/projects/11431)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/rikardronnkvist/vcvq/badge)](https://scorecard.dev/viewer/?uri=github.com/rikardronnkvist/vcvq)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq?ref=badge_shield&issueType=security)
 
 A real-time multiplayer quiz game designed for car trips! Generate AI-powered quiz questions on any topic and compete with 2-5 players using an intuitive drag-and-drop or click interface.
 
