@@ -3,7 +3,7 @@
 
 # Install dependencies
 cd $SRC/vcvq
-npm install
+npm ci
 
 # Copy fuzz targets
 cp tests/clusterfuzz/*.js $OUT/

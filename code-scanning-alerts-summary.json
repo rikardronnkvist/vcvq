@@ -1,0 +1,302 @@
+[
+  {
+    "number": 40,
+    "state": "open",
+    "severity": null,
+    "rule": "js/trivial-conditional",
+    "file": "utils/security.js",
+    "line": 132,
+    "created_at": "2025-11-05T09:28:44Z",
+    "fixed_at": null
+  },
+  {
+    "number": 39,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".clusterfuzzlite/build.sh",
+    "line": 6,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 38,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".clusterfuzzlite/Dockerfile",
+    "line": 9,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 37,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".clusterfuzzlite/Dockerfile",
+    "line": 2,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 36,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/fuzzing.yml",
+    "line": 93,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 35,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/fuzzing.yml",
+    "line": 68,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 34,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/fuzzing.yml",
+    "line": 63,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 33,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/fuzzing.yml",
+    "line": 47,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 32,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/fuzzing.yml",
+    "line": 33,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 31,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/fuzzing.yml",
+    "line": 28,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 30,
+    "state": "open",
+    "severity": "high",
+    "rule": "Token-Permissions",
+    "file": ".github/workflows/fuzzing.yml",
+    "line": 18,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 29,
+    "state": "open",
+    "severity": "high",
+    "rule": "Token-Permissions",
+    "file": ".github/workflows/security.yml",
+    "line": 22,
+    "created_at": "2025-11-05T09:27:59Z",
+    "fixed_at": null
+  },
+  {
+    "number": 28,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/codeql-analysis.yml",
+    "line": 44,
+    "created_at": "2025-11-05T06:30:21Z",
+    "fixed_at": null
+  },
+  {
+    "number": 27,
+    "state": "open",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": "Dockerfile",
+    "line": 11,
+    "created_at": "2025-11-05T06:30:21Z",
+    "fixed_at": null
+  },
+  {
+    "number": 26,
+    "state": "dismissed",
+    "severity": "high",
+    "rule": "Maintained",
+    "file": "no file associated with this alert",
+    "line": 1,
+    "created_at": "2025-11-05T06:05:23Z",
+    "fixed_at": null
+  },
+  {
+    "number": 25,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "Fuzzing",
+    "file": "no file associated with this alert",
+    "line": 1,
+    "created_at": "2025-11-05T06:05:23Z",
+    "fixed_at": "2025-11-05T09:27:59Z"
+  },
+  {
+    "number": 24,
+    "state": "dismissed",
+    "severity": "high",
+    "rule": "Code-Review",
+    "file": "no file associated with this alert",
+    "line": 1,
+    "created_at": "2025-11-05T06:05:23Z",
+    "fixed_at": null
+  },
+  {
+    "number": 23,
+    "state": "open",
+    "severity": "low",
+    "rule": "CII-Best-Practices",
+    "file": "no file associated with this alert",
+    "line": 1,
+    "created_at": "2025-11-05T06:05:23Z",
+    "fixed_at": null
+  },
+  {
+    "number": 22,
+    "state": "fixed",
+    "severity": "high",
+    "rule": "Token-Permissions",
+    "file": ".github/workflows/security.yml",
+    "line": 1,
+    "created_at": "2025-11-05T06:05:22Z",
+    "fixed_at": "2025-11-05T08:29:24Z"
+  },
+  {
+    "number": 21,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": ".github/workflows/codeql-analysis.yml",
+    "line": 44,
+    "created_at": "2025-11-05T06:05:22Z",
+    "fixed_at": "2025-11-05T06:30:21Z"
+  },
+  {
+    "number": 20,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "Pinned-Dependencies",
+    "file": "Dockerfile",
+    "line": 11,
+    "created_at": "2025-11-05T06:05:22Z",
+    "fixed_at": "2025-11-05T06:30:21Z"
+  },
+  {
+    "number": 19,
+    "state": "open",
+    "severity": "high",
+    "rule": "Branch-Protection",
+    "file": "no file associated with this alert",
+    "line": 1,
+    "created_at": "2025-11-05T06:05:22Z",
+    "fixed_at": null
+  },
+  {
+    "number": 18,
+    "state": "fixed",
+    "severity": null,
+    "rule": "js/unused-local-variable",
+    "file": "server.js",
+    "line": 8,
+    "created_at": "2025-11-03T20:31:46Z",
+    "fixed_at": "2025-11-04T06:33:46Z"
+  },
+  {
+    "number": 17,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "js/cors-permissive-configuration",
+    "file": "server.js",
+    "line": 43,
+    "created_at": "2025-11-03T19:18:52Z",
+    "fixed_at": "2025-11-03T19:46:43Z"
+  },
+  {
+    "number": 16,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "js/log-injection",
+    "file": "server.js",
+    "line": 359,
+    "created_at": "2025-11-02T12:48:11Z",
+    "fixed_at": "2025-11-02T12:50:52Z"
+  },
+  {
+    "number": 15,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "js/log-injection",
+    "file": "server.js",
+    "line": 266,
+    "created_at": "2025-11-02T12:48:11Z",
+    "fixed_at": "2025-11-02T12:50:52Z"
+  },
+  {
+    "number": 14,
+    "state": "fixed",
+    "severity": null,
+    "rule": "js/unused-local-variable",
+    "file": "server.js",
+    "line": 3,
+    "created_at": "2025-11-02T12:39:05Z",
+    "fixed_at": "2025-11-02T12:48:11Z"
+  },
+  {
+    "number": 13,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "js/log-injection",
+    "file": "server.js",
+    "line": 455,
+    "created_at": "2025-11-02T12:39:05Z",
+    "fixed_at": "2025-11-02T12:48:11Z"
+  },
+  {
+    "number": 12,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "js/log-injection",
+    "file": "server.js",
+    "line": 441,
+    "created_at": "2025-11-02T12:39:05Z",
+    "fixed_at": "2025-11-02T12:50:52Z"
+  },
+  {
+    "number": 11,
+    "state": "fixed",
+    "severity": "medium",
+    "rule": "js/log-injection",
+    "file": "server.js",
+    "line": 374,
+    "created_at": "2025-11-02T12:39:05Z",
+    "fixed_at": "2025-11-02T12:48:11Z"
+  }
+]

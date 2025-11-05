@@ -129,7 +129,7 @@ function isValidCorsOrigin(origin, requestHost, allowedOrigins = []) {
     }
   } catch (error) {
     // Invalid URL format - check if it's a plain IPv6 address without brackets
-    if (origin && (origin.includes('::1') || origin === 'http://::1')) {
+    if (origin && origin.includes('::1')) {
       return true;
     }
     return false;

@@ -6,7 +6,7 @@ COPY . $SRC/vcvq
 WORKDIR $SRC/vcvq
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Copy build script
 COPY .clusterfuzzlite/build.sh $SRC/

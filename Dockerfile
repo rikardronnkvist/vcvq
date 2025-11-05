@@ -7,8 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-# Note: If package-lock.json exists, it will be used for reproducible builds
-RUN npm install --production && \
+# Using npm ci for reproducible builds with package-lock.json
+RUN npm ci --production && \
     npm cache clean --force
 
 # Production stage
