@@ -6,6 +6,11 @@ A real-time multiplayer quiz game designed for car trips! Generate AI-powered qu
 
 **Project home:** https://github.com/rikardronnkvist/vcvq
 
+## 🚗 Live Demo in a Car
+
+![VCVQ running on Tesla Model Y infotainment screen](images/InCarDemo.jpeg)
+*VCVQ quiz application running live on a Tesla Model Y infotainment system*
+
 ## 📚 Documentation
 
 For detailed documentation, see the [`docs/`](docs/) folder:
