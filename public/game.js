@@ -260,6 +260,7 @@ function updatePlayerBadgesOnAnswer() {
             badge.style.bottom = 'auto';
             break;
           case 2: // P2 - Upper right corner
+          default: // Fallback to upper right for any unexpected player numbers
             badge.style.top = '8px';
             badge.style.right = '8px';
             badge.style.left = 'auto';
@@ -284,12 +285,6 @@ function updatePlayerBadgesOnAnswer() {
             badge.style.top = 'auto';
             badge.style.right = 'auto';
             break;
-          default:
-            // Fallback to upper right for any unexpected player numbers
-            badge.style.top = '8px';
-            badge.style.right = '8px';
-            badge.style.left = 'auto';
-            badge.style.bottom = 'auto';
         }
         
         answerBox.appendChild(badge);
