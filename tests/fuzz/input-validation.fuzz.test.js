@@ -13,17 +13,17 @@ function isValidLanguage(lang) {
 }
 
 function isValidQuestionCount(count) {
-  const num = parseInt(count, 10);
+  const num = Number.parseInt(count, 10);
   return Number.isInteger(num) && num >= 5 && num <= 50;
 }
 
 function isValidAnswerCount(count) {
-  const num = parseInt(count, 10);
+  const num = Number.parseInt(count, 10);
   return Number.isInteger(num) && num >= 4 && num <= 8;
 }
 
 function isValidPlayerCount(count) {
-  const num = parseInt(count, 10);
+  const num = Number.parseInt(count, 10);
   return Number.isInteger(num) && num >= 2 && num <= 5;
 }
 
@@ -89,12 +89,12 @@ test('Question count validation - should reject non-integers', () => {
         fc.boolean(),
         fc.constant(null),
         fc.constant(undefined),
-        fc.constant(NaN),
+        fc.constant(Number.NaN),
         fc.constant(Infinity)
       ),
       (input) => {
         // Only reject if it's not a valid integer in range
-        const num = parseInt(input, 10);
+        const num = Number.parseInt(input, 10);
         const result = isValidQuestionCount(input);
         if (!Number.isInteger(num) || num < 5 || num > 50) {
           assert.strictEqual(result, false, `Should reject non-integer: ${input}`);
@@ -225,7 +225,7 @@ test('Edge cases - very large numbers should be rejected', () => {
 });
 
 test('Edge cases - special numeric values should be rejected', () => {
-  const specialValues = [NaN, Infinity, -Infinity, Number.MAX_VALUE];
+  const specialValues = [Number.NaN, Infinity, -Infinity, Number.MAX_VALUE];
   
   specialValues.forEach(value => {
     assert.strictEqual(isValidQuestionCount(value), false, `Questions: ${value}`);

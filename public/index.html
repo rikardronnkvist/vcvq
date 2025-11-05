@@ -180,7 +180,7 @@
     }
 
     function updatePlayerInputs() {
-      const count = parseInt(playerCountSelect.value);
+      const count = Number.parseInt(playerCountSelect.value);
       console.log(`[VCVQ] Updating player inputs for ${count} players`);
       playerNameInputs.forEach((input, idx) => {
         input.style.display = idx < count ? 'flex' : 'none';
@@ -360,7 +360,7 @@
     }
 
     async function generatePlayerNames() {
-      const count = parseInt(playerCountSelect.value);
+      const count = Number.parseInt(playerCountSelect.value);
       const lang = languageSelect.value;
       const topic = getCurrentTopic();
       
@@ -519,8 +519,8 @@
 
     startBtn.addEventListener('click', async () => {
       const topic = getCurrentTopic();
-      const playerCount = parseInt(playerCountSelect.value);
-      const questionCount = parseInt(document.getElementById('questionCount').value);
+      const playerCount = Number.parseInt(playerCountSelect.value);
+      const questionCount = Number.parseInt(document.getElementById('questionCount').value);
       const answerCount = 6; // Fixed to 6 answers
       const language = languageSelect.value;
       

@@ -180,14 +180,14 @@ function setupInteractions() {
       e.preventDefault();
       box.classList.remove('drag-over');
       
-      const selectedIndex = parseInt(box.dataset.index);
+      const selectedIndex = Number.parseInt(box.dataset.index);
       console.log(`[VCVQ] Player ${currentPlayerIndex + 1} dropped on answer ${selectedIndex}`);
       handleAnswer(selectedIndex);
     });
 
     // Click functionality - click on answer box to select
     box.addEventListener('click', () => {
-      const selectedIndex = parseInt(box.dataset.index);
+      const selectedIndex = Number.parseInt(box.dataset.index);
       console.log(`[VCVQ] Player ${currentPlayerIndex + 1} clicked answer ${selectedIndex}`);
       handleAnswer(selectedIndex);
     });
@@ -231,15 +231,15 @@ function updatePlayerBadgesOnAnswer() {
     if (!answerGroups[originalAnswerIdx]) {
       answerGroups[originalAnswerIdx] = [];
     }
-    answerGroups[originalAnswerIdx].push(parseInt(playerIdx));
+    answerGroups[originalAnswerIdx].push(Number.parseInt(playerIdx));
   });
   
   // Add badges for each player's answer, stacked
   Object.entries(answerGroups).forEach(([originalAnswerIdx, playerIndices]) => {
-    const originalIndex = parseInt(originalAnswerIdx);
+    const originalIndex = Number.parseInt(originalAnswerIdx);
     const displayIndex = shuffleMap[originalIndex];
     const answerBox = Array.from(answerBoxes).find(box => 
-      parseInt(box.dataset.displayIndex) === displayIndex
+      Number.parseInt(box.dataset.displayIndex) === displayIndex
     );
     
     if (answerBox) {
@@ -353,7 +353,7 @@ function showFeedback() {
   const correctOriginalIndex = question.correctAnswer;
   const correctDisplayIndex = shuffleMap[correctOriginalIndex];
   const correctBox = Array.from(answerBoxes).find(box => 
-    parseInt(box.dataset.displayIndex) === correctDisplayIndex
+    Number.parseInt(box.dataset.displayIndex) === correctDisplayIndex
   );
   if (correctBox) {
     correctBox.classList.add('correct');
@@ -364,7 +364,7 @@ function showFeedback() {
     if (originalAnswerIdx !== question.correctAnswer) {
       const displayIndex = shuffleMap[originalAnswerIdx];
       const incorrectBox = Array.from(answerBoxes).find(box => 
-        parseInt(box.dataset.displayIndex) === displayIndex
+        Number.parseInt(box.dataset.displayIndex) === displayIndex
       );
       if (incorrectBox) {
         incorrectBox.classList.add('incorrect');
