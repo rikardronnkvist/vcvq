@@ -1,0 +1,11 @@
+homepage: "https://github.com/rikardronnkvist/vcvq"
+language: javascript
+primary_contact: "security@vcvq.dev"
+auto_ccs:
+  - "security@vcvq.dev"
+sanitizers:
+  - address
+fuzzing_engines:
+  - libfuzzer
+main_repo: "https://github.com/rikardronnkvist/vcvq"
+

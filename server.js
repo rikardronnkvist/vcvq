@@ -6,6 +6,13 @@ const { body, validationResult } = require('express-validator');
 const helmet = require('helmet');
 const cors = require('cors');
 const { t, getPositions } = require('./public/i18n.js');
+const {
+  sanitizeLog,
+  sanitizePromptInput,
+  isValidVisitorId,
+  generateVisitorId,
+  getClientIp
+} = require('./utils/security.js');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -127,74 +134,11 @@ const visitorInfo = new Map(); // Map<sessionId, {firstVisit: timestamp, ip, use
 
 app.use(express.json({ limit: '1mb' })); // Limit payload size
 
-// Helper function to generate a short unique ID
-function generateVisitorId() {
-  return Math.random().toString(36).substring(2, 10);
-}
-
-// Helper function to get client IP
-function getClientIp(req) {
-  // req.ip should be the real client IP if trust proxy is set correctly
-  const ip = req.ip || req.socket.remoteAddress;
-  
-  // If we still get a local IP, try parsing x-forwarded-for manually
-  if (ip && (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.') || ip === '127.0.0.1')) {
-    const xForwardedFor = req.headers['x-forwarded-for'];
-    if (xForwardedFor) {
-      // Take the first IP in the chain (the real client)
-      const forwardedIps = xForwardedFor.split(',').map(ip => ip.trim());
-      for (const forwardedIp of forwardedIps) {
-        // Skip if it's another local/proxy IP
-        if (!forwardedIp.startsWith('192.168.') && !forwardedIp.startsWith('10.') && 
-            !forwardedIp.startsWith('172.16.') && forwardedIp !== '127.0.0.1') {
-          return forwardedIp;
-        }
-      }
-    }
-  }
-  
-  return ip || 'Unknown';
-}
-
 // Helper function to determine if we should log IP
 function shouldLogClientIp() {
   // If running behind multiple proxies where we only get internal IPs,
   // we can disable IP logging to avoid noise
   return false; // Set to true if you want IP logging
-}
-
-// Helper function to sanitize user input for safe logging (prevents log injection)
-// Removes newlines, carriage returns, and other control characters
-function sanitizeLog(value, maxLength = 200) {
-  if (value == null) return 'unknown';
-  const str = String(value);
-  // Remove newlines, carriage returns, and other control characters that could be used for log injection
-  return str.replace(/[\r\n\t\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
-}
-
-// Helper function to sanitize topic for AI prompts (prevents prompt injection)
-// Removes prompt injection attempts and sanitizes the input
-function sanitizePromptInput(topic) {
-  if (!topic) return '';
-  let sanitized = String(topic);
-  
-  // Remove common prompt injection patterns
-  // Remove newlines and carriage returns
-  sanitized = sanitized.replace(/[\r\n]/g, ' ');
-  // Remove common injection keywords/patterns
-  sanitized = sanitized.replace(/\b(ignore|forget|override|system|admin|assistant|instructions|prompt|role|persona)\s+(previous|above|instructions|all|the|this)\b/gi, '');
-  // Remove multiple consecutive spaces
-  sanitized = sanitized.replace(/\s+/g, ' ').trim();
-  
-  // Limit length to prevent overly long prompts
-  return sanitized.substring(0, 200);
-}
-
-// Helper function to validate visitorId format
-function isValidVisitorId(visitorId) {
-  if (!visitorId || typeof visitorId !== 'string') return false;
-  // Visitor ID should be alphanumeric, 8 characters max (as generated)
-  return /^[a-z0-9]{1,20}$/i.test(visitorId);
 }
 
 // Log user agent for page requests

@@ -1,0 +1,119 @@
+name: Fuzzing
+
+on:
+  # Run on PRs and main branch pushes
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  # Allow manual triggers
+  workflow_dispatch:
+  # Run weekly to catch regressions
+  schedule:
+    - cron: '0 3 * * 1'  # Every Monday at 3 AM UTC
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  # Property-based fuzzing with fast-check
+  property-based-fuzzing:
+    name: Property-Based Fuzzing
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run fuzz tests
+        run: npm run test:fuzz:verbose
+        timeout-minutes: 10
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-test-results
+          path: |
+            test-results/
+            coverage/
+          retention-days: 30
+
+  # Extended fuzzing - runs longer on schedule
+  extended-fuzzing:
+    name: Extended Fuzzing
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run extended fuzz tests
+        run: |
+          echo "Running extended fuzzing session..."
+          for i in {1..10}; do
+            echo "Fuzzing iteration $i/10"
+            npm run test:fuzz || exit 1
+          done
+        timeout-minutes: 30
+      
+      - name: Run ClusterFuzz targets locally
+        run: |
+          echo "Running ClusterFuzz fuzz targets..."
+          node tests/clusterfuzz/sanitize_fuzz.js
+          node tests/clusterfuzz/cors_fuzz.js
+      
+      - name: Upload extended test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: extended-fuzz-results
+          path: |
+            test-results/
+            coverage/
+          retention-days: 90
+
+  # Summary job
+  fuzzing-summary:
+    name: Fuzzing Summary
+    needs: [property-based-fuzzing]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Check fuzzing results
+        run: |
+          echo "Property-based fuzzing: ${{ needs.property-based-fuzzing.result }}"
+          
+          if [ "${{ needs.property-based-fuzzing.result }}" == "failure" ]; then
+            echo "❌ Fuzzing found issues"
+            exit 1
+          else
+            echo "✅ All fuzzing passed"
+          fi
+

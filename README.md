@@ -162,8 +162,9 @@ VCVQ implements comprehensive security measures:
 - **Prompt Injection Prevention:** Sanitization of user inputs in AI prompts
 - **JSON Parsing Error Handling:** Prevents server crashes from malformed responses
 - **Docker Security:** Non-root user, security options, resource limits
+- **Fuzzing:** Property-based testing with fast-check to detect vulnerabilities through automated testing with random and malicious inputs
 
-For detailed security information, see `SECURITY.md`.
+For detailed security information, see `SECURITY.md` and `FUZZING.md`.
 
 ## Development Prompts and AI Assistance
 
@@ -232,6 +233,7 @@ prompts/
 - **Frontend:** Vanilla JavaScript, HTML5, CSS3
 - **Features:** HTML5 Drag and Drop API, Internationalization (i18n)
 - **Security:** Helmet (security headers), CORS, express-rate-limit, express-validator
+- **Testing:** fast-check (property-based fuzzing), Node.js test runner
 - **Deployment:** Docker, docker-compose
 
 ## API Endpoints
@@ -243,6 +245,29 @@ prompts/
 - `GET /health` - Health check endpoint for monitoring
 
 All endpoints include rate limiting, input validation, and security headers. See `prompts/` directory for detailed specifications and development guidelines.
+
+## Testing & Fuzzing
+
+VCVQ includes comprehensive fuzzing to improve security and reliability:
+
+```bash
+# Run all tests
+npm test
+
+# Run fuzz tests
+npm run test:fuzz
+
+# Run fuzz tests with verbose output
+npm run test:fuzz:verbose
+```
+
+Fuzzing runs automatically on:
+- Every pull request
+- Pushes to main branch
+- Weekly scheduled runs
+- Manual workflow dispatch
+
+For detailed fuzzing documentation, see `FUZZING.md`.
 
 ## Environment Variables
 
