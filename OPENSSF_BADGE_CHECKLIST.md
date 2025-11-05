@@ -210,17 +210,26 @@ To achieve a higher badge level, consider these additions:
 
 **URL:** https://github.com/rikardronnkvist/vcvq/blob/main/LICENSE
 
-### "Vulnerability report process"
+### "Vulnerability report process" (URL required)
 
 **Answer:** Yes
 
-**URL:** https://github.com/rikardronnkvist/vcvq/blob/main/SECURITY.md
+**URL to provide:** https://github.com/rikardronnkvist/vcvq/blob/main/SECURITY.md
 
-**Justification:** SECURITY.md includes:
-- How to report vulnerabilities
-- Expected response time (48 hours)
-- Fix timeline based on severity
-- Private reporting instructions
+**Alternative URLs:**
+- Security tab: https://github.com/rikardronnkvist/vcvq/security
+- Policy link: https://github.com/rikardronnkvist/vcvq/security/policy
+
+**Justification:** SECURITY.md is published on the project site and includes:
+- **How to report vulnerabilities:** Email or GitHub Security Advisories
+- **What to include:** Detailed description, reproduction steps, impact assessment
+- **Expected response time:** 48 hours
+- **Fix timeline based on severity:**
+  - Critical: Within 7 days
+  - High: Within 30 days
+  - Medium/Low: Within 90 days
+- **Private reporting instructions:** Do NOT use public issues
+- **Contact methods:** Email to maintainer or GitHub Security Advisories
 
 ### "Quality"
 
