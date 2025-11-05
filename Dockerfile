@@ -23,6 +23,9 @@ WORKDIR /app
 # Copy dependencies from builder
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 
+# Set read-only permissions on node_modules for security
+RUN chmod -R 555 /app/node_modules
+
 # Copy application files
 COPY --chown=nodejs:nodejs . .
 
