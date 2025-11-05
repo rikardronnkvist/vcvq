@@ -8,7 +8,7 @@ function escapeHtml(text) {
     '"': '&quot;',
     "'": '&#039;'
   };
-  return String(text).replace(/[&<>"']/g, m => map[m]);
+  return String(text).replaceAll(/[&<>"']/g, m => map[m]);
 }
 
 let gameState;
@@ -16,20 +16,20 @@ try {
   const gameStateStr = sessionStorage.getItem('gameState');
   if (!gameStateStr) {
     console.error('[VCVQ] No game state found, redirecting to index');
-    window.location.href = 'index.html';
+    globalThis.location.href = 'index.html';
     throw new Error('No game state'); // Prevent further execution
   }
   gameState = JSON.parse(gameStateStr);
 } catch (error) {
   console.error('[VCVQ] Error parsing game state:', error);
   sessionStorage.removeItem('gameState');
-  window.location.href = 'index.html';
+  globalThis.location.href = 'index.html';
   throw error; // Prevent further execution
 }
 
 if (!gameState) {
   console.error('[VCVQ] No game state found, redirecting to index');
-  window.location.href = 'index.html';
+  globalThis.location.href = 'index.html';
 }
 
 const { topic, players, questions, language, numQuestions } = gameState;
