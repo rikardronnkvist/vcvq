@@ -1,6 +1,7 @@
 # 🎮 Vibe Coded Vibe Quiz (VCVQ)
 
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11431/badge)](https://www.bestpractices.dev/projects/11431)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq?ref=badge_shield)
 
 A real-time multiplayer quiz game designed for car trips! Generate AI-powered quiz questions on any topic and compete with 2-5 players using an intuitive drag-and-drop or click interface.
 
@@ -299,6 +300,9 @@ For detailed fuzzing documentation, see `FUZZING.md`.
 ## License
 
 MIT License - Feel free to use and modify!
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Frikardronnkvist%2Fvcvq?ref=badge_large)
 
 ## Credits
 
