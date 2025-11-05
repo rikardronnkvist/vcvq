@@ -267,7 +267,7 @@ async function tryGenerateWithModels(prompt) {
       console.log(`Trying model: ${modelName}`);
       const model = genAI.getGenerativeModel({ model: modelName });
       const result = await model.generateContent(prompt);
-      const response = await result.response;
+      const response = result.response;
       console.log(`Success with model: ${modelName}`);
       return response.text();
     } catch (error) {
