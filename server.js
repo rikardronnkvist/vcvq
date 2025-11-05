@@ -166,6 +166,56 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Helper function to build visitor log message
+function buildVisitorLogMessage(prefix, visitorId, page, userAgent, clientIp, resolution, viewport, logIp) {
+  const ipStr = logIp ? ` | IP: ${sanitizeLog(clientIp)}` : '';
+  const sanitizedPage = sanitizeLog(page);
+  const sanitizedUserAgent = sanitizeLog(userAgent, 150);
+  
+  let resolutionStr = '';
+  if (resolution && viewport) {
+    const sanitizedWidth = sanitizeLog(resolution.width, 10);
+    const sanitizedHeight = sanitizeLog(resolution.height, 10);
+    const sanitizedVpWidth = sanitizeLog(viewport.width, 10);
+    const sanitizedVpHeight = sanitizeLog(viewport.height, 10);
+    resolutionStr = ` | Resolution: ${sanitizedWidth}x${sanitizedHeight} | Viewport: ${sanitizedVpWidth}x${sanitizedVpHeight}`;
+  } else if (resolution) {
+    const sanitizedWidth = sanitizeLog(resolution.width, 10);
+    const sanitizedHeight = sanitizeLog(resolution.height, 10);
+    resolutionStr = ` | Resolution: ${sanitizedWidth}x${sanitizedHeight}`;
+  }
+  
+  return `[VCVQ] ${prefix} | ID: ${visitorId} | Page: ${sanitizedPage}${ipStr}${resolutionStr} | User-Agent: ${sanitizedUserAgent}`;
+}
+
+// Helper function to create and store new visitor
+function createNewVisitor(visitorId, clientIp, userAgent, resolution) {
+  const now = new Date().toISOString();
+  visitorInfo.set(visitorId, {
+    firstVisit: now,
+    ip: clientIp,
+    userAgent,
+    resolution: resolution ? `${resolution.width}x${resolution.height}` : 'Unknown'
+  });
+}
+
+// Helper function to handle first visit
+function handleFirstVisit(clientIp, userAgent, page, resolution, viewport, logIp, prefix = 'First visit') {
+  const newVisitorId = generateVisitorId();
+  createNewVisitor(newVisitorId, clientIp, userAgent, resolution);
+  const logMessage = buildVisitorLogMessage(prefix, newVisitorId, page, userAgent, clientIp, resolution, viewport, logIp);
+  console.log(logMessage);
+  return newVisitorId;
+}
+
+// Helper function to handle returning visitor
+function handleReturningVisitor(visitorId, page, userAgent) {
+  const sanitizedVisitorId = sanitizeLog(visitorId);
+  const sanitizedPage = sanitizeLog(page);
+  const sanitizedUserAgent = sanitizeLog(userAgent, 150);
+  console.log(`[VCVQ] Visitor: ${sanitizedVisitorId} | Page: ${sanitizedPage} | User-Agent: ${sanitizedUserAgent}`);
+}
+
 // Client info logging endpoint (no rate limiting, minimal payload)
 app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   const userAgent = req.headers['user-agent'] || 'Unknown';
@@ -178,82 +228,22 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
     return res.status(400).json({ error: 'Invalid visitor ID format' });
   }
   
-  // Check if this is a first visit (no visitorId) or returning visitor
+  // Handle first visit (no visitorId)
   if (!visitorId) {
-    // First visit - generate ID and log full info
-    const newVisitorId = generateVisitorId();
-    const now = new Date().toISOString();
-    
-    visitorInfo.set(newVisitorId, {
-      firstVisit: now,
-      ip: clientIp,
-      userAgent,
-      resolution: resolution ? `${resolution.width}x${resolution.height}` : 'Unknown'
-    });
-    
-    // Log first visit with full details
-    const ipStr = logIp ? ` | IP: ${sanitizeLog(clientIp)}` : '';
-    const sanitizedPage = sanitizeLog(page);
-    const sanitizedUserAgent = sanitizeLog(userAgent, 150);
-    if (resolution && viewport) {
-      const sanitizedWidth = sanitizeLog(resolution.width, 10);
-      const sanitizedHeight = sanitizeLog(resolution.height, 10);
-      const sanitizedVpWidth = sanitizeLog(viewport.width, 10);
-      const sanitizedVpHeight = sanitizeLog(viewport.height, 10);
-      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${sanitizedPage}${ipStr} | Resolution: ${sanitizedWidth}x${sanitizedHeight} | Viewport: ${sanitizedVpWidth}x${sanitizedVpHeight} | User-Agent: ${sanitizedUserAgent}`);
-    } else if (resolution) {
-      const sanitizedWidth = sanitizeLog(resolution.width, 10);
-      const sanitizedHeight = sanitizeLog(resolution.height, 10);
-      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${sanitizedPage}${ipStr} | Resolution: ${sanitizedWidth}x${sanitizedHeight} | User-Agent: ${sanitizedUserAgent}`);
-    } else {
-      console.log(`[VCVQ] First visit | ID: ${newVisitorId} | Page: ${sanitizedPage}${ipStr} | User-Agent: ${sanitizedUserAgent}`);
-    }
-    
-    // Return the visitor ID to store client-side
-    res.status(200).json({ status: 'ok', visitorId: newVisitorId });
-  } else {
-    // Returning visitor - just log with ID
-    const visitor = visitorInfo.get(visitorId);
-    if (visitor) {
-      const sanitizedVisitorId = sanitizeLog(visitorId);
-      const sanitizedPage = sanitizeLog(page);
-      const sanitizedUserAgent = sanitizeLog(userAgent, 150);
-      console.log(`[VCVQ] Visitor: ${sanitizedVisitorId} | Page: ${sanitizedPage} | User-Agent: ${sanitizedUserAgent}`);
-    } else {
-      // Visitor ID not found in map (server restarted), treat as first visit
-      const newVisitorId = generateVisitorId();
-      const now = new Date().toISOString();
-      
-      visitorInfo.set(newVisitorId, {
-        firstVisit: now,
-        ip: clientIp,
-        userAgent,
-        resolution: resolution ? `${resolution.width}x${resolution.height}` : 'Unknown'
-      });
-      
-      // Log first visit (ID expired) with full details
-      const ipStr = logIp ? ` | IP: ${sanitizeLog(clientIp)}` : '';
-      const sanitizedPage = sanitizeLog(page);
-      const sanitizedUserAgent = sanitizeLog(userAgent, 150);
-      if (resolution && viewport) {
-        const sanitizedWidth = sanitizeLog(resolution.width, 10);
-        const sanitizedHeight = sanitizeLog(resolution.height, 10);
-        const sanitizedVpWidth = sanitizeLog(viewport.width, 10);
-        const sanitizedVpHeight = sanitizeLog(viewport.height, 10);
-        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${sanitizedPage}${ipStr} | Resolution: ${sanitizedWidth}x${sanitizedHeight} | Viewport: ${sanitizedVpWidth}x${sanitizedVpHeight} | User-Agent: ${sanitizedUserAgent}`);
-      } else if (resolution) {
-        const sanitizedWidth = sanitizeLog(resolution.width, 10);
-        const sanitizedHeight = sanitizeLog(resolution.height, 10);
-        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${sanitizedPage}${ipStr} | Resolution: ${sanitizedWidth}x${sanitizedHeight} | User-Agent: ${sanitizedUserAgent}`);
-      } else {
-        console.log(`[VCVQ] First visit (ID expired) | ID: ${newVisitorId} | Page: ${sanitizedPage}${ipStr} | User-Agent: ${sanitizedUserAgent}`);
-      }
-      res.status(200).json({ status: 'ok', visitorId: newVisitorId });
-      return;
-    }
-    
-    res.status(200).json({ status: 'ok' });
+    const newVisitorId = handleFirstVisit(clientIp, userAgent, page, resolution, viewport, logIp);
+    return res.status(200).json({ status: 'ok', visitorId: newVisitorId });
   }
+  
+  // Handle returning visitor
+  const visitor = visitorInfo.get(visitorId);
+  if (visitor) {
+    handleReturningVisitor(visitorId, page, userAgent);
+    return res.status(200).json({ status: 'ok' });
+  }
+  
+  // Visitor ID not found (server restarted), treat as first visit
+  const newVisitorId = handleFirstVisit(clientIp, userAgent, page, resolution, viewport, logIp, 'First visit (ID expired)');
+  return res.status(200).json({ status: 'ok', visitorId: newVisitorId });
 });
 
 async function tryGenerateWithModels(prompt) {
@@ -417,6 +407,52 @@ Rules:
 });
 
 // Input validation middleware for player names
+// Helper function to build player names prompt
+function buildPlayerNamesPrompt(language, count, topic, positions) {
+  const sanitizedTopicForPrompt = topic ? sanitizePromptInput(topic) : '';
+  const positionList = positions.slice(0, count);
+  
+  const topicContext = sanitizedTopicForPrompt 
+    ? t('aiPlayerNamesTopicContext', language, sanitizedTopicForPrompt)
+    : '';
+  
+  const langInstruction = t('aiPlayerNamesInstruction', language, count, topicContext);
+  const topicRule = topic ? ' AND the quiz topic' : ' or driving context';
+  
+  return `${langInstruction}
+${positionList.map((pos, i) => `${i + 1}. ${pos}`).join('\n')}
+
+IMPORTANT: You must respond ONLY with valid JSON. Do not include any markdown formatting, code blocks, or explanatory text.
+
+Format your response as a JSON array with exactly ${count} strings (one name per position):
+["Name1", "Name2", "Name3"]
+
+Rules:
+- Names should be funny, memorable, and family-friendly
+- Names should relate to the car position${topicRule}
+- Keep names short (1-2 words max)
+- Make them culturally appropriate for ${t('languageName', language)} speakers
+- Be creative and fun!`;
+}
+
+// Helper function to parse and validate player names response
+function validatePlayerNamesResponse(text, count) {
+  const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  
+  let names;
+  try {
+    names = JSON.parse(cleanedText);
+  } catch (error) {
+    throw new Error(`Invalid JSON response from AI: ${error.message}`);
+  }
+  
+  if (!Array.isArray(names) || names.length !== count) {
+    throw new Error(`Invalid response format: Expected ${count} names`);
+  }
+  
+  return names;
+}
+
 const validatePlayerNames = [
   body('language')
     .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
@@ -431,7 +467,6 @@ const validatePlayerNames = [
 
 app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, async (req, res) => {
   try {
-    // Check validation results
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('[VCVQ] Validation errors:', errors.array());
@@ -444,13 +479,9 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
 
     const { language, count, topic, visitorId } = req.body;
     
-    // Validate visitorId if provided
     if (visitorId && !isValidVisitorId(visitorId)) {
       return res.status(400).json({ error: 'Invalid visitor ID format' });
     }
-    
-    // Sanitize topic for prompt injection prevention
-    const sanitizedTopicForPrompt = topic ? sanitizePromptInput(topic) : '';
     
     const sanitizedTopic = sanitizeLog(topic);
     const sanitizedLanguage = sanitizeLog(language);
@@ -460,109 +491,29 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
     console.log(`[VCVQ] Generating ${sanitizedCount} player names in ${sanitizedLanguage} for topic: ${sanitizedTopic}${visitorInfoStr}`);
 
     const positions = getPositions(language);
-    const positionList = positions.slice(0, count);
-    
-    const topicContext = sanitizedTopicForPrompt 
-      ? t('aiPlayerNamesTopicContext', language, sanitizedTopicForPrompt)
-      : '';
-    
-    const langInstruction = t('aiPlayerNamesInstruction', language, count, topicContext);
-    
-    const prompt = `${langInstruction}
-${positionList.map((pos, i) => `${i + 1}. ${pos}`).join('\n')}
-
-IMPORTANT: You must respond ONLY with valid JSON. Do not include any markdown formatting, code blocks, or explanatory text.
-
-Format your response as a JSON array with exactly ${count} strings (one name per position):
-["Name1", "Name2", "Name3"]
-
-Rules:
-- Names should be funny, memorable, and family-friendly
-- Names should relate to the car position${topic ? ' AND the quiz topic' : ' or driving context'}
-- Keep names short (1-2 words max)
-- Make them culturally appropriate for ${t('languageName', language)} speakers
-- Be creative and fun!`;
-
-    let text = await tryGenerateWithModels(prompt);
-
-    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-    let names;
-    try {
-      names = JSON.parse(text);
-    } catch (error) {
-      throw new Error(`Invalid JSON response from AI: ${error.message}`);
-    }
-
-    if (!Array.isArray(names) || names.length !== count) {
-      throw new Error(`Invalid response format: Expected ${count} names`);
-    }
+    const prompt = buildPlayerNamesPrompt(language, count, topic, positions);
+    const text = await tryGenerateWithModels(prompt);
+    const names = validatePlayerNamesResponse(text, count);
 
     console.log(`[VCVQ] Generated player names:`, names);
     res.json({ names });
   } catch (error) {
-    const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
-    console.error(`[VCVQ] Error generating player names: ${sanitizedError}`);
-    
-    // Check if this is an overload error
-    if (error.isOverloaded) {
-      return res.status(503).json({ 
-        error: 'Service temporarily unavailable',
-        errorCode: 'OVERLOADED',
-        message: 'The AI service is currently overloaded. Please try again in a few moments.'
-      });
-    }
-    
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    res.status(500).json({ 
-      error: 'Failed to generate player names',
-      ...(isDevelopment && { details: error.message })
-    });
+    return handleGenerationError(error, res, 'player names');
   }
 });
 
-// Input validation middleware for topic generation
-const validateTopicGeneration = [
-  body('language')
-    .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
-  body('count')
-    .optional()
-    .isInt({ min: 1, max: 20 }).withMessage('Count must be between 1 and 20')
-];
-
-app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async (req, res) => {
-  try {
-    // Check validation results
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log('[VCVQ] Validation errors:', errors.array());
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        ...(isDevelopment && { details: errors.array().map(e => e.msg).join(', ') })
-      });
-    }
-
-    const { language, count = 1, visitorId } = req.body;
-    
-    // Validate visitorId if provided
-    if (visitorId && !isValidVisitorId(visitorId)) {
-      return res.status(400).json({ error: 'Invalid visitor ID format' });
-    }
-    
-    const sanitizedLanguage = sanitizeLog(language);
-    const sanitizedCount = sanitizeLog(count);
-    const sanitizedVisitorId = sanitizeLog(visitorId);
-    const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
-    console.log(`[VCVQ] Generating ${sanitizedCount} random funny topic(s) in ${sanitizedLanguage}${visitorInfoStr}`);
-    
-    const langInstruction = t('aiTopicsInstruction', language, count);
-
-    const responseFormat = count === 1 
-      ? '{\n  "topic": "Your funny topic here"\n}'
-      : '{\n  "topics": ["Topic 1", "Topic 2", "Topic 3"]\n}';
-
-    const prompt = `${langInstruction}
+// Helper function to build topic generation prompt
+function buildTopicPrompt(language, count) {
+  const langInstruction = t('aiTopicsInstruction', language, count);
+  const responseFormat = count === 1 
+    ? '{\n  "topic": "Your funny topic here"\n}'
+    : '{\n  "topics": ["Topic 1", "Topic 2", "Topic 3"]\n}';
+  
+  const pluralRules = count > 1 
+    ? '- All topics should be different and diverse\n- Cover different categories'
+    : '';
+  
+  return `${langInstruction}
 
 IMPORTANT: You must respond ONLY with valid JSON. Do not include any markdown formatting, code blocks, or explanatory text.
 
@@ -576,52 +527,101 @@ Rules:
 - Be creative and unexpected!
 - Each topic should be maximum 5 words
 - Make ${count > 1 ? 'them' : 'it'} funny or quirky when possible
-${count > 1 ? '- All topics should be different and diverse\n- Cover different categories' : ''}
+${pluralRules}
 
 Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs", "80s Music", "Famous Mustaches"`;
+}
 
-    let text = await tryGenerateWithModels(prompt);
-
-    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (error) {
-      throw new Error(`Invalid JSON response from AI: ${error.message}`);
-    }
-
-    if (count === 1) {
-      if (!data.topic || typeof data.topic !== 'string') {
-        throw new Error('Invalid response format: Expected topic string');
-      }
-      console.log(`[VCVQ] Generated topic: ${sanitizeLog(data.topic)}`);
-      res.json({ topic: data.topic });
-    } else {
-      if (!Array.isArray(data.topics) || data.topics.length !== count) {
-        throw new Error(`Invalid response format: Expected ${count} topics`);
-      }
-      console.log(`[VCVQ] Generated topics:`, data.topics);
-      res.json({ topics: data.topics });
-    }
+// Helper function to parse and validate topic response
+function validateTopicResponse(text, count) {
+  const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  
+  let data;
+  try {
+    data = JSON.parse(cleanedText);
   } catch (error) {
-    const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
-    console.error(`[VCVQ] Error generating topic: ${sanitizedError}`);
-    
-    // Check if this is an overload error
-    if (error.isOverloaded) {
-      return res.status(503).json({ 
-        error: 'Service temporarily unavailable',
-        errorCode: 'OVERLOADED',
-        message: 'The AI service is currently overloaded. Please try again in a few moments.'
+    throw new Error(`Invalid JSON response from AI: ${error.message}`);
+  }
+  
+  if (count === 1) {
+    if (!data.topic || typeof data.topic !== 'string') {
+      throw new Error('Invalid response format: Expected topic string');
+    }
+    return { topic: data.topic };
+  }
+  
+  if (!Array.isArray(data.topics) || data.topics.length !== count) {
+    throw new Error(`Invalid response format: Expected ${count} topics`);
+  }
+  return { topics: data.topics };
+}
+
+// Helper function to handle AI generation errors
+function handleGenerationError(error, res, context) {
+  const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
+  console.error(`[VCVQ] Error generating ${context}: ${sanitizedError}`);
+  
+  if (error.isOverloaded) {
+    return res.status(503).json({ 
+      error: 'Service temporarily unavailable',
+      errorCode: 'OVERLOADED',
+      message: 'The AI service is currently overloaded. Please try again in a few moments.'
+    });
+  }
+  
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  return res.status(500).json({ 
+    error: `Failed to generate ${context}`,
+    ...(isDevelopment && { details: error.message })
+  });
+}
+
+// Input validation middleware for topic generation
+const validateTopicGeneration = [
+  body('language')
+    .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
+  body('count')
+    .optional()
+    .isInt({ min: 1, max: 20 }).withMessage('Count must be between 1 and 20')
+];
+
+app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('[VCVQ] Validation errors:', errors.array());
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        ...(isDevelopment && { details: errors.array().map(e => e.msg).join(', ') })
       });
     }
+
+    const { language, count = 1, visitorId } = req.body;
     
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    res.status(500).json({ 
-      error: 'Failed to generate topic',
-      ...(isDevelopment && { details: error.message })
-    });
+    if (visitorId && !isValidVisitorId(visitorId)) {
+      return res.status(400).json({ error: 'Invalid visitor ID format' });
+    }
+    
+    const sanitizedLanguage = sanitizeLog(language);
+    const sanitizedCount = sanitizeLog(count);
+    const sanitizedVisitorId = sanitizeLog(visitorId);
+    const visitorInfoStr = visitorId ? ` | Visitor: ${sanitizedVisitorId}` : '';
+    console.log(`[VCVQ] Generating ${sanitizedCount} random funny topic(s) in ${sanitizedLanguage}${visitorInfoStr}`);
+    
+    const prompt = buildTopicPrompt(language, count);
+    const text = await tryGenerateWithModels(prompt);
+    const result = validateTopicResponse(text, count);
+    
+    if (count === 1) {
+      console.log(`[VCVQ] Generated topic: ${sanitizeLog(result.topic)}`);
+    } else {
+      console.log(`[VCVQ] Generated topics:`, result.topics);
+    }
+    
+    res.json(result);
+  } catch (error) {
+    return handleGenerationError(error, res, 'topic');
   }
 });
 
