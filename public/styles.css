@@ -167,10 +167,11 @@ select {
 }
 
 .option-btn.active {
-  background: linear-gradient(135deg, #00D9FF 0%, #1DE9B6 100%);
+  background: linear-gradient(135deg, #00B8D4 0%, #00BFA5 100%);
   color: white;
   border-color: #00D9FF;
   box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .option-btn:active {
@@ -265,10 +266,11 @@ select {
 }
 
 .topic-option-btn.active {
-  background: linear-gradient(135deg, #00D9FF 0%, #1DE9B6 100%);
+  background: linear-gradient(135deg, #00B8D4 0%, #00BFA5 100%);
   color: white;
   border-color: #00D9FF;
   box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .topic-option-btn:active {
@@ -340,9 +342,9 @@ select:active {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #FF2E97 0%, #FF8C00 50%, #FFD700 100%);
+  background: linear-gradient(135deg, #E91E63 0%, #FF6F00 50%, #FFA000 100%);
   color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   border: 3px solid #00D9FF;
 }
 
@@ -662,16 +664,16 @@ select:active {
 
 .feedback.correct {
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  color: #1DE9B6;
-  border: 3px solid #1DE9B6;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  color: #00897B;
+  border: 3px solid #00BFA5;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .feedback.incorrect {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  color: #FF2E97;
-  border: 3px solid #FF2E97;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  color: #C2185B;
+  border: 3px solid #E91E63;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .btn-end-game {
@@ -930,8 +932,9 @@ select:active {
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #FF2E97 0%, #FF8C00 50%, #FFD700 100%);
+    background: linear-gradient(135deg, #E91E63 0%, #FF6F00 50%, #FFA000 100%);
     color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     border-color: #00D9FF;
     box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.3), 0 4px 12px rgba(255, 46, 151, 0.4);
   }
