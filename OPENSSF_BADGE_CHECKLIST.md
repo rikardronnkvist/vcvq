@@ -284,9 +284,9 @@ To achieve a higher badge level, consider these additions:
 
 5. **Update README with badge:**
    ```markdown
-   [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/YOUR_PROJECT_ID/badge)](https://www.bestpractices.dev/projects/YOUR_PROJECT_ID)
+   [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11431/badge)](https://www.bestpractices.dev/projects/11431)
    ```
-   Replace `YOUR_PROJECT_ID` with your actual project ID from the badge site.
+   ✅ Badge updated with project ID: 11431
 
 ## 📊 Expected Badge Level
 
@@ -345,7 +345,7 @@ Before submitting badge application:
 Once you receive your badge:
 
 1. **Update README.md:**
-   - Replace `YOUR_PROJECT_ID` with actual ID
+   - ✅ DONE - Badge updated with project ID: 11431
    
 2. **Announce:**
    - Update documentation
@@ -356,6 +356,17 @@ Once you receive your badge:
    - Keep documentation updated
    - Respond to security reports per policy
    - Update badge as criteria evolve
+
+## 📊 Your Badge Information
+
+**Project ID:** 11431  
+**Badge URL:** https://www.bestpractices.dev/projects/11431  
+**Badge Status:** https://www.bestpractices.dev/projects/11431/badge  
+
+**Badge Markdown:**
+```markdown
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11431/badge)](https://www.bestpractices.dev/projects/11431)
+```
 
 ---
 
