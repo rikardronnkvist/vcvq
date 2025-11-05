@@ -28,3 +28,8 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Test Coverage
+coverage/
+.nyc_output/
+*.lcov
