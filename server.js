@@ -89,6 +89,7 @@ app.use((req, res, next) => {
         }
       } catch (error) {
         // Invalid URL format, continue to deny
+        console.debug('[VCVQ] CORS: Invalid URL format for origin:', sanitizeLog(origin, 100));
       }
       
       // For non-localhost/non-same-origin requests, require explicit ALLOWED_ORIGINS configuration
@@ -372,7 +373,7 @@ Rules:
 
     let text = await tryGenerateWithModels(prompt);
 
-    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    text = text.replaceAll(/```json\n?/g, '').replaceAll(/```\n?/g, '').trim();
 
     let questions;
     try {
@@ -385,12 +386,12 @@ Rules:
       throw new Error(`Invalid response format: Expected ${numQuestions} questions`);
     }
 
-    questions.forEach((q, idx) => {
+    for (const [idx, q] of questions.entries()) {
       if (!q.question || !Array.isArray(q.options) || q.options.length !== numAnswers || 
           typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > maxAnswerIndex) {
         throw new Error(`Invalid question format at index ${idx}`);
       }
-    });
+    }
 
     console.log(`[VCVQ] Successfully generated ${questions.length} questions`);
     res.json({ questions });
@@ -447,7 +448,7 @@ Rules:
 
 // Helper function to parse and validate player names response
 function validatePlayerNamesResponse(text, count) {
-  const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  const cleanedText = text.replaceAll(/```json\n?/g, '').replaceAll(/```\n?/g, '').trim();
   
   let names;
   try {
@@ -544,7 +545,7 @@ Examples of good topics: "Movie Villains", "Space Oddities", "Swedish Meatballs"
 
 // Helper function to parse and validate topic response
 function validateTopicResponse(text, count) {
-  const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  const cleanedText = text.replaceAll(/```json\n?/g, '').replaceAll(/```\n?/g, '').trim();
   
   let data;
   try {

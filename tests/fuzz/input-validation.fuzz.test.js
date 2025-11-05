@@ -61,10 +61,10 @@ test('Language validation - should reject malicious inputs', () => {
     'swedish'
   ];
   
-  maliciousInputs.forEach(input => {
+  for (const input of maliciousInputs) {
     const result = isValidLanguage(input);
     assert.strictEqual(result, false, `Should reject: ${input}`);
-  });
+  }
 });
 
 test('Question count validation - should enforce range 5-50', () => {
@@ -227,11 +227,11 @@ test('Edge cases - very large numbers should be rejected', () => {
 test('Edge cases - special numeric values should be rejected', () => {
   const specialValues = [Number.NaN, Infinity, -Infinity, Number.MAX_VALUE];
   
-  specialValues.forEach(value => {
+  for (const value of specialValues) {
     assert.strictEqual(isValidQuestionCount(value), false, `Questions: ${value}`);
     assert.strictEqual(isValidAnswerCount(value), false, `Answers: ${value}`);
     assert.strictEqual(isValidPlayerCount(value), false, `Players: ${value}`);
-  });
+  }
   
   // Number.MIN_VALUE (5e-324) is close to 0, so parseInt returns 5 which is valid
   // This is actually correct behavior, so we don't test it as rejection
@@ -247,12 +247,12 @@ test('Realistic - common valid configurations should be accepted', () => {
     { questions: 50, answers: 6, players: 4, lang: 'en' }
   ];
   
-  validConfigs.forEach((config, idx) => {
+  for (const [idx, config] of validConfigs.entries()) {
     assert.strictEqual(isValidQuestionCount(config.questions), true, `Config ${idx}: questions`);
     assert.strictEqual(isValidAnswerCount(config.answers), true, `Config ${idx}: answers`);
     assert.strictEqual(isValidPlayerCount(config.players), true, `Config ${idx}: players`);
     assert.strictEqual(isValidLanguage(config.lang), true, `Config ${idx}: language`);
-  });
+  }
 });
 
 // Test attack patterns
@@ -269,11 +269,11 @@ test('Security - injection attacks in topic should be handled', () => {
     '$(whoami)'
   ];
   
-  injectionTopics.forEach(topic => {
+  for (const topic of injectionTopics) {
     // Should still validate length correctly
     const result = isValidTopicLength(topic);
     assert.strictEqual(typeof result, 'boolean', `Should handle injection: ${topic}`);
-  });
+  }
 });
 
 test('Security - Unicode and special characters in topic should be handled', () => {
@@ -293,9 +293,9 @@ test('Security - control characters in inputs should be handled gracefully', () 
     'topic\x1bwith\x1bescape'
   ];
   
-  controlChars.forEach(topic => {
+  for (const topic of controlChars) {
     const result = isValidTopicLength(topic);
     assert.strictEqual(typeof result, 'boolean', `Should handle control chars: ${topic}`);
-  });
+  }
 });
 

@@ -36,7 +36,7 @@ function fuzz(data) {
     
     // Verify properties
     if (typeof result !== 'boolean') {
-      throw new Error('isValidCorsOrigin must return boolean');
+      throw new TypeError('isValidCorsOrigin must return boolean');
     }
     
     // Test known safe origins that should always be accepted
@@ -81,7 +81,7 @@ if (require.main === module) {
   ];
   
   console.log('Running CORS fuzz target tests...');
-  testInputs.forEach((input, idx) => {
+  for (const [idx, input] of testInputs.entries()) {
     try {
       fuzz(input);
       console.log(`✓ Test ${idx + 1} passed`);
@@ -89,7 +89,7 @@ if (require.main === module) {
       console.error(`✗ Test ${idx + 1} failed:`, error.message);
       process.exit(1);
     }
-  });
+  }
   console.log('All tests passed!');
 }
 

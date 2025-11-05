@@ -118,9 +118,9 @@ function renderQuestion() {
     
     // Create mapping: originalIndex -> shuffledIndex
     answerShuffles[currentQuestionIndex] = {};
-    shuffledIndices.forEach((originalIdx, shuffledIdx) => {
+    for (const [shuffledIdx, originalIdx] of shuffledIndices.entries()) {
       answerShuffles[currentQuestionIndex][originalIdx] = shuffledIdx;
-    });
+    }
     
     console.log(`[VCVQ] Shuffled answer order for question ${currentQuestionIndex + 1}:`, shuffledIndices);
   }
@@ -164,7 +164,7 @@ function setupInteractions() {
     playerToken.classList.remove('dragging');
   });
 
-  answerBoxes.forEach(box => {
+  for (const box of answerBoxes) {
     // Allow dropping on the whole answer box
     box.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -191,7 +191,7 @@ function setupInteractions() {
       console.log(`[VCVQ] Player ${currentPlayerIndex + 1} clicked answer ${selectedIndex}`);
       handleAnswer(selectedIndex);
     });
-  });
+  }
 }
 
 function disableInteractions() {
@@ -204,10 +204,10 @@ function disableInteractions() {
   playerToken.style.cursor = 'default';
   
   // Disable interactions on answer boxes
-  answerBoxes.forEach(box => {
+  for (const box of answerBoxes) {
     box.style.pointerEvents = 'none';
     box.style.cursor = 'default';
-  });
+  }
   
   console.log('[VCVQ] Interactions disabled - all players have answered');
 }
@@ -217,25 +217,27 @@ function updatePlayerBadgesOnAnswer() {
   const shuffleMap = answerShuffles[currentQuestionIndex];
   
   // Clear existing player badges
-  answerBoxes.forEach(box => {
+  for (const box of answerBoxes) {
     const existingBadges = box.querySelectorAll('.player-badge');
-    existingBadges.forEach(badge => badge.remove());
-  });
+    for (const badge of existingBadges) {
+      badge.remove();
+    }
+  }
   
   // Get all answers for current question
   const currentAnswers = playerAnswers[currentQuestionIndex] || {};
   
   // Group players by their answer (answers are stored as original indices)
   const answerGroups = {};
-  Object.entries(currentAnswers).forEach(([playerIdx, originalAnswerIdx]) => {
+  for (const [playerIdx, originalAnswerIdx] of Object.entries(currentAnswers)) {
     if (!answerGroups[originalAnswerIdx]) {
       answerGroups[originalAnswerIdx] = [];
     }
     answerGroups[originalAnswerIdx].push(Number.parseInt(playerIdx));
-  });
+  }
   
   // Add badges for each player's answer, stacked
-  Object.entries(answerGroups).forEach(([originalAnswerIdx, playerIndices]) => {
+  for (const [originalAnswerIdx, playerIndices] of Object.entries(answerGroups)) {
     const originalIndex = Number.parseInt(originalAnswerIdx);
     const displayIndex = shuffleMap[originalIndex];
     const answerBox = Array.from(answerBoxes).find(box => 
@@ -243,7 +245,7 @@ function updatePlayerBadgesOnAnswer() {
     );
     
     if (answerBox) {
-      playerIndices.forEach((playerIndex) => {
+      for (const playerIndex of playerIndices) {
         const badge = document.createElement('div');
         badge.className = 'player-badge';
         badge.textContent = playerIndex + 1;
@@ -293,9 +295,9 @@ function updatePlayerBadgesOnAnswer() {
         }
         
         answerBox.appendChild(badge);
-      });
+      }
     }
-  });
+  }
 }
 
 function handleAnswer(selectedIndex) {
@@ -365,7 +367,7 @@ function showFeedback() {
   }
   
   // Show which answers were selected (if incorrect)
-  Object.entries(playerAnswers[currentQuestionIndex]).forEach(([playerIdx, originalAnswerIdx]) => {
+  for (const [playerIdx, originalAnswerIdx] of Object.entries(playerAnswers[currentQuestionIndex])) {
     if (originalAnswerIdx !== question.correctAnswer) {
       const displayIndex = shuffleMap[originalAnswerIdx];
       const incorrectBox = Array.from(answerBoxes).find(box => 
@@ -375,7 +377,7 @@ function showFeedback() {
         incorrectBox.classList.add('incorrect');
       }
     }
-  });
+  }
 
   // Count correct answers
   const correctCount = Object.entries(playerAnswers[currentQuestionIndex])
@@ -453,7 +455,7 @@ document.getElementById('restartBtn')?.addEventListener('click', () => {
     numAnswers: questions[0]?.options.length || 6
   };
   sessionStorage.setItem('restartSettings', JSON.stringify(restartData));
-  window.location.href = 'index.html';
+  globalThis.location.href = 'index.html';
 });
 
 console.log('[VCVQ] Initializing game');

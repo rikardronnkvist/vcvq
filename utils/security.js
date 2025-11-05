@@ -15,9 +15,10 @@ function sanitizeLog(value, maxLength = 200) {
   try {
     const str = String(value);
     // Remove newlines, carriage returns, and other control characters that could be used for log injection
-    return str.replace(/[\r\n\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
+    return str.replaceAll(/[\r\n\x00-\x1F\x7F-\x9F]/g, '').substring(0, maxLength);
   } catch (error) {
     // Handle objects that can't be converted to string
+    console.debug('[VCVQ] sanitizeLog: Failed to convert value to string:', error.message);
     return 'unknown';
   }
 }
@@ -34,11 +35,11 @@ function sanitizePromptInput(topic) {
   
   // Remove common prompt injection patterns
   // Remove newlines and carriage returns
-  sanitized = sanitized.replace(/[\r\n]/g, ' ');
+  sanitized = sanitized.replaceAll(/[\r\n]/g, ' ');
   // Remove common injection keywords/patterns (expanded to catch more variations)
-  sanitized = sanitized.replace(/\b(ignore|forget|override|system|admin|assistant|instructions|prompt|role|persona)\s+(previous|above|instructions|all|the|this|prompt|system)\b/gi, '');
+  sanitized = sanitized.replaceAll(/\b(ignore|forget|override|system|admin|assistant|instructions|prompt|role|persona)\s+(previous|above|instructions|all|the|this|prompt|system)\b/gi, '');
   // Remove multiple consecutive spaces
-  sanitized = sanitized.replace(/\s+/g, ' ').trim();
+  sanitized = sanitized.replaceAll(/\s+/g, ' ').trim();
   
   // Limit length to prevent overly long prompts
   return sanitized.substring(0, 200);
@@ -129,10 +130,8 @@ function isValidCorsOrigin(origin, requestHost, allowedOrigins = []) {
     }
   } catch (error) {
     // Invalid URL format - check if it's a plain IPv6 address without brackets
-    if (origin.includes('::1')) {
-      return true;
-    }
-    return false;
+    console.debug('[VCVQ] CORS: Invalid URL format, checking for IPv6:', error.message);
+    return origin.includes('::1');
   }
   
   return false;

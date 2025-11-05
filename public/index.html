@@ -112,12 +112,12 @@
     // Log client info (resolution and user agent) to server
     (function() {
       const resolution = {
-        width: window.screen.width || 0,
-        height: window.screen.height || 0
+        width: globalThis.screen.width || 0,
+        height: globalThis.screen.height || 0
       };
       const viewport = {
-        width: window.innerWidth || 0,
-        height: window.innerHeight || 0
+        width: globalThis.innerWidth || 0,
+        height: globalThis.innerHeight || 0
       };
       
       // Get or store visitor ID
@@ -148,8 +148,8 @@
     // Detect Tesla browser and add class for compatibility
     const ua = navigator.userAgent;
     console.log('[VCVQ] User Agent:', ua);
-    const screenWidth = window.screen.width || window.innerWidth || 0;
-    const screenHeight = window.screen.height || window.innerHeight || 0;
+    const screenWidth = globalThis.screen.width || globalThis.innerWidth || 0;
+    const screenHeight = globalThis.screen.height || globalThis.innerHeight || 0;
     
     // Detect Tesla browser by user agent or screen resolution
     // Tesla Model Y: 1180x919, Tesla Model 3/X: 1920x1200
@@ -182,9 +182,9 @@
     function updatePlayerInputs() {
       const count = Number.parseInt(playerCountSelect.value);
       console.log(`[VCVQ] Updating player inputs for ${count} players`);
-      playerNameInputs.forEach((input, idx) => {
+      for (const [idx, input] of playerNameInputs.entries()) {
         input.style.display = idx < count ? 'flex' : 'none';
-      });
+      }
     }
 
     function updateLanguage() {
@@ -193,9 +193,9 @@
       console.log(`[VCVQ] Language changed to: ${lang}`);
       
       // Update flag active states
-      document.querySelectorAll('.language-flag').forEach(flag => {
+      for (const flag of document.querySelectorAll('.language-flag')) {
         flag.classList.remove('active');
-      });
+      }
       document.getElementById(`flag-${lang}`).classList.add('active');
       
       // Update labels
@@ -219,8 +219,7 @@
         const currentValue = input.value;
         const allPositionNames = [];
         for (let pos = 1; pos <= 5; pos++) {
-          allPositionNames.push(t(`position${pos}`, 'sv'));
-          allPositionNames.push(t(`position${pos}`, 'en'));
+          allPositionNames.push(t(`position${pos}`, 'sv'), t(`position${pos}`, 'en'));
         }
         if (currentValue === '' || allPositionNames.includes(currentValue)) {
           input.value = getDefaultName(i - 1, lang);
@@ -287,7 +286,7 @@
             '"': '&quot;',
             "'": '&#039;'
           };
-          return String(text).replace(/[&<>"']/g, m => map[m]);
+          return String(text).replaceAll(/[&<>"']/g, m => map[m]);
         }
         
         // Populate hidden select for compatibility
@@ -306,9 +305,11 @@
         }
         
         // Add click handlers for topic buttons
-        topicButtonGroup.querySelectorAll('.topic-option-btn').forEach(btn => {
+        for (const btn of topicButtonGroup.querySelectorAll('.topic-option-btn')) {
           btn.addEventListener('click', () => {
-            topicButtonGroup.querySelectorAll('.topic-option-btn').forEach(b => b.classList.remove('active'));
+            for (const b of topicButtonGroup.querySelectorAll('.topic-option-btn')) {
+              b.classList.remove('active');
+            }
             btn.classList.add('active');
             topicDropdown.value = btn.dataset.value;
           });
@@ -348,14 +349,14 @@
       const topicButtonGroup = document.getElementById('topicButtonGroup');
       const topicDropdown = document.getElementById('topicDropdown');
       
-      if (topicButtonGroup.style.display !== 'none' && topicButtonGroup.style.display !== '') {
+      if (topicInput.style.display !== 'none') {
+        return topicInput.value.trim();
+      } else if (topicButtonGroup.style.display === 'none' || topicButtonGroup.style.display === '') {
+        return topicDropdown.value || '';
+      } else {
         // Using button group - get selected button value
         const selectedBtn = topicButtonGroup.querySelector('.topic-option-btn.active');
         return selectedBtn ? selectedBtn.dataset.value : '';
-      } else if (topicInput.style.display !== 'none') {
-        return topicInput.value.trim();
-      } else {
-        return topicDropdown.value || '';
       }
     }
 
@@ -504,7 +505,7 @@
     languageSelect.addEventListener('change', updateLanguage);
     
     // Language flag buttons
-    document.querySelectorAll('.language-flag').forEach(flag => {
+    for (const flag of document.querySelectorAll('.language-flag')) {
       flag.addEventListener('click', () => {
         const lang = flag.dataset.lang;
         languageSelect.value = lang;
@@ -582,7 +583,7 @@
           numQuestions: questionCount
         }));
 
-        window.location.href = 'game.html';
+        globalThis.location.href = 'game.html';
       } catch (error) {
         console.error('[VCVQ] Error generating quiz:', error);
         errorDiv.textContent = t('generateFailed', language);
@@ -593,7 +594,7 @@
     });
 
     // Check if returning from a game restart
-    window.addEventListener('load', () => {
+    globalThis.addEventListener('load', () => {
       const restartSettings = sessionStorage.getItem('restartSettings');
       const oldRestartPlayers = sessionStorage.getItem('restartPlayers'); // Backwards compatibility
       
@@ -637,9 +638,9 @@
         document.getElementById('playerCount').dispatchEvent(event);
         
         // Restore player names
-        settings.players.forEach((player, idx) => {
+        for (const [idx, player] of settings.players.entries()) {
           document.getElementById(`player${idx + 1}`).value = player.name;
-        });
+        }
         
         sessionStorage.removeItem('restartSettings');
       } else if (oldRestartPlayers) {
@@ -660,9 +661,9 @@
         const event = new Event('change');
         document.getElementById('playerCount').dispatchEvent(event);
         
-        players.forEach((player, idx) => {
+        for (const [idx, player] of players.entries()) {
           document.getElementById(`player${idx + 1}`).value = player.name;
-        });
+        }
         
         sessionStorage.removeItem('restartPlayers');
       }

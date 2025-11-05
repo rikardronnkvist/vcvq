@@ -16,7 +16,7 @@ const {
  */
 function verifySanitizeLog(result, maxLength) {
   if (typeof result !== 'string') {
-    throw new Error('sanitizeLog must return a string');
+    throw new TypeError('sanitizeLog must return a string');
   }
   if (result.length > maxLength) {
     throw new Error(`sanitizeLog exceeded max length: ${result.length} > ${maxLength}`);
@@ -32,7 +32,7 @@ function verifySanitizeLog(result, maxLength) {
  */
 function verifySanitizePromptInput(result) {
   if (typeof result !== 'string') {
-    throw new Error('sanitizePromptInput must return a string');
+    throw new TypeError('sanitizePromptInput must return a string');
   }
   if (result.length > 200) {
     throw new Error(`sanitizePromptInput exceeded 200 chars: ${result.length}`);
@@ -52,7 +52,7 @@ function verifySanitizePromptInput(result) {
  */
 function verifyVisitorIdValidation(isValid, input) {
   if (typeof isValid !== 'boolean') {
-    throw new Error('isValidVisitorId must return boolean');
+    throw new TypeError('isValidVisitorId must return boolean');
   }
   
   // If marked as valid, verify it actually matches the pattern
@@ -122,7 +122,7 @@ if (require.main === module) {
   ];
   
   console.log('Running ClusterFuzzLite fuzz target tests...');
-  testInputs.forEach((input, idx) => {
+  for (const [idx, input] of testInputs.entries()) {
     try {
       fuzz(input);
       console.log(`✓ Test ${idx + 1} passed`);
@@ -130,7 +130,7 @@ if (require.main === module) {
       console.error(`✗ Test ${idx + 1} failed:`, error.message);
       process.exit(1);
     }
-  });
+  }
   console.log('All tests passed!');
 }
 
