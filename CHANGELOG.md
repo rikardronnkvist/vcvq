@@ -36,8 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - SECURITY.md with vulnerability reporting
   - CONTRIBUTING.md with contribution guidelines
   - CODE_OF_CONDUCT.md
-  - FUZZING.md with testing documentation
-  - Complete docs/ folder with detailed guides
+  - Complete docs/ folder with detailed guides (testing, API, development, etc.)
 - Customizable game settings:
   - 5-50 questions per game
   - 4-8 answer options per question
@@ -67,12 +66,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added SECURITY.md with vulnerability reporting process
 - Created CONTRIBUTING.md with development guidelines
 - Added CODE_OF_CONDUCT.md (Contributor Covenant 2.1)
-- Created FUZZING.md with testing documentation
 - Added complete docs/ folder:
   - Installation guide
   - User guide
-  - API reference
+  - API and interface reference
   - Development guide
+  - Testing and fuzzing guide
+  - OpenSSF compliance guide
+  - Security fixes history
 
 ### Testing
 - Implemented property-based fuzzing with fast-check

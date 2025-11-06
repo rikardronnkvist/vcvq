@@ -1,12 +1,12 @@
-# Fuzzing Documentation
+# Testing and Fuzzing Guide
 
-This document describes the fuzzing infrastructure implemented in VCVQ to improve security and code quality through automated testing with random and malicious inputs.
+This document describes the testing infrastructure implemented in VCVQ, including fuzzing to improve security and code quality through automated testing with random and malicious inputs.
 
 ## Overview
 
-VCVQ implements comprehensive fuzzing using two complementary approaches:
+VCVQ implements comprehensive testing using two complementary approaches:
 
-1. **Property-Based Testing** with [fast-check](https://github.com/dubzzz/fast-check)
+1. **Property-Based Fuzzing** with [fast-check](https://github.com/dubzzz/fast-check)
 2. **Continuous Fuzzing** with extended test runs in CI/CD
 
 ## Why Fuzzing?
@@ -18,7 +18,7 @@ Fuzzing helps us discover:
 - Unexpected crashes or errors
 - Performance problems with large inputs
 
-## Fuzzing Infrastructure
+## Test Infrastructure
 
 ### 1. Property-Based Testing (fast-check)
 
@@ -31,14 +31,14 @@ Property-based testing generates hundreds of random test cases to verify that ce
 #### Running Tests
 
 ```bash
-# Run all fuzz tests
+# Run all tests
+npm test
+
+# Run fuzz tests only
 npm run test:fuzz
 
 # Run with verbose output
 npm run test:fuzz:verbose
-
-# Run all tests (including fuzz tests)
-npm test
 ```
 
 #### Test Coverage
@@ -121,7 +121,7 @@ Fuzzing runs automatically in GitHub Actions:
    - Reports overall status
    - Fails build if issues found
 
-## Writing New Fuzz Tests
+## Writing New Tests
 
 ### Property-Based Test Example
 
@@ -158,7 +158,7 @@ fc.array(generator)      // Arrays of generated values
 fc.object()              // Random objects
 ```
 
-### Best Practices
+### Testing Best Practices
 
 1. **Test Properties, Not Specific Values**
    - ❌ "function returns 'hello'"
@@ -293,14 +293,7 @@ For projects that want to integrate with [OSS-Fuzz](https://github.com/google/os
 3. Use our `.clusterfuzzlite/` configuration as a starting point
 4. Customize for your specific needs
 
-## Resources
-
-- [fast-check Documentation](https://fast-check.dev/)
-- [OSS-Fuzz](https://github.com/google/oss-fuzz)
-- [ClusterFuzzLite](https://google.github.io/clusterfuzzlite/)
-- [OWASP Fuzzing Guide](https://owasp.org/www-community/Fuzzing)
-
-## Contributing
+## Contributing Tests
 
 When adding new security-critical functions:
 
@@ -315,13 +308,21 @@ When adding new security-critical functions:
 If fuzzing discovers a security vulnerability:
 
 1. Do NOT create a public issue
-2. Follow our [Security Policy](SECURITY.md)
+2. Follow our [Security Policy](../SECURITY.md)
 3. Email security details privately
 4. Wait for fix before disclosure
 
+## Resources
+
+- [fast-check Documentation](https://fast-check.dev/)
+- [OSS-Fuzz](https://github.com/google/oss-fuzz)
+- [ClusterFuzzLite](https://google.github.io/clusterfuzzlite/)
+- [OWASP Fuzzing Guide](https://owasp.org/www-community/Fuzzing)
+- [Node.js Test Runner](https://nodejs.org/api/test.html)
+
 ---
 
-**Last Updated**: November 2025  
-**Fuzzing Framework**: fast-check v3.15.0  
-**Node Version**: 20.x
+**Last Updated:** November 6, 2025  
+**Fuzzing Framework:** fast-check v3.15.0  
+**Node Version:** 20.x
 

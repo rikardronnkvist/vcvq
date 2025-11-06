@@ -54,109 +54,40 @@ Thank you for your interest in contributing to VCVQ! This document provides guid
 
 ## Development Setup
 
-### Prerequisites
+For complete development environment setup, see the **[Development Guide](docs/development.md)**.
 
-- Node.js 18+ 
-- Docker and docker-compose (for containerized development)
-- Google Gemini API key (for AI features)
-
-### Local Setup
-
-1. **Clone your fork:**
-   ```bash
-   git clone https://github.com/your-username/vcvq.git
-   cd vcvq
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Create environment file:**
-   ```bash
-   cp .env.example .env
-   # Add your GEMINI_API_KEY
-   ```
-
-4. **Run development server:**
-   ```bash
-   npm run dev
-   ```
-
-### Docker Setup
-
-```bash
-docker-compose up -d
-```
+Quick start:
+1. Fork and clone the repository
+2. Install dependencies: `npm install`
+3. Create `.env` file with your `GEMINI_API_KEY`
+4. Run development server: `npm run dev`
 
 ## Coding Standards
 
-### JavaScript/Node.js
+For complete coding standards and best practices, see the **[Development Guide](docs/development.md)**.
 
-- Use ES6+ features where appropriate
-- Follow existing code style and patterns
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Keep functions focused and single-purpose
-
-### Security Requirements
-
-- **Always escape HTML** - Use `escapeHtml()` function for user input
-- **Validate server-side** - Never trust client-side validation alone
-- **Sanitize inputs** - Use `sanitizeLog()` and `sanitizePromptInput()` functions
-- **No hardcoded secrets** - Use environment variables
-- **Review security implications** - Check `SECURITY.md` and `prompts/security-requirements.md`
-
-### Internationalization (i18n)
-
-- All user-facing text must be translatable
-- Add translations to `public/i18n.js` for both Swedish (`sv`) and English (`en`)
-- Use the `t()` function for translations
-- Test both languages
-
-### Tesla Browser Compatibility
-
-- Test at 1180x919 resolution
-- Avoid complex CSS that might not render correctly
-- Ensure dropdowns work (Tesla browser has specific issues)
-- Test drag-and-drop functionality
-- Keep animations simple and performant
-
-### Code Structure
-
-- **Client-side:** `public/` directory
-  - `game.js` - Game logic
-  - `index.html` - Landing page
-  - `game.html` - Game page
-  - `i18n.js` - Translations
-  - `styles.css` - Styling
-
-- **Server-side:** `server.js`
-  - API endpoints
-  - Security middleware
-  - AI integration
+Key requirements:
+- **Security:** Always escape HTML, validate inputs, sanitize data
+- **Internationalization:** Support Swedish and English
+- **Tesla Compatibility:** Test at 1180x919 resolution
+- **Code Quality:** Follow existing patterns, add comments for complex logic
 
 ## Testing
 
-Before submitting a PR, ensure:
+Before submitting a PR:
 
-1. **Local testing:**
-   - Test in both Swedish and English
-   - Test with 2-5 players
-   - Test different question counts
-   - Test on different screen sizes (especially 1180x919)
+```bash
+npm test                    # Run all tests
+npm run test:fuzz           # Run fuzz tests
+```
 
-2. **Security testing:**
-   - No XSS vulnerabilities
-   - Input validation works
-   - Rate limiting functions
-   - No secrets exposed
+Test checklist:
+- Both languages (Swedish/English)
+- Different player counts (2-5)
+- Various screen sizes (especially 1180x919)
+- No security vulnerabilities
 
-3. **Browser testing:**
-   - Modern browsers (Chrome, Firefox, Safari)
-   - Tesla browser (if possible)
-   - Mobile/tablet browsers
+For detailed testing information, see the **[Testing Guide](docs/testing.md)**.
 
 ## Pull Request Process
 
@@ -176,80 +107,30 @@ Before submitting a PR, ensure:
    - Performance impact
    - Documentation updates
 
-## Development Guidelines
+## Development Resources
 
-### Using AI Assistance
-
-This project uses AI assistance through VS Code. See `README.md` for details on the `/vibe` command and prompt files in `prompts/` directory.
-
-### Key Files to Review
-
-- `prompts/development-guidelines.md` - Technical standards
-- `prompts/feature-specifications.md` - Feature requirements
-- `prompts/security-requirements.md` - Security practices
-- `SECURITY.md` - Security policy
-
-### Common Patterns
-
-**Adding translations:**
-```javascript
-// In public/i18n.js
-const translations = {
-  sv: {
-    newKey: 'Swedish text'
-  },
-  en: {
-    newKey: 'English text'
-  }
-};
-```
-
-**Escaping HTML:**
-```javascript
-// Always escape user input
-element.innerHTML = escapeHtml(userInput);
-```
-
-**API endpoint:**
-```javascript
-// Follow existing pattern with validation and rate limiting
-app.post('/api/your-endpoint', apiLimiter, validateInput, async (req, res) => {
-  // Implementation
-});
-```
+- **[Development Guide](docs/development.md)** - Complete technical documentation
+- **[Testing Guide](docs/testing.md)** - Testing and fuzzing
+- **[API Reference](docs/interface-reference.md)** - API documentation
+- **[Security Policy](SECURITY.md)** - Security practices
+- **Prompts Directory** - AI assistance and coding patterns (`prompts/`)
 
 ## What to Contribute
 
-### High Priority
+**High Priority:**
+- Bug fixes and security improvements
+- Tesla browser compatibility
+- Accessibility enhancements
 
-- Bug fixes
-- Security improvements
-- Performance optimizations
-- Tesla browser compatibility fixes
-- Accessibility improvements
-
-### Feature Ideas
-
+**Feature Ideas:**
 - Additional languages
-- New question types
 - UI/UX improvements
-- Performance enhancements
-- Documentation improvements
+- Documentation enhancements
 
-### Areas Needing Help
-
-- Testing (especially Tesla browser)
-- Documentation
-- Internationalization
-- Accessibility
-- Performance optimization
-
-## Questions?
-
-- Open an issue for questions
-- Check existing documentation
-- Review `prompts/` directory for development guidelines
-- Use GitHub Discussions if enabled
+**Need Help?**
+- Open a GitHub issue
+- Check the documentation in `docs/`
+- Review the development guide
 
 ## License
 

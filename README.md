@@ -16,16 +16,15 @@ A real-time multiplayer quiz game designed for car trips! Generate AI-powered qu
 
 ## 📚 Documentation
 
-For detailed documentation, see the [`docs/`](docs/) folder:
+Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
-- **[📖 External Interface Reference](docs/interface-reference.md)** - Complete reference for all inputs/outputs
-- **[🔌 API Reference](docs/api.md)** - Detailed API documentation with examples
+- **[📖 Documentation Index](docs/)** - Complete documentation overview
 - **[📥 Installation Guide](docs/installation.md)** - How to install and run VCVQ
 - **[🎮 User Guide](docs/usage.md)** - How to play and use all features
+- **[🔌 API Reference](docs/interface-reference.md)** - Complete API and interface documentation
 - **[👨‍💻 Development Guide](docs/development.md)** - How to contribute and develop
+- **[🧪 Testing Guide](docs/testing.md)** - Testing and fuzzing information
 - **[🔒 Security Policy](SECURITY.md)** - How to report security vulnerabilities
-- **[🛡️ Scorecard Setup](SCORECARD_SETUP.md)** - Improve OpenSSF Scorecard score
-- **[🧪 Fuzzing Guide](FUZZING.md)** - Testing and security testing information
 - **[📝 Changelog](CHANGELOG.md)** - Version history and release notes
 
 ## Features
@@ -78,64 +77,18 @@ http://localhost:3030
 
 ## How to Play
 
-1. **Setup:**
-   - Select language (Swedish or English) using the flag buttons
-   - Choose a quiz topic:
-     - Enter your own topic (e.g., "Science", "Movies", "Geography")
-     - OR click "🎲 Random" to get 15 AI-generated funny topics to choose from
-     - Switch back to custom input anytime
-   - Choose number of players (2-5, default: 2)
-   - Choose number of questions (5, 10, 15, 20, 25, 30, or 50, default: 10)
-   - Choose number of answer options per question (4, 6, or 8, default: 6)
-   - Generate AI player names (context-aware, based on topic and car positions) or customize manually
-   - Click "Start Quiz" to begin
+1. **Setup:** Select language, choose a topic (or get AI-generated random topics), configure players (2-5), questions (5-50), and answer options (4-8)
+2. **Gameplay:** Players take turns answering questions via drag-and-drop or click, with real-time feedback and scoring
+3. **Winning:** Highest score wins, with support for ties. Restart anytime with preserved settings
 
-2. **Game Flow:**
-   - Random starting player for the first question
-   - Starting player rotates for each subsequent question (fair distribution)
-   - ALL players answer EACH question in numerical sequence from the starting player
-   - Players drag their numbered token OR click on answer boxes to select answers
-   - Player badges appear on answer boxes showing which players selected each answer
-   - After all players answer, feedback is shown:
-     - 🎉 "Everyone answered correctly!" (if all correct)
-     - 😅 "No one answered correctly!" (if all incorrect)
-     - "X/Y answered correctly" (shows how many got it right)
-   - Green highlight = correct answer, Red highlight = incorrect answer
-   - Correct answer is always highlighted
-   - 5-second delay between questions for answer review
-   - "End Game" button available to end early and see results
-   - Game continues for your selected number of questions
-
-3. **Winning:**
-   - Player(s) with highest score wins (ties are supported)
-   - Final scoreboard shows all players sorted by score
-   - "Play Again" button restarts with same settings, players, and topic
-   - All settings are preserved when restarting
+For detailed gameplay instructions, see the **[User Guide](docs/usage.md)**.
 
 ## Development
 
-### Without Docker
-
-1. **Install dependencies:**
-```bash
-   npm install
-```
-
-2. **Create `.env` file:**
-```bash
-   cp .env.example .env
-   # Add your GEMINI_API_KEY
-```
-
-3. **Run development server:**
-```bash
-   npm run dev
-```
-
-**Note:** Make sure you have `nodemon` installed for auto-reload during development. For production, use:
-```bash
-   npm start
-```
+For development setup and contribution guidelines, see:
+- **[Development Guide](docs/development.md)** - Complete development setup
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute
+- **[Testing Guide](docs/testing.md)** - Running and writing tests
 
 ## Security Analysis with GitHub CodeQL
 
@@ -188,67 +141,11 @@ VCVQ implements comprehensive security measures:
 - **Docker Security:** Non-root user, security options, resource limits
 - **Fuzzing:** Property-based testing with fast-check to detect vulnerabilities through automated testing with random and malicious inputs
 
-For detailed security information, see `SECURITY.md` and `FUZZING.md`.
+For detailed security information, see **[SECURITY.md](SECURITY.md)** and the **[Testing Guide](docs/testing.md)**.
 
-## Development Prompts and AI Assistance
+## Development Assistance
 
-VCVQ includes built-in AI assistance for development through VS Code. The project contains comprehensive prompts and guidelines in the `prompts/` directory that help maintain consistency and best practices.
-
-### Using the `/vibe` Command
-
-VS Code is configured with a custom `/vibe` command for project-specific assistance:
-
-1. **Access the Command:**
-   - Open VS Code command palette (Cmd+Shift+P or Ctrl+Shift+P)
-   - Type `/vibe` followed by your question
-   - Get contextual help based on project requirements
-
-2. **Example Queries:**
-   ```
-   /vibe How do I add a new language?
-   /vibe What's the pattern for adding new question types?
-   /vibe How should I implement Tesla browser optimizations?
-   ```
-
-3. **Key Features:**
-   - Tesla browser compatibility focus (1180x919)
-   - Security requirement checking
-   - Code pattern suggestions
-   - Project-specific best practices
-
-### Prompt Files Structure
-
-```
-prompts/
-├── copilot-role.md       # AI assistant role definition
-├── development-guidelines.md  # Technical standards
-├── feature-specifications.md  # Feature requirements
-├── security-requirements.md   # Security implementations
-└── README.md             # Prompt documentation
-```
-
-### Using AI Assistance
-
-1. **For New Features:**
-   - Check `prompts/feature-specifications.md`
-   - Use `/vibe` for implementation guidance
-   - Follow patterns in example code
-
-2. **For Security:**
-   - Reference `prompts/security-requirements.md`
-   - Use `/vibe` to verify security practices
-   - Check existing validation patterns
-
-3. **For UI Changes:**
-   - Consider Tesla browser compatibility
-   - Follow existing UI patterns
-   - Test at 1180x919 resolution
-
-4. **Best Practices:**
-   - Start with prompt files for context
-   - Use `/vibe` for specific guidance
-   - Follow existing code patterns
-   - Maintain security standards
+VCVQ includes AI-powered development assistance through the `prompts/` directory. See the **[Development Guide](docs/development.md)** for details on using the `/vibe` command and project-specific prompts.
 
 ## Technology Stack
 
@@ -262,36 +159,25 @@ prompts/
 
 ## API Endpoints
 
-- `POST /api/generate-quiz` - Generate quiz questions (requires: topic, language, numQuestions, numAnswers)
-- `POST /api/generate-player-names` - Generate AI player names (requires: language, count, topic)
-- `POST /api/generate-topic` - Generate random funny topics (requires: language, count)
-- `POST /api/log-client-info` - Log client information for analytics
-- `GET /health` - Health check endpoint for monitoring
+- `POST /api/generate-quiz` - Generate quiz questions
+- `POST /api/generate-player-names` - Generate AI player names
+- `POST /api/generate-topic` - Generate random funny topics
+- `POST /api/log-client-info` - Log client information
+- `GET /health` - Health check endpoint
 
-All endpoints include rate limiting, input validation, and security headers. See `prompts/` directory for detailed specifications and development guidelines.
+All endpoints include rate limiting, input validation, and security headers. See the **[API Reference](docs/interface-reference.md)** for complete documentation.
 
-## Testing & Fuzzing
+## Testing
 
-VCVQ includes comprehensive fuzzing to improve security and reliability:
+VCVQ includes comprehensive testing with property-based fuzzing for security:
 
 ```bash
-# Run all tests
-npm test
-
-# Run fuzz tests
-npm run test:fuzz
-
-# Run fuzz tests with verbose output
-npm run test:fuzz:verbose
+npm test                    # Run all tests
+npm run test:fuzz           # Run fuzz tests only
+npm run test:fuzz:verbose   # Verbose output
 ```
 
-Fuzzing runs automatically on:
-- Every pull request
-- Pushes to main branch
-- Weekly scheduled runs
-- Manual workflow dispatch
-
-For detailed fuzzing documentation, see `FUZZING.md`.
+For detailed testing information, see the **[Testing Guide](docs/testing.md)**.
 
 ## Environment Variables
 

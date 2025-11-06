@@ -7,14 +7,20 @@ Welcome to the comprehensive documentation for Vibe Coded Vibe Quiz (VCVQ).
 ### User Documentation
 - **[Installation Guide](installation.md)** - Get VCVQ up and running
 - **[User Guide](usage.md)** - Learn how to play and use features
-- **[API Reference](api.md)** - Complete API endpoint documentation
+- **[API Reference](interface-reference.md)** - Complete API endpoint documentation
 
 ### Developer Documentation  
 - **[Development Guide](development.md)** - Set up development environment and contribute
+- **[Testing Guide](testing.md)** - Testing and fuzzing documentation
+
+### Reference Documentation
+- **[OpenSSF Compliance](openssf-compliance.md)** - Best Practices Badge and Scorecard setup
+- **[Security Fixes History](security-fixes.md)** - Security remediation documentation
+
+### Project Policies
 - **[Security Policy](../SECURITY.md)** - Report security vulnerabilities
 - **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute
 - **[Code of Conduct](../CODE_OF_CONDUCT.md)** - Community standards
-- **[Fuzzing Documentation](../FUZZING.md)** - Testing and security testing
 - **[Changelog](../CHANGELOG.md)** - Version history
 
 ## What is VCVQ?
@@ -36,7 +42,7 @@ VCVQ is a real-time multiplayer quiz game designed specifically for car trips. I
 
 1. **[Install VCVQ](installation.md)** - Docker or manual installation
 2. **[Start Playing](usage.md)** - Learn the game mechanics
-3. **[API Reference](api.md)** - If you're building integrations
+3. **[API Reference](interface-reference.md)** - If you're building integrations
 
 ### For Developers
 
@@ -48,12 +54,14 @@ VCVQ is a real-time multiplayer quiz game designed specifically for car trips. I
 
 ```
 docs/
-├── README.md                # This file - documentation overview
-├── interface-reference.md   # External interface reference (inputs/outputs)
-├── api.md                   # API reference with detailed examples
-├── installation.md          # Installation and setup guide
-├── usage.md                 # User guide and gameplay
-└── development.md           # Development and contribution guide
+├── README.md                 # This file - documentation overview
+├── interface-reference.md    # Complete API and interface reference
+├── installation.md           # Installation and setup guide
+├── usage.md                  # User guide and gameplay
+├── development.md            # Development and contribution guide
+├── testing.md                # Testing and fuzzing guide
+├── openssf-compliance.md     # OpenSSF Best Practices and Scorecard
+└── security-fixes.md         # Security remediation history
 ```
 
 ## Documentation Standards
@@ -70,7 +78,8 @@ Our documentation follows these principles:
 
 - **Installation Issues** - See [Installation Guide](installation.md)
 - **Usage Questions** - See [User Guide](usage.md)
-- **API Questions** - See [API Reference](api.md)
+- **API Questions** - See [API Reference](interface-reference.md)
+- **Testing Questions** - See [Testing Guide](testing.md)
 - **Contributing** - See [Development Guide](development.md)
 - **Security Issues** - See [Security Policy](../SECURITY.md)
 - **Bug Reports** - Open a [GitHub Issue](https://github.com/rikardronnkvist/vcvq/issues)

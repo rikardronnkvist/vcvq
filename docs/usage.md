@@ -246,7 +246,7 @@ Special optimizations for Tesla browsers:
 
 ## Next Steps
 
-- [API Reference](api.md) - Technical API documentation
+- [API Reference](interface-reference.md) - Complete API documentation
 - [Development Guide](development.md) - Contribute to VCVQ
 - [Security](../SECURITY.md) - Report security issues
 

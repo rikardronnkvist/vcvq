@@ -690,10 +690,10 @@ const response = await fetch('/api/generate-quiz', {
 
 ## 9. Related Documentation
 
-- **[API Reference](api.md)** - Detailed API documentation with more examples
 - **[Installation Guide](installation.md)** - How to set up and configure
 - **[User Guide](usage.md)** - How to use the web interface
 - **[Development Guide](development.md)** - How to extend the interface
+- **[Testing Guide](testing.md)** - Testing and security testing
 
 ---
 

@@ -200,5 +200,5 @@ If you encounter permission errors with Docker:
 
 - [User Guide](usage.md) - Learn how to use VCVQ
 - [Development Guide](development.md) - Set up development environment
-- [API Reference](api.md) - API endpoint documentation
+- [API Reference](interface-reference.md) - Complete API documentation
 
