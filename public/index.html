@@ -516,7 +516,10 @@
     document.getElementById('randomTopicBtn').addEventListener('click', generateRandomTopics);
     document.getElementById('customTopicBtn').addEventListener('click', switchToCustomTopic);
     generateNamesBtn.addEventListener('click', generatePlayerNames);
-    updatePlayerInputs();
+    
+    // Ensure player inputs are hidden/shown correctly on page load
+    // Call after a short delay to ensure all initialization is complete
+    setTimeout(() => updatePlayerInputs(), 0);
 
     startBtn.addEventListener('click', async () => {
       const topic = getCurrentTopic();
@@ -670,6 +673,9 @@
       
       // Initialize button text on page load
       updateLanguage();
+      
+      // Ensure player inputs visibility is correct after page load
+      updatePlayerInputs();
     });
   </script>
 </body>
