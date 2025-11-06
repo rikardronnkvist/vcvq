@@ -497,11 +497,12 @@
       updateQuestionCountDisplay();
     }
     
-    // Initialize button groups
-    setupButtonGroups();
-    
+    // Set up event listeners BEFORE initializing button groups
     playerCountSelect.addEventListener('change', updatePlayerInputs);
     languageSelect.addEventListener('change', updateLanguage);
+    
+    // Initialize button groups
+    setupButtonGroups();
     
     // Language flag buttons
     for (const flag of document.querySelectorAll('.language-flag')) {
