@@ -86,11 +86,11 @@
           <input type="text" id="player2" value="">
         </div>
         <div class="player-name-input">
-          <label id="labelPlayer3" for="player3">Player 4:</label>
+          <label id="labelPlayer3" for="player3">Player 3:</label>
           <input type="text" id="player3" value="">
         </div>
         <div class="player-name-input">
-          <label id="labelPlayer4" for="player4">Player 3:</label>
+          <label id="labelPlayer4" for="player4">Player 4:</label>
           <input type="text" id="player4" value="">
         </div>
         <div class="player-name-input">
@@ -171,6 +171,8 @@
     const loading = document.getElementById('loading');
     const errorDiv = document.getElementById('error');
     const languageSelect = document.getElementById('language');
+    const playerCountSelect = document.getElementById('playerCount');
+    const questionCountSelect = document.getElementById('questionCount');
 
     let currentLang = 'en';
 
@@ -432,7 +434,6 @@
     function setupButtonGroups() {
       // Player count +/- buttons
       const playerCountDisplay = document.getElementById('playerCountDisplay');
-      const playerCountSelect = document.getElementById('playerCount');
       const playerCountDecrease = document.getElementById('playerCountDecrease');
       const playerCountIncrease = document.getElementById('playerCountIncrease');
       
@@ -465,7 +466,6 @@
       
       // Question count +/- buttons
       const questionCountDisplay = document.getElementById('questionCountDisplay');
-      const questionCountSelect = document.getElementById('questionCount');
       const questionCountDecrease = document.getElementById('questionCountDecrease');
       const questionCountIncrease = document.getElementById('questionCountIncrease');
       
@@ -500,7 +500,6 @@
     // Initialize button groups
     setupButtonGroups();
     
-    const playerCountSelect = document.getElementById('playerCount');
     playerCountSelect.addEventListener('change', updatePlayerInputs);
     languageSelect.addEventListener('change', updateLanguage);
     
@@ -521,7 +520,7 @@
     startBtn.addEventListener('click', async () => {
       const topic = getCurrentTopic();
       const playerCount = Number.parseInt(playerCountSelect.value);
-      const questionCount = Number.parseInt(document.getElementById('questionCount').value);
+      const questionCount = Number.parseInt(questionCountSelect.value);
       const answerCount = 6; // Fixed to 6 answers
       const language = languageSelect.value;
       
