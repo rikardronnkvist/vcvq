@@ -93,9 +93,12 @@ These prompts are part of the project and should be:
 
 ## Related Documentation
 
-- Project README - User-facing project documentation
-- Security policy document - Security policy and vulnerability reporting
-- GitHub Actions workflows - Security scanning and automation
+- **[Project README](../README.md)** - User-facing project documentation
+- **[Documentation Index](../docs/README.md)** - Complete documentation overview
+- **[Development Guide](../docs/development.md)** - Detailed development setup and standards
+- **[Testing Guide](../docs/testing.md)** - Testing and fuzzing documentation
+- **[Security Policy](../SECURITY.md)** - Security policy and vulnerability reporting
+- **[API Reference](../docs/interface-reference.md)** - Complete API documentation
 
 ## Security Note
 

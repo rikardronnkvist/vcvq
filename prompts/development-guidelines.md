@@ -126,6 +126,11 @@ npm run dev
 
 # Run production server
 npm start
+
+# Run tests
+npm test                    # All tests
+npm run test:fuzz           # Fuzz tests only
+npm run test:fuzz:verbose   # Verbose output
 ```
 
 ### Manual Testing Checklist
@@ -137,6 +142,13 @@ npm start
 - Test both Swedish and English languages
 - Test Tesla browser compatibility (if available)
 - Test responsive design on different screen sizes
+
+### Documentation
+For comprehensive testing information, see **[Testing Guide](../docs/testing.md)** which covers:
+- Property-based fuzzing with fast-check
+- ClusterFuzz targets
+- Security testing patterns
+- Writing new tests
 
 ## Browser Compatibility
 
