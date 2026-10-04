@@ -59,7 +59,7 @@ For complete development environment setup, see the **[Development Guide](docs/d
 Quick start:
 1. Fork and clone the repository
 2. Install dependencies: `npm install`
-3. Create `.env` file with your `GEMINI_API_KEY`
+3. Create `.env` file with at least one supported AI provider key
 4. Run development server: `npm run dev`
 
 ## Coding Standards
@@ -137,4 +137,3 @@ For detailed testing information, see the **[Testing Guide](docs/testing.md)**.
 By contributing, you agree that your contributions will be licensed under the MIT License.
 
 Thank you for contributing to VCVQ! 🚀
-

@@ -30,7 +30,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 ## Features
 
 - 🚗 **Car-Friendly Design** - Perfect for road trips with easy drag-and-drop or click controls
-- 🤖 **AI-Generated Questions** - Powered by Google Gemini to create quizzes on any topic
+- 🤖 **AI-Generated Questions** - Choose Google Gemini, ChatGPT, Claude, or Perplexity
 - 🎲 **Random Topics** - Get 15 AI-generated funny topics with one click, or enter your own
 - 👥 **2-5 Players** - Multiplayer support with AI-generated or customizable player names
 - 🌍 **Bilingual** - Support for Swedish and English with easy language switching
@@ -47,7 +47,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 ### Prerequisites
 
 - Docker and docker-compose installed
-- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- At least one AI API key: [Gemini](https://aistudio.google.com/app/apikey), [ChatGPT](https://platform.openai.com/api-keys), [Claude](https://console.anthropic.com/settings/keys), or [Perplexity](https://www.perplexity.ai/settings/api)
 
 ### Installation
 
@@ -58,9 +58,12 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
    cp .env.example .env
 ```
 
-3. **Edit `.env` and add your Gemini API key:**
+3. **Edit `.env` and add one or more AI provider API keys:**
 ```env
-   GEMINI_API_KEY=your_actual_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key
+   OPENAI_API_KEY=your_openai_api_key
+   ANTHROPIC_API_KEY=your_anthropic_api_key
+   PERPLEXITY_API_KEY=your_perplexity_api_key
    PORT=3030
    # Optional: For cross-origin requests, set ALLOWED_ORIGINS
    # ALLOWED_ORIGINS=http://example.com,https://another-domain.com
@@ -150,7 +153,7 @@ VCVQ includes AI-powered development assistance through the `prompts/` directory
 ## Technology Stack
 
 - **Backend:** Node.js, Express 5.x
-- **AI:** Google Gemini API (with automatic fallback: gemini-2.5-flash → gemini-2.0-flash → gemini-flash-latest → gemini-2.5-pro → gemini-pro-latest)
+- **AI:** Google Gemini (with model fallback), ChatGPT, Claude, and Perplexity
 - **Frontend:** Vanilla JavaScript, HTML5, CSS3
 - **Features:** HTML5 Drag and Drop API, Internationalization (i18n)
 - **Security:** Helmet (security headers), CORS, express-rate-limit, express-validator
@@ -181,7 +184,7 @@ For detailed testing information, see the **[Testing Guide](docs/testing.md)**.
 
 ## Environment Variables
 
-- `GEMINI_API_KEY` (required) - Your Google Gemini API key
+- At least one of `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `PERPLEXITY_API_KEY` is required
 - `PORT` (optional) - Server port, defaults to 3030
 - `NODE_ENV` (optional) - Environment mode (development/production), defaults to production in Docker
 - `ALLOWED_ORIGINS` (optional) - Comma-separated list of allowed CORS origins for cross-origin requests. If not set, only localhost and same-origin requests are allowed.

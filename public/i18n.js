@@ -7,6 +7,8 @@ const translations = {
     subtitle: 'Flerspelar Quiz för Bilen',
     language: 'Språk',
     languageSelector: 'Språk',
+    aiProvider: 'AI-tjänst',
+    providerLoadFailed: 'Kunde inte läsa in AI-tjänster.',
     topic: 'Frågeämne',
     topicPlaceholder: 'Ange ett ämne (t.ex. Vetenskap, Filmer, Sport)',
     randomTopic: '🎲 Slumpa',
@@ -76,6 +78,8 @@ const translations = {
     subtitle: 'Car-Friendly Multiplayer Quiz Game',
     language: 'Language',
     languageSelector: 'Language',
+    aiProvider: 'AI provider',
+    providerLoadFailed: 'Could not load AI providers.',
     topic: 'Quiz Topic',
     topicPlaceholder: 'Enter any topic (e.g., Science, Movies, Sports)',
     randomTopic: '🎲 Random',
@@ -179,4 +183,3 @@ if (typeof module !== 'undefined' && module.exports) {
     getPositions
   };
 }
-

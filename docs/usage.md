@@ -8,6 +8,8 @@ This guide explains how to use VCVQ to create and play quiz games.
 
 Open your browser and navigate to `http://localhost:3030` (or your configured URL).
 
+Choose an AI provider from the available options. Only providers with an API key configured by the administrator are shown.
+
 ### 2. Configure Game Settings
 
 #### Language Selection
@@ -187,7 +189,7 @@ The entire interface switches language when you select a flag:
 
 ### AI-Generated Content
 
-VCVQ uses Google Gemini AI to generate:
+VCVQ uses your selected AI provider (Google Gemini, ChatGPT, Claude, or Perplexity) to generate:
 - Quiz questions based on your topic
 - Answer options (with one correct answer)
 - Random funny topics
@@ -212,7 +214,7 @@ Special optimizations for Tesla browsers:
 ## Known Limitations
 
 - Requires internet connection (for AI)
-- Gemini API key required
+- At least one supported AI provider API key is required
 - Questions are AI-generated (quality may vary)
 - Not all topics may work equally well
 - Maximum 5 players per game
@@ -222,7 +224,7 @@ Special optimizations for Tesla browsers:
 ### Questions Not Loading
 
 - Check your internet connection
-- Verify Gemini API key is valid
+- Verify the selected provider's API key is valid
 - Try a different topic (some topics may not work well)
 - Check server logs for errors
 
@@ -249,4 +251,3 @@ Special optimizations for Tesla browsers:
 - [API Reference](interface-reference.md) - Complete API documentation
 - [Development Guide](development.md) - Contribute to VCVQ
 - [Security](../SECURITY.md) - Report security issues
-
