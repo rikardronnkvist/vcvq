@@ -301,7 +301,7 @@ async function generateWithApiProvider(prompt, provider) {
 
   if (provider === 'chatgpt') {
     url = 'https://api.openai.com/v1/chat/completions';
-    requestOptions.headers.Authorization = `******;
+    requestOptions.headers.Authorization = 'Bearer ' + API_KEYS.chatgpt;
     requestOptions.body = JSON.stringify({
       model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
@@ -318,7 +318,7 @@ async function generateWithApiProvider(prompt, provider) {
     });
   } else {
     url = 'https://api.perplexity.ai/chat/completions';
-    requestOptions.headers.Authorization = `******;
+    requestOptions.headers.Authorization = 'Bearer ' + API_KEYS.perplexity;
     requestOptions.body = JSON.stringify({
       model: 'sonar',
       messages: [{ role: 'user', content: prompt }],

@@ -25,6 +25,11 @@
       </select>
 
       <div class="form-group">
+        <label id="labelAiProvider">AI provider:</label>
+        <div id="providerButtonGroup" class="topic-button-group" role="group" aria-labelledby="labelAiProvider"></div>
+      </div>
+
+      <div class="form-group">
         <label for="topic" id="labelTopic">Quiz Topic:</label>
         <div style="display: flex; gap: 10px;">
           <input type="text" id="topicInput" placeholder="Enter any topic (e.g., Science, Movies, Sports)" style="flex: 1;">
@@ -175,6 +180,44 @@
     const questionCountSelect = document.getElementById('questionCount');
 
     let currentLang = 'en';
+    let selectedProvider = null;
+
+    async function loadProviders() {
+      const providerButtonGroup = document.getElementById('providerButtonGroup');
+      try {
+        const response = await fetch('/api/providers');
+        if (!response.ok) throw new Error('Failed to load AI providers');
+        const data = await response.json();
+        selectedProvider = data.defaultProvider;
+
+        for (const provider of data.providers) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'topic-option-btn';
+          button.textContent = provider.name;
+          button.dataset.provider = provider.id;
+          button.setAttribute('aria-pressed', String(provider.id === selectedProvider));
+          if (provider.id === selectedProvider) button.classList.add('active');
+          button.addEventListener('click', () => {
+            selectedProvider = provider.id;
+            for (const option of providerButtonGroup.querySelectorAll('.topic-option-btn')) {
+              const isSelected = option.dataset.provider === selectedProvider;
+              option.classList.toggle('active', isSelected);
+              option.setAttribute('aria-pressed', String(isSelected));
+            }
+          });
+          providerButtonGroup.append(button);
+        }
+      } catch (error) {
+        console.error('[VCVQ] Error loading AI providers:', error);
+        providerButtonGroup.textContent = t('providerLoadFailed', languageSelect.value);
+        startBtn.disabled = true;
+        generateNamesBtn.disabled = true;
+        document.getElementById('randomTopicBtn').disabled = true;
+      }
+    }
+
+    const providerLoadPromise = loadProviders();
 
     // Use position translations from i18n.js instead of duplicating
     function getDefaultName(index, lang) {
@@ -202,6 +245,7 @@
       
       // Update labels
       document.getElementById('logoImg').alt = t('logoAlt', lang);
+      document.getElementById('labelAiProvider').textContent = t('aiProvider', lang) + ':';
       document.getElementById('labelTopic').textContent = t('topic', lang) + ':';
       document.getElementById('topicInput').placeholder = t('topicPlaceholder', lang);
       document.getElementById('randomTopicBtn').textContent = t('randomTopic', lang);
@@ -245,7 +289,7 @@
         const response = await fetch('/api/generate-topic', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang, count: 15, visitorId: visitorId })
+          body: JSON.stringify({ language: lang, count: 15, visitorId: visitorId, provider: selectedProvider })
         });
 
         if (!response.ok) {
@@ -379,7 +423,7 @@
         const response = await fetch('/api/generate-player-names', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang, count, topic, visitorId: visitorId })
+          body: JSON.stringify({ language: lang, count, topic, visitorId: visitorId, provider: selectedProvider })
         });
 
         if (!response.ok) {
@@ -557,7 +601,8 @@
             language, 
             numQuestions: questionCount, 
             numAnswers: answerCount,
-            visitorId: visitorId
+            visitorId: visitorId,
+            provider: selectedProvider
           })
         });
 
@@ -583,6 +628,7 @@
           currentQuestion: 0,
           currentPlayer: Math.floor(Math.random() * playerCount),
           language,
+          provider: selectedProvider,
           numQuestions: questionCount
         }));
 
@@ -597,7 +643,8 @@
     });
 
     // Check if returning from a game restart
-    globalThis.addEventListener('load', () => {
+    globalThis.addEventListener('load', async () => {
+      await providerLoadPromise;
       const restartSettings = sessionStorage.getItem('restartSettings');
       const oldRestartPlayers = sessionStorage.getItem('restartPlayers'); // Backwards compatibility
       
@@ -608,6 +655,10 @@
         // Restore language
         document.getElementById('language').value = settings.language || 'en';
         updateLanguage();
+        if (settings.provider && [...document.querySelectorAll('#providerButtonGroup .topic-option-btn')]
+          .some(button => button.dataset.provider === settings.provider)) {
+          document.querySelector(`#providerButtonGroup [data-provider="${settings.provider}"]`)?.click();
+        }
         
         // Restore topic
         document.getElementById('topicInput').value = settings.topic || '';

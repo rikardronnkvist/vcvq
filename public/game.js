@@ -429,6 +429,7 @@ document.getElementById('restartBtn')?.addEventListener('click', () => {
     players: players,
     topic: topic,
     language: language,
+    provider: gameState.provider,
     numQuestions: numQuestions,
     numAnswers: questions[0]?.options.length || 6
   };
