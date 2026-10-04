@@ -7,7 +7,7 @@ This guide helps you set up a development environment and contribute to VCVQ.
 - Node.js 18+ 
 - Git
 - Docker and docker-compose (optional)
-- Google Gemini API key
+- At least one supported AI provider API key
 - Text editor or IDE (VS Code recommended)
 
 ## Setting Up Development Environment
@@ -32,9 +32,12 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` and add your Gemini API key:
+Edit `.env` and add one or more provider API keys:
 ```env
-GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_gemini_api_key
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+PERPLEXITY_API_KEY=your_perplexity_api_key
 PORT=3030
 NODE_ENV=development
 ```
@@ -474,7 +477,7 @@ kill -9 PID
 ```
 
 **API errors:**
-- Check Gemini API key
+- Check the selected AI provider API key
 - Check network connection
 - Check server logs
 - Verify request format
@@ -532,4 +535,3 @@ Before submitting a PR:
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
-

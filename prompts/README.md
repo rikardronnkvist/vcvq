@@ -73,7 +73,7 @@ Implement the random topic generation feature
 - **Project Name:** VCVQ
 - **GitHub:** https://github.com/rikardronnkvist/vcvq
 - **Type:** Real-time multiplayer quiz game
-- **Stack:** Node.js, Express, Vanilla JavaScript, Google Gemini AI
+- **Stack:** Node.js, Express, Vanilla JavaScript, Google Gemini, ChatGPT, Claude, and Perplexity APIs
 
 ## Maintenance
 
@@ -103,4 +103,3 @@ These prompts are part of the project and should be:
 ## Security Note
 
 All security requirements in `security-requirements.md` are **already implemented** in the codebase. Use this file as a reference to ensure new code maintains security standards.
-

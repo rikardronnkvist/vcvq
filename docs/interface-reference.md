@@ -124,7 +124,7 @@ Content-Type: application/json
 - `200 OK` - Questions generated successfully
 - `400 Bad Request` - Invalid input parameters
 - `429 Too Many Requests` - Rate limit exceeded (10 requests per 15 minutes)
-- `500 Internal Server Error` - Server or AI API error
+- `500 Internal Server Error` - Server or AI provider error
 
 **Rate Limiting:**
 - Maximum: 10 requests per 15 minutes per IP address
@@ -497,7 +497,7 @@ X-RateLimit-Reset: 1730819400
 | 404 | Not Found | Invalid endpoint |
 | 429 | Too Many Requests | Rate limit exceeded |
 | 500 | Internal Server Error | Server error |
-| 503 | Service Unavailable | Gemini API unavailable |
+| 503 | Service Unavailable | Selected AI provider temporarily unavailable |
 
 ### 5.2 Error Response Format
 

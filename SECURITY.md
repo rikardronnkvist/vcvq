@@ -54,7 +54,7 @@ When reporting a vulnerability, please include:
 If you are using VCVQ, please ensure:
 
 - Keep dependencies up to date
-- Use a strong API key for Google Gemini API
+- Use strong API keys for your configured AI providers
 - Run the application in a secure environment
 - Review and update environment variables regularly
 - Monitor logs for suspicious activity
@@ -75,7 +75,7 @@ VCVQ includes the following security features:
 
 ### Known Security Considerations
 
-- **API Key Security**: The Google Gemini API key is required and should be kept secure. Never commit it to version control.
+- **API Key Security**: At least one AI provider API key is required and should be kept secure. Never commit API keys to version control.
 - **Public Repository**: This is a public repository. Do not include sensitive information in code or commits.
 - **Logging**: Application logs may contain user-provided data. Ensure logs are stored securely.
 
@@ -97,4 +97,3 @@ Please note that security research must be conducted responsibly and in accordan
 - Violate privacy
 
 Thank you for helping keep VCVQ and our users safe!
-

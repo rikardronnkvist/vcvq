@@ -17,10 +17,10 @@ const {
 const app = express();
 const PORT = process.env.PORT || 3030;
 const API_KEYS = {
-  gemini: process.env.GEMINI_API_KEY,
-  chatgpt: process.env.OPENAI_API_KEY,
-  claude: process.env.ANTHROPIC_API_KEY,
-  perplexity: process.env.PERPLEXITY_API_KEY
+  gemini: process.env.GEMINI_API_KEY?.trim(),
+  chatgpt: process.env.OPENAI_API_KEY?.trim(),
+  claude: process.env.ANTHROPIC_API_KEY?.trim(),
+  perplexity: process.env.PERPLEXITY_API_KEY?.trim()
 };
 const PROVIDER_LABELS = {
   gemini: 'Google Gemini',
@@ -187,6 +187,13 @@ app.get('/api/providers', (req, res) => {
     defaultProvider: DEFAULT_PROVIDER
   });
 });
+
+function logValidationErrors(errors) {
+  console.log('[VCVQ] Validation errors:', errors.array().map(error => ({
+    field: sanitizeLog(error.path || error.param),
+    message: sanitizeLog(error.msg)
+  })));
+}
 
 // Helper function to build visitor log message
 function buildVisitorLogMessage(options) {
@@ -412,7 +419,7 @@ const validateQuizGeneration = [
 function validateQuizRequest(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log('[VCVQ] Validation errors:', errors.array());
+    logValidationErrors(errors);
     const isDevelopment = process.env.NODE_ENV === 'development';
     return { 
       valid: false, 
@@ -588,7 +595,7 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log('[VCVQ] Validation errors:', errors.array());
+      logValidationErrors(errors);
       const isDevelopment = process.env.NODE_ENV === 'development';
       return res.status(400).json({ 
         error: 'Validation failed', 
@@ -717,7 +724,7 @@ app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log('[VCVQ] Validation errors:', errors.array());
+      logValidationErrors(errors);
       const isDevelopment = process.env.NODE_ENV === 'development';
       return res.status(400).json({ 
         error: 'Validation failed', 
