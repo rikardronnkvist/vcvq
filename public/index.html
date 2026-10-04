@@ -26,7 +26,7 @@
 
       <div class="form-group">
         <label id="labelAiProvider">AI provider:</label>
-        <div id="providerButtonGroup" class="topic-button-group" role="group" aria-labelledby="labelAiProvider"></div>
+        <div id="providerButtonGroup" class="topic-button-group ai-provider-button-group" role="group" aria-labelledby="labelAiProvider"></div>
       </div>
 
       <div class="form-group">
@@ -655,10 +655,9 @@
         // Restore language
         document.getElementById('language').value = settings.language || 'en';
         updateLanguage();
-        if (settings.provider && [...document.querySelectorAll('#providerButtonGroup .topic-option-btn')]
-          .some(button => button.dataset.provider === settings.provider)) {
-          document.querySelector(`#providerButtonGroup [data-provider="${settings.provider}"]`)?.click();
-        }
+        const providerButton = [...document.querySelectorAll('#providerButtonGroup .topic-option-btn')]
+          .find(button => button.dataset.provider === settings.provider);
+        providerButton?.click();
         
         // Restore topic
         document.getElementById('topicInput').value = settings.topic || '';

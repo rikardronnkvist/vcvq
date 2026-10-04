@@ -329,7 +329,7 @@ async function generateWithApiProvider(prompt, provider) {
     requestOptions.body = JSON.stringify({
       model: 'sonar',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 12000
+      max_tokens: 8192
     });
   }
 
