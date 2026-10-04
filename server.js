@@ -16,10 +16,23 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 3030;
-const API_KEY = process.env.GEMINI_API_KEY;
+const API_KEYS = {
+  gemini: process.env.GEMINI_API_KEY,
+  chatgpt: process.env.OPENAI_API_KEY,
+  claude: process.env.ANTHROPIC_API_KEY,
+  perplexity: process.env.PERPLEXITY_API_KEY
+};
+const PROVIDER_LABELS = {
+  gemini: 'Google Gemini',
+  chatgpt: 'ChatGPT',
+  claude: 'Claude',
+  perplexity: 'Perplexity'
+};
+const AVAILABLE_PROVIDERS = Object.keys(PROVIDER_LABELS).filter(provider => API_KEYS[provider]);
+const DEFAULT_PROVIDER = AVAILABLE_PROVIDERS.includes('gemini') ? 'gemini' : AVAILABLE_PROVIDERS[0];
 
-if (!API_KEY) {
-  console.error('ERROR: GEMINI_API_KEY environment variable is not set');
+if (AVAILABLE_PROVIDERS.length === 0) {
+  console.error('ERROR: Configure at least one AI provider API key (GEMINI_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, or PERPLEXITY_API_KEY)');
   process.exit(1);
 }
 
@@ -100,7 +113,7 @@ app.use((req, res, next) => {
   })(req, res, next);
 });
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+const genAI = API_KEYS.gemini ? new GoogleGenerativeAI(API_KEYS.gemini) : null;
 
 // Rate limiting configuration
 const apiLimiter = rateLimit({
@@ -165,6 +178,13 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'vcvq',
     version: '1.0.0'
+  });
+});
+
+app.get('/api/providers', (req, res) => {
+  res.json({
+    providers: AVAILABLE_PROVIDERS.map(id => ({ id, name: PROVIDER_LABELS[id] })),
+    defaultProvider: DEFAULT_PROVIDER
   });
 });
 
@@ -260,7 +280,78 @@ app.post('/api/log-client-info', express.json({ limit: '1kb' }), (req, res) => {
   return res.status(200).json({ status: 'ok', visitorId: newVisitorId });
 });
 
-async function tryGenerateWithModels(prompt) {
+function resolveProvider(provider) {
+  const selectedProvider = provider || DEFAULT_PROVIDER;
+  if (!Object.hasOwn(PROVIDER_LABELS, selectedProvider) || !API_KEYS[selectedProvider]) {
+    const error = new Error('Invalid or unconfigured AI provider');
+    error.isInvalidProvider = true;
+    throw error;
+  }
+  return selectedProvider;
+}
+
+async function generateWithApiProvider(prompt, provider) {
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(60000)
+  };
+  let url;
+  let responseText;
+
+  if (provider === 'chatgpt') {
+    url = 'https://api.openai.com/v1/chat/completions';
+    requestOptions.headers.Authorization = `******;
+    requestOptions.body = JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      max_completion_tokens: 12000
+    });
+  } else if (provider === 'claude') {
+    url = 'https://api.anthropic.com/v1/messages';
+    requestOptions.headers['x-api-key'] = API_KEYS.claude;
+    requestOptions.headers['anthropic-version'] = '2023-06-01';
+    requestOptions.body = JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 12000,
+      messages: [{ role: 'user', content: prompt }]
+    });
+  } else {
+    url = 'https://api.perplexity.ai/chat/completions';
+    requestOptions.headers.Authorization = `******;
+    requestOptions.body = JSON.stringify({
+      model: 'sonar',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 12000
+    });
+  }
+
+  const response = await fetch(url, requestOptions);
+  if (!response.ok) {
+    const error = new Error(`AI provider request failed with status ${response.status}`);
+    if (response.status === 429 || response.status >= 500) {
+      error.isOverloaded = true;
+    }
+    throw error;
+  }
+  const data = await response.json();
+  if (provider === 'claude') {
+    responseText = data.content?.find(block => block.type === 'text')?.text;
+  } else {
+    responseText = data.choices?.[0]?.message?.content;
+  }
+  if (typeof responseText !== 'string' || !responseText.trim()) {
+    throw new Error('AI provider returned an empty response');
+  }
+  return responseText;
+}
+
+async function tryGenerateWithModels(prompt, requestedProvider) {
+  const provider = resolveProvider(requestedProvider);
+  if (provider !== 'gemini') {
+    return generateWithApiProvider(prompt, provider);
+  }
+
   let lastError = null;
   let isOverloaded = false;
   
@@ -300,6 +391,9 @@ async function tryGenerateWithModels(prompt) {
 
 // Input validation middleware for quiz generation
 const validateQuizGeneration = [
+  body('provider')
+    .optional()
+    .isIn(Object.keys(PROVIDER_LABELS)).withMessage('Provider must be gemini, chatgpt, claude, or perplexity'),
   body('topic')
     .trim()
     .notEmpty().withMessage('Topic is required')
@@ -412,12 +506,13 @@ app.post('/api/generate-quiz', strictApiLimiter, validateQuizGeneration, async (
     }
 
     const { topic, language, numQuestions = 10, numAnswers = 6, visitorId } = req.body;
+    const provider = resolveProvider(req.body.provider);
     
     const sanitizedTopicForPrompt = sanitizePromptInput(topic);
     logQuizRequest(topic, language, numQuestions, numAnswers, visitorId);
 
     const prompt = buildQuizPrompt(sanitizedTopicForPrompt, language, numQuestions, numAnswers);
-    const text = await tryGenerateWithModels(prompt);
+    const text = await tryGenerateWithModels(prompt, provider);
     const questions = parseAndValidateQuizResponse(text, numQuestions, numAnswers);
 
     console.log(`[VCVQ] Successfully generated ${questions.length} questions`);
@@ -475,6 +570,9 @@ function validatePlayerNamesResponse(text, count) {
 }
 
 const validatePlayerNames = [
+  body('provider')
+    .optional()
+    .isIn(Object.keys(PROVIDER_LABELS)).withMessage('Provider must be gemini, chatgpt, claude, or perplexity'),
   body('language')
     .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
   body('count')
@@ -503,6 +601,7 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
     if (visitorId && !isValidVisitorId(visitorId)) {
       return res.status(400).json({ error: 'Invalid visitor ID format' });
     }
+    const provider = resolveProvider(req.body.provider);
     
     const sanitizedTopic = sanitizeLog(topic);
     const sanitizedLanguage = sanitizeLog(language);
@@ -513,7 +612,7 @@ app.post('/api/generate-player-names', strictApiLimiter, validatePlayerNames, as
 
     const positions = getPositions(language);
     const prompt = buildPlayerNamesPrompt(language, count, topic, positions);
-    const text = await tryGenerateWithModels(prompt);
+    const text = await tryGenerateWithModels(prompt, provider);
     const names = validatePlayerNamesResponse(text, count);
 
     console.log(`[VCVQ] Generated player names:`, names);
@@ -583,6 +682,10 @@ function handleGenerationError(error, res, context) {
   const sanitizedError = error instanceof Error ? sanitizeLog(error.message, 300) : sanitizeLog(String(error), 300);
   console.error(`[VCVQ] Error generating ${sanitizedContext}: ${sanitizedError}`);
   
+  if (error.isInvalidProvider) {
+    return res.status(400).json({ error: 'Invalid or unavailable AI provider' });
+  }
+
   if (error.isOverloaded) {
     return res.status(503).json({ 
       error: 'Service temporarily unavailable',
@@ -600,6 +703,9 @@ function handleGenerationError(error, res, context) {
 
 // Input validation middleware for topic generation
 const validateTopicGeneration = [
+  body('provider')
+    .optional()
+    .isIn(Object.keys(PROVIDER_LABELS)).withMessage('Provider must be gemini, chatgpt, claude, or perplexity'),
   body('language')
     .isIn(['sv', 'en']).withMessage('Language must be either "sv" or "en"'),
   body('count')
@@ -620,6 +726,7 @@ app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async
     }
 
     const { language, count = 1, visitorId } = req.body;
+    const provider = resolveProvider(req.body.provider);
     
     if (visitorId && !isValidVisitorId(visitorId)) {
       return res.status(400).json({ error: 'Invalid visitor ID format' });
@@ -632,7 +739,7 @@ app.post('/api/generate-topic', strictApiLimiter, validateTopicGeneration, async
     console.log(`[VCVQ] Generating ${sanitizedCount} random funny topic(s) in ${sanitizedLanguage}${visitorInfoStr}`);
     
     const prompt = buildTopicPrompt(language, count);
-    const text = await tryGenerateWithModels(prompt);
+    const text = await tryGenerateWithModels(prompt, provider);
     const result = validateTopicResponse(text, count);
     
     if (count === 1) {
