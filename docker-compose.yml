@@ -6,6 +6,9 @@ services:
       - "${PORT:-3030}:3030"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
       - PORT=${PORT:-3030}
       - NODE_ENV=${NODE_ENV:-production}
     restart: unless-stopped

@@ -374,13 +374,16 @@ GET /game.html
 
 ## 3. Configuration Interface
 
-VCVQ accepts configuration through environment variables.
+VCVQ accepts configuration through environment variables. Configure one or more AI providers; only configured providers are available to users.
 
 ### 3.1 Environment Variables (Input)
 
 | Variable | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `GEMINI_API_KEY` | string | **Yes** | None | Google Gemini API key for AI generation |
+| `GEMINI_API_KEY` | string | One provider required | None | Google Gemini API key |
+| `OPENAI_API_KEY` | string | One provider required | None | OpenAI API key for ChatGPT |
+| `ANTHROPIC_API_KEY` | string | One provider required | None | Anthropic API key for Claude |
+| `PERPLEXITY_API_KEY` | string | One provider required | None | Perplexity API key |
 | `PORT` | integer | No | 3030 | Server listening port |
 | `NODE_ENV` | string | No | `production` | Environment mode (`development` or `production`) |
 | `ALLOWED_ORIGINS` | string | No | localhost only | Comma-separated CORS origins |
@@ -394,6 +397,10 @@ ALLOWED_ORIGINS=http://example.com,https://another.com
 - `PORT`: Valid port number (1-65535)
 - `NODE_ENV`: Either `development` or `production`
 - `ALLOWED_ORIGINS`: Comma-separated valid URLs
+
+### 3.2 Available AI Providers
+
+`GET /api/providers` returns the configured provider IDs and display names, plus the default provider. AI generation endpoints accept an optional `provider` value: `gemini`, `chatgpt`, `claude`, or `perplexity`. If omitted, the default configured provider is used (Gemini when configured, otherwise the first configured provider).
 
 ---
 
@@ -726,4 +733,3 @@ const response = await fetch('/api/generate-quiz', {
 **This document serves as the complete external interface reference for VCVQ.**
 
 For implementation details and internal architecture, see the [Development Guide](development.md).
-

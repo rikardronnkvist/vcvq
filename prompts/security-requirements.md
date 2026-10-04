@@ -163,7 +163,7 @@ See Docker configuration files.
 **Status: ✅ Implemented**
 
 ### Environment Variables
-- `GEMINI_API_KEY`: Required for AI functionality
+- At least one of `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `PERPLEXITY_API_KEY`: Required for AI functionality
 - `PORT`: Web server port (default: 3030)
 - `NODE_ENV`: Environment mode (development/production)
 
@@ -212,4 +212,3 @@ When modifying code, ensure:
 - [ ] CodeQL scans still pass
 - [ ] No hardcoded secrets
 - [ ] Environment variables used for config
-

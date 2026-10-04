@@ -5,7 +5,7 @@ This guide covers how to install and run VCVQ.
 ## Prerequisites
 
 - Docker and docker-compose installed
-- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- At least one AI API key: [Gemini](https://aistudio.google.com/app/apikey), [ChatGPT](https://platform.openai.com/api-keys), [Claude](https://console.anthropic.com/settings/keys), or [Perplexity](https://www.perplexity.ai/settings/api)
 
 ## Quick Start with Docker (Recommended)
 
@@ -28,10 +28,13 @@ cp .env.example .env
 
 ### 3. Configure Environment Variables
 
-Edit `.env` and add your Gemini API key:
+Edit `.env` and add one or more AI provider API keys. VCVQ only displays providers with a configured key:
 
 ```env
-GEMINI_API_KEY=your_actual_api_key_here
+GEMINI_API_KEY=your_gemini_api_key
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+PERPLEXITY_API_KEY=your_perplexity_api_key
 PORT=3030
 # Optional: For cross-origin requests, set ALLOWED_ORIGINS
 # ALLOWED_ORIGINS=http://example.com,https://another-domain.com
@@ -73,7 +76,7 @@ npm install
 
 ```bash
 cp .env.example .env
-# Add your GEMINI_API_KEY to the .env file
+# Add at least one AI provider API key to the .env file
 ```
 
 ### 4. Run the Application
@@ -96,17 +99,24 @@ The application will be available at `http://localhost:3030`.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `GEMINI_API_KEY` | Yes | - | Your Google Gemini API key |
+| `GEMINI_API_KEY` | One provider required | - | Google Gemini API key |
+| `OPENAI_API_KEY` | One provider required | - | OpenAI API key for ChatGPT |
+| `ANTHROPIC_API_KEY` | One provider required | - | Anthropic API key for Claude |
+| `PERPLEXITY_API_KEY` | One provider required | - | Perplexity API key |
 | `PORT` | No | 3030 | Server port number |
 | `NODE_ENV` | No | production | Environment mode (development/production) |
 | `ALLOWED_ORIGINS` | No | localhost only | Comma-separated list of allowed CORS origins |
 
-## Getting a Gemini API Key
+## Getting an AI API Key
 
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy the API key and add it to your `.env` file
+Create an API key from one or more of the provider consoles:
+
+- [Google AI Studio](https://aistudio.google.com/app/apikey)
+- [OpenAI platform](https://platform.openai.com/api-keys)
+- [Anthropic console](https://console.anthropic.com/settings/keys)
+- [Perplexity settings](https://www.perplexity.ai/settings/api)
+
+Copy each key to its corresponding variable in `.env`. Only providers with keys configured are available in the app.
 
 ## Verifying Installation
 
@@ -114,7 +124,7 @@ Once the application is running, you can verify it's working:
 
 1. Open `http://localhost:3030` in your browser
 2. You should see the VCVQ landing page
-3. Try starting a quiz to verify the Gemini API connection
+3. Select a configured AI provider and start a quiz to verify the connection
 
 ### Health Check
 
@@ -172,9 +182,9 @@ Then restart the application.
 
 ### API Key Issues
 
-If you see errors related to the Gemini API:
+If you see errors related to an AI provider:
 
-- Verify your API key is correct in `.env`
+- Verify the provider's API key is correct in `.env`
 - Check that your API key has not been revoked
 - Ensure you have billing enabled (if required by Google)
 
@@ -201,4 +211,3 @@ If you encounter permission errors with Docker:
 - [User Guide](usage.md) - Learn how to use VCVQ
 - [Development Guide](development.md) - Set up development environment
 - [API Reference](interface-reference.md) - Complete API documentation
-
